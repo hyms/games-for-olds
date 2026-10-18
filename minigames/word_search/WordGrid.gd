@@ -95,7 +95,7 @@ func _validate_selection() -> void:
 		sel_str += c.letter
 	var sel_str_rev: String = sel_str.reverse()
 	for i in placements.size():
-		var p := placements[i]
+		var p: WordGenerator.WordPlacement = placements[i]
 		if p.word == sel_str or p.word == sel_str_rev:
 			_mark_found(p)
 			return

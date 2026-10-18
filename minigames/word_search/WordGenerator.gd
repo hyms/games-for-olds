@@ -59,7 +59,7 @@ static func generate(theme: WordSearchTheme) -> GenerationResult:
 	res.success = placements_list.size() > 0
 	
 	# Rellenar espacios vacíos con letras aleatorias
-	var rng := RandomNumberGenerator.new()
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
 	var letters := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	for y in size:
@@ -72,7 +72,7 @@ static func generate(theme: WordSearchTheme) -> GenerationResult:
 
 ## Intenta colocar una palabra
 static func _try_place_word(grid: Array, size: int, word: String, theme: WordSearchTheme, existing: Array[WordPlacement]) -> WordPlacement:
-	var rng := RandomNumberGenerator.new()
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
 	var dirs := DIRECTIONS.duplicate()
 	dirs.shuffle()
