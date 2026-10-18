@@ -77,7 +77,7 @@ static func _try_place_word(grid: Array, size: int, word: String, theme: WordSea
 	var dirs: Array[Vector2i] = DIRECTIONS.duplicate()
 	dirs.shuffle()
 	for d in dirs:
-		var variants := [word]
+		var variants: Array[String] = [word]
 		if theme.allow_backwards:
 			variants.append(word.reverse())
 		for wvar in variants:
