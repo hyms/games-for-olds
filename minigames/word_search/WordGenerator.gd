@@ -65,7 +65,7 @@ static func generate(theme: WordSearchTheme) -> GenerationResult:
 	for y in size:
 		for x in size:
 			if res.grid[y][x] == " ":
-				var l := letters[rng.randi() % letters.length()]
+				var l: String = letters[rng.randi() % letters.length()]
 				res.grid[y][x] = l
 	
 	return res
