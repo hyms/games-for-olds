@@ -82,8 +82,8 @@ static func _try_place_word(grid: Array, size: int, word: String, theme: WordSea
 			variants.append(word.reverse())
 		for wvar in variants:
 			for attempt in 60:
-				var start_x := rng.randi_range(0, size - 1)
-				var start_y := rng.randi_range(0, size - 1)
+				var start_x: int = rng.randi_range(0, size - 1)
+				var start_y: int = rng.randi_range(0, size - 1)
 				if _can_place(grid, size, wvar, start_x, start_y, d):
 					var wp := WordPlacement.new()
 					wp.word = word
