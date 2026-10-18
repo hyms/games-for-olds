@@ -85,7 +85,7 @@ static func _try_place_word(grid: Array, size: int, word: String, theme: WordSea
 				var start_x: int = rng.randi_range(0, size - 1)
 				var start_y: int = rng.randi_range(0, size - 1)
 				if _can_place(grid, size, wvar, start_x, start_y, d):
-					var wp := WordPlacement.new()
+					var wp: WordGenerator.WordPlacement = WordPlacement.new()
 					wp.word = word
 					for i in wvar.length():
 						var px := start_x + d.x * i
