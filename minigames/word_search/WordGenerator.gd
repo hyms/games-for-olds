@@ -61,7 +61,7 @@ static func generate(theme: WordSearchTheme) -> GenerationResult:
 	# Rellenar espacios vacíos con letras aleatorias
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
-	var letters := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	var letters: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	for y in size:
 		for x in size:
 			if res.grid[y][x] == " ":

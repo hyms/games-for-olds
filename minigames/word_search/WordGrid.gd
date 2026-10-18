@@ -116,7 +116,7 @@ func _positions_match(a: Array[Vector2i], b: Array[Vector2i]) -> bool:
 
 func _mark_found(placement: WordGenerator.WordPlacement) -> void:
 	for pos in placement.positions:
-		var c := _get_cell_at(pos.x, pos.y)
+		var c: WordCell = _get_cell_at(pos.x, pos.y)
 		if c:
 			c.set_found(true)
 	word_found.emit(placement.word)
