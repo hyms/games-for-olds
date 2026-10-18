@@ -1,4 +1,5 @@
 extends Control
+class_name ThemeSelector
 
 ## Selector de temáticas para WordSearch
 
