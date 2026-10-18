@@ -102,7 +102,7 @@ static func _can_place(grid: Array, size: int, word: String, sx: int, sy: int, d
 		var py: int = sy + dir.y * i
 		if px < 0 or px >= size or py < 0 or py >= size:
 			return false
-		var existing_char := grid[py][px]
+		var existing_char: String = grid[py][px]
 		if existing_char != " " and existing_char != word[i]:
 			return false
 	return true
