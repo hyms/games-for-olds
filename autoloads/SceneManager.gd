@@ -11,7 +11,7 @@ var current_scene_path: String = ""
 
 func _ready() -> void:
 	var tree := get_tree()
-	if tree.current_scene:
+	if is_instance_valid(tree.current_scene) and not tree.current_scene.scene_file_path.is_empty():
 		current_scene_path = tree.current_scene.scene_file_path
 
 ## Cambia a otra escena por ruta res://...

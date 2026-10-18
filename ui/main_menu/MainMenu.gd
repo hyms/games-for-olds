@@ -11,13 +11,18 @@ extends Control
 
 func _ready() -> void:
 	# Conexiones con señales Godot 4 (.connect)
-	btn_word_search.pressed.connect(_on_word_search_pressed)
-	btn_tangram.pressed.connect(_on_tangram_pressed)
-	btn_blocks.pressed.connect(_on_blocks_pressed)
-	btn_quit.pressed.connect(_on_quit_pressed)
+	if is_instance_valid(btn_word_search):
+		btn_word_search.pressed.connect(_on_word_search_pressed)
+	if is_instance_valid(btn_tangram):
+		btn_tangram.pressed.connect(_on_tangram_pressed)
+	if is_instance_valid(btn_blocks):
+		btn_blocks.pressed.connect(_on_blocks_pressed)
+	if is_instance_valid(btn_quit):
+		btn_quit.pressed.connect(_on_quit_pressed)
 
 	# Enfoque inicial accesible (teclado/mandos si se usa)
-	btn_word_search.grab_focus()
+	if is_instance_valid(btn_word_search):
+		btn_word_search.grab_focus()
 
 func _on_word_search_pressed() -> void:
 	# TODO: Cambiar a res://minigames/word_search/WordSearch.tscn cuando exista
