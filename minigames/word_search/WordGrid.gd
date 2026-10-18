@@ -93,7 +93,10 @@ func _validate_selection() -> void:
 	var sel_str: String = ""
 	for c in selected_path:
 		sel_str += c.letter
-	var sel_str_rev: String = sel_str.reversed()
+	var sel_str_rev: String = sel_str.reverse()
+	# Array.reverse() es in-place (void): duplicamos primero.
+	var sel_pos_rev: Array[Vector2i] = selected_positions.duplicate()
+	sel_pos_rev.reverse()
 	for i in placements.size():
 		var p: WordGenerator.WordPlacement = placements[i]
 		if p.word == sel_str or p.word == sel_str_rev:
@@ -102,7 +105,7 @@ func _validate_selection() -> void:
 		if _positions_match(p.positions, selected_positions):
 			_mark_found(p)
 			return
-		if _positions_match(p.positions, selected_positions.duplicate().reversed()):
+		if _positions_match(p.positions, sel_pos_rev):
 			_mark_found(p)
 			return
 

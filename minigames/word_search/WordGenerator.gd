@@ -74,12 +74,17 @@ static func generate(theme: WordSearchTheme) -> GenerationResult:
 static func _try_place_word(grid: Array, size: int, word: String, theme: WordSearchTheme, existing: Array[WordPlacement]) -> WordPlacement:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
-	var dirs: Array[Vector2i] = DIRECTIONS.duplicate()
+	var dirs: Array[Vector2i] = []
+	for d in DIRECTIONS:
+		var is_diag = d.x != 0 and d.y != 0
+		if is_diag and not theme.allow_diagonal:
+			continue
+		dirs.append(d)
 	dirs.shuffle()
 	for d in dirs:
 		var variants: Array[String] = [word]
 		if theme.allow_backwards:
-			variants.append(word.reversed())
+			variants.append(word.reverse())
 		for wvar in variants:
 			for attempt in 60:
 				var start_x: int = rng.randi_range(0, size - 1)
