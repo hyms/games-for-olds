@@ -74,7 +74,7 @@ static func generate(theme: WordSearchTheme) -> GenerationResult:
 static func _try_place_word(grid: Array, size: int, word: String, theme: WordSearchTheme, existing: Array[WordPlacement]) -> WordPlacement:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
-	var dirs := DIRECTIONS.duplicate()
+	var dirs: Array[Vector2i] = DIRECTIONS.duplicate()
 	dirs.shuffle()
 	for d in dirs:
 		var variants := [word]
