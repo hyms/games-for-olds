@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3 uid="uid://c7ypmxn2kq8vh"]
+
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_f1v7l"]
+
+[resource]
+script = ExtResource("1_f1v7l")
+theme_name = "Frutas y Verduras"
+description = "Alimentos saludables y conocidos"
+words = Array[String](["MANZANA", "PERA", "PLATANO", "NARANJA", "FRESA", "UVA", "MELON", "SANDIA", "TOMATE", "ZANAHORIA", "LECHUGA", "CEBOLLA", "PATATA", "CALABAZA"])
+grid_size = 8
+max_words = 8
+min_word_length = 4
+allow_diagonal = true
+allow_backwards = true

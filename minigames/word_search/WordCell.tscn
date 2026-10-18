@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://bqvxmj4k8n7ph"]
+
+[ext_resource type="PackedScene" uid="uid://d2v8xgk5q1m0h" path="res://ui/components/BigButton.tscn" id="1_btn"]
+[ext_resource type="Script" path="res://minigames/word_search/WordCell.gd" id="2_script"]
+
+[node name="WordCell" instance=ExtResource("1_btn")]
+custom_minimum_size = Vector2(48, 48)
+offset_right = 48.0
+offset_bottom = 48.0
+text = "A"
+script = ExtResource("2_script")

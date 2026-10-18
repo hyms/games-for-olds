@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3 uid="uid://b8qkm3xp4w7th"]
+
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_p3t2k"]
+
+[resource]
+script = ExtResource("1_p3t2k")
+theme_name = "Países y Ciudades"
+description = "Lugares conocidos de habla hispana"
+words = Array[String](["ESPAÑA", "MEXICO", "ARGENTINA", "COLOMBIA", "CHILE", "PERU", "BRASIL", "FRANCIA", "ITALIA", "MADRID", "BARCELONA", "LIMA", "BOGOTA"])
+grid_size = 8
+max_words = 8
+min_word_length = 4
+allow_diagonal = true
+allow_backwards = true

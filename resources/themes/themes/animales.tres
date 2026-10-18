@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3 uid="uid://d2xvkwm1yq5bp"]
+
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_0v4yk"]
+
+[resource]
+script = ExtResource("1_0v4yk")
+theme_name = "Animales"
+description = "Animales domésticos y conocidos"
+words = Array[String](["PERRO", "GATO", "VACA", "CABALLO", "OVEJA", "CERDO", "PATO", "GALLINA", "CONEJO", "TORTUGA", "POLLITO", "BURRO"])
+grid_size = 8
+max_words = 8
+min_word_length = 4
+allow_diagonal = true
+allow_backwards = true

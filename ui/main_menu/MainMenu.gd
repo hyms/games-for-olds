@@ -4,6 +4,8 @@ extends Control
 ## Punto de entrada. Usa SceneManager para navegar (desacoplado).
 ## Más adelante conectaremos a las escenas reales de cada minijuego.
 
+const THEME_SELECTOR_SCENE := "res://ui/theme_selector/ThemeSelector.tscn"
+
 @onready var btn_word_search: BigButton = %BtnWordSearch
 @onready var btn_tangram: BigButton = %BtnTangram
 @onready var btn_blocks: BigButton = %BtnBlocks
@@ -25,17 +27,13 @@ func _ready() -> void:
 		btn_word_search.grab_focus()
 
 func _on_word_search_pressed() -> void:
-	# TODO: Cambiar a res://minigames/word_search/WordSearch.tscn cuando exista
-	print("[MainMenu] Sopa de Letras (procedural) aún no implementado. Se creará en el siguiente paso.")
-	# SceneManager.go_to("res://minigames/word_search/WordSearch.tscn")
+	SceneManager.go_to(THEME_SELECTOR_SCENE)
 
 func _on_tangram_pressed() -> void:
-	# TODO: Cambiar a res://minigames/tangram/Tangram.tscn cuando exista
 	print("[MainMenu] Tangram/Puzles de encaje aún no implementado.")
 	# SceneManager.go_to("res://minigames/tangram/Tangram.tscn")
 
 func _on_blocks_pressed() -> void:
-	# TODO: Cambiar a res://minigames/blocks/Blocks.tscn (estilo Dr. Mario) cuando exista
 	print("[MainMenu] Lógica de Bloques (estilo Dr. Mario) aún no implementado.")
 	# SceneManager.go_to("res://minigames/blocks/Blocks.tscn")
 

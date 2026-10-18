@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3 uid="uid://xjv4p8k5m3qh"]
+
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_o8h2m"]
+
+[resource]
+script = ExtResource("1_o8h2m")
+theme_name = "Objetos del Hogar"
+description = "Utensilios y objetos cotidianos"
+words = Array[String](["MESA", "SILLA", "COCINA", "HORNO", "LAVABO", "ARMARIO", "ESTUFA", "TAZA", "PLATO", "CUCHARA", "TENEDOR", "VASO", "TELEVISOR"])
+grid_size = 8
+max_words = 8
+min_word_length = 4
+allow_diagonal = true
+allow_backwards = true
