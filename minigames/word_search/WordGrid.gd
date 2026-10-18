@@ -37,7 +37,7 @@ func _clear_grid() -> void:
 func _build_grid() -> void:
 	cells_grid = []
 	var cell_size: Vector2 = Vector2(48, 48)
-	var spacing := 4
+	var spacing: int = 4
 	for y in grid_size:
 		cells_grid.append([])
 		for x in grid_size:

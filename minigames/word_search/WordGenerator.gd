@@ -38,7 +38,7 @@ static func generate(theme: WordSearchTheme) -> GenerationResult:
 			res.grid[y].append(" ") # vacío
 	
 	# Obtener palabras filtradas y barajar
-	var candidates := theme.get_filtered_words()
+	var candidates: Array[String] = theme.get_filtered_words()
 	candidates.shuffle()
 	
 	# Limitar a max_words

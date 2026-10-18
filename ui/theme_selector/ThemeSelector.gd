@@ -54,7 +54,7 @@ func _on_theme_selected(idx: int) -> void:
 	if idx < 0 or idx >= themes.size():
 		return
 	var selected: WordSearchTheme = themes[idx]
-	var tree := get_tree()
+	var tree: SceneTree = get_tree()
 	var err := tree.change_scene_to_file(THEME_SCENE)
 	if err == OK:
 		await tree.process_frame
