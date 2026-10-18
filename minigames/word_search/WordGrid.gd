@@ -93,7 +93,7 @@ func _validate_selection() -> void:
 	var sel_str: String = ""
 	for c in selected_path:
 		sel_str += c.letter
-	var sel_str_rev: String = sel_str.reverse()
+	var sel_str_rev: String = sel_str.reversed()
 	for i in placements.size():
 		var p: WordGenerator.WordPlacement = placements[i]
 		if p.word == sel_str or p.word == sel_str_rev:
@@ -102,7 +102,7 @@ func _validate_selection() -> void:
 		if _positions_match(p.positions, selected_positions):
 			_mark_found(p)
 			return
-		if _positions_match(p.positions, selected_positions.duplicate().reverse()):
+		if _positions_match(p.positions, selected_positions.duplicate().reversed()):
 			_mark_found(p)
 			return
 

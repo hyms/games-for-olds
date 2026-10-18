@@ -79,7 +79,7 @@ static func _try_place_word(grid: Array, size: int, word: String, theme: WordSea
 	for d in dirs:
 		var variants: Array[String] = [word]
 		if theme.allow_backwards:
-			variants.append(word.reverse())
+			variants.append(word.reversed())
 		for wvar in variants:
 			for attempt in 60:
 				var start_x: int = rng.randi_range(0, size - 1)
