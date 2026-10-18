@@ -51,7 +51,7 @@ static func generate(theme: WordSearchTheme) -> GenerationResult:
 	# Intentar colocar palabras
 	var placements_list: Array[WordPlacement] = []
 	for word in words_to_place:
-		var placed := _try_place_word(res.grid, size, word, theme, placements_list)
+		var placed: WordGenerator.WordPlacement = _try_place_word(res.grid, size, word, theme, placements_list)
 		if placed:
 			placements_list.append(placed)
 	

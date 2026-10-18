@@ -41,7 +41,7 @@ func _build_grid() -> void:
 	for y in grid_size:
 		cells_grid.append([])
 		for x in grid_size:
-			var cell := cell_scene.instantiate() as WordCell
+			var cell: WordCell = cell_scene.instantiate() as WordCell
 			add_child(cell)
 			cell.grid_pos = Vector2i(x, y)
 			var letter: String = grid_data[y][x]
