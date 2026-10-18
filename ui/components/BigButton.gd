@@ -20,5 +20,3 @@ func _ready() -> void:
 	add_to_group(Constants.GROUP_TOUCHABLE)
 
 	mouse_filter = Control.MOUSE_FILTER_STOP
-
-
