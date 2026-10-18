@@ -88,8 +88,8 @@ static func _try_place_word(grid: Array, size: int, word: String, theme: WordSea
 					var wp: WordGenerator.WordPlacement = WordPlacement.new()
 					wp.word = word
 					for i in wvar.length():
-						var px := start_x + d.x * i
-						var py := start_y + d.y * i
+						var px: int = start_x + d.x * i
+						var py: int = start_y + d.y * i
 						grid[py][px] = wvar[i]
 						wp.positions.append(Vector2i(px, py))
 					return wp
@@ -98,8 +98,8 @@ static func _try_place_word(grid: Array, size: int, word: String, theme: WordSea
 ## Comprueba si cabe y no solapa con letra distinta
 static func _can_place(grid: Array, size: int, word: String, sx: int, sy: int, dir: Vector2i) -> bool:
 	for i in word.length():
-		var px := sx + dir.x * i
-		var py := sy + dir.y * i
+		var px: int = sx + dir.x * i
+		var py: int = sy + dir.y * i
 		if px < 0 or px >= size or py < 0 or py >= size:
 			return false
 		var existing_char := grid[py][px]
