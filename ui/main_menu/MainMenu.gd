@@ -21,17 +21,17 @@ func _ready() -> void:
 
 func _on_word_search_pressed() -> void:
 	# TODO: Cambiar a res://minigames/word_search/WordSearch.tscn cuando exista
-	push_info("[MainMenu] Sopa de Letras (procedural) aún no implementado. Se creará en el siguiente paso.")
+	print("[MainMenu] Sopa de Letras (procedural) aún no implementado. Se creará en el siguiente paso.")
 	# SceneManager.go_to("res://minigames/word_search/WordSearch.tscn")
 
 func _on_tangram_pressed() -> void:
 	# TODO: Cambiar a res://minigames/tangram/Tangram.tscn cuando exista
-	push_info("[MainMenu] Tangram/Puzles de encaje aún no implementado.")
+	print("[MainMenu] Tangram/Puzles de encaje aún no implementado.")
 	# SceneManager.go_to("res://minigames/tangram/Tangram.tscn")
 
 func _on_blocks_pressed() -> void:
 	# TODO: Cambiar a res://minigames/blocks/Blocks.tscn (estilo Dr. Mario) cuando exista
-	push_info("[MainMenu] Lógica de Bloques (estilo Dr. Mario) aún no implementado.")
+	print("[MainMenu] Lógica de Bloques (estilo Dr. Mario) aún no implementado.")
 	# SceneManager.go_to("res://minigames/blocks/Blocks.tscn")
 
 func _on_quit_pressed() -> void:
