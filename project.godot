@@ -1,0 +1,38 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Clásicos Mente Activa 2D"
+run/main_scene="res://ui/main_menu/MainMenu.tscn"
+config/version="0.1.0"
+config/features=PackedStringArray("4.4", "Forward Plus")
+boot_splash/show_image=false
+
+[autoload]
+
+SceneManager="*res://autoloads/SceneManager.gd"
+
+[display]
+
+window/size/viewport_width=360
+window/size/viewport_height=640
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=1
+
+[input_devices]
+
+pointing/emulate_mouse_from_touch=true
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+renderer/rendering_method="mobile"

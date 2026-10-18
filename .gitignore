@@ -1,0 +1,47 @@
+# Godot 4.x
+.godot/
+.import/
+*.import
+*.translation
+
+# Exportación
+export.cfg
+export_presets.cfg
+builds/
+dist/
+export/
+
+# Android export (generado)
+android/build/
+android/.gradle/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Mono / C# (por si en futuro, aunque usamos GDScript)
+.mono/
+data_*/
+mono_crash.*.json
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+
+# Editores / IDEs
+.vscode/
+.idea/
+.fleet/
+*.code-workspace
+
+# Temporales
+*.tmp
+*.bak
+*.swp
+*.swo
+*.log
+
+# Tests / coverage (futuro)
+coverage/
