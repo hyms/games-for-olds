@@ -36,7 +36,7 @@ func _load_themes() -> void:
 	themes.clear()
 	for path in THEME_PATHS:
 		if ResourceLoader.exists(path):
-			var t := load(path) as WordSearchTheme
+			var t: WordSearchTheme = load(path) as WordSearchTheme
 			if t:
 				themes.append(t)
 	if themes.size() > 0 and is_instance_valid(btn_theme1):

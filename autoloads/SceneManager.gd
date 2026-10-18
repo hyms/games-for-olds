@@ -10,7 +10,7 @@ signal scene_changed(to_path: String)
 var current_scene_path: String = ""
 
 func _ready() -> void:
-	var tree := get_tree()
+	var tree: SceneTree = get_tree()
 	if is_instance_valid(tree.current_scene) and not tree.current_scene.scene_file_path.is_empty():
 		current_scene_path = tree.current_scene.scene_file_path
 
@@ -23,7 +23,7 @@ func go_to(path: String) -> void:
 		push_warning("[SceneManager] Ya estás en la misma escena: %s" % path)
 		return
 
-	var tree := get_tree()
+	var tree: SceneTree = get_tree()
 	scene_changing.emit(current_scene_path, path)
 	await tree.process_frame ## Pequeño respiro para que listeners reaccionen
 

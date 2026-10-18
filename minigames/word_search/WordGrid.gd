@@ -22,7 +22,7 @@ var selected_positions: Array[Vector2i] = []
 func setup(theme: WordSearchTheme) -> void:
 	current_theme = theme
 	grid_size = theme.grid_size
-	var result := WordGenerator.generate(theme)
+	var result: WordGenerator.GenerationResult = WordGenerator.generate(theme)
 	grid_data = result.grid
 	placements = result.placements
 	_clear_grid()

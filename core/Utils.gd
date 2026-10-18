@@ -6,7 +6,7 @@ extends RefCounted
 static func get_touch_rect(control: Control, margin: float = 8.0) -> Rect2:
 	if not control:
 		return Rect2()
-	var rect := control.get_global_rect()
+	var rect: Rect2 = control.get_global_rect()
 	rect = rect.grow(margin)
 	return rect
 

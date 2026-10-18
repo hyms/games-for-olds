@@ -26,7 +26,7 @@ class GenerationResult:
 
 ## Genera grid NxN con palabras del tema
 static func generate(theme: WordSearchTheme) -> GenerationResult:
-	var res := GenerationResult.new()
+	var res: WordGenerator.GenerationResult = GenerationResult.new()
 	res.grid_size = theme.grid_size
 	var size := theme.grid_size
 	
