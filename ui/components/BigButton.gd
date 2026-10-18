@@ -22,8 +22,4 @@ func _ready() -> void:
 
 	mouse_filter = Control.MOUSE_FILTER_STOP
 
-func _get_global_rect() -> Rect2:
-	var rect := super._get_global_rect()
-	if grow_hitbox > 0.0:
-		rect = rect.grow(grow_hitbox)
-	return rect
+
