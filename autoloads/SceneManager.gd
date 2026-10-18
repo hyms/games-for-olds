@@ -28,7 +28,7 @@ func go_to(path: String) -> void:
 	await tree.process_frame ## Pequeño respiro para que listeners reaccionen
 
 	# Cambio inmediato por ahora. Más adelante añadiremos transiciones (fade/crossfade)
-	var err := tree.change_scene_to_file(path)
+	var err: Error = tree.change_scene_to_file(path)
 	if err != OK:
 		push_error("[SceneManager] Error al cargar escena '%s' (code: %d)" % [path, err])
 		return

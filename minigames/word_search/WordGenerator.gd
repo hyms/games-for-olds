@@ -28,7 +28,7 @@ class GenerationResult:
 static func generate(theme: WordSearchTheme) -> GenerationResult:
 	var res: WordGenerator.GenerationResult = GenerationResult.new()
 	res.grid_size = theme.grid_size
-	var size := theme.grid_size
+	var size: int = theme.grid_size
 	
 	# Inicializar grid vacío (espacio)
 	res.grid = []
