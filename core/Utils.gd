@@ -14,5 +14,5 @@ static func get_touch_rect(control: Control, margin: float = 8.0) -> Rect2:
 static func scene_name_from_path(path: String) -> String:
 	if path.is_empty():
 		return ""
-	var name := path.get_file().get_basename()
+	var name: String = path.get_file().get_basename()
 	return name.replace("_", " ").capitalize()

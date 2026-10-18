@@ -27,13 +27,13 @@ extends Resource
 func get_filtered_words() -> Array[String]:
 	var filtered: Array[String] = []
 	for w in words:
-		var clean := w.strip_edges().to_upper()
+		var clean: String = w.strip_edges().to_upper()
 		if clean.length() < min_word_length:
 			continue
 		if clean.length() > grid_size:
 			continue
 		# Limpiar caracteres no alfabéticos
-		var cleaned := ""
+		var cleaned: String = ""
 		for c in clean:
 			if c >= "A" and c <= "Z":
 				cleaned += c

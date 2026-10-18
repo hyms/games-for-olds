@@ -44,13 +44,13 @@ func _build_grid() -> void:
 			var cell := cell_scene.instantiate() as WordCell
 			add_child(cell)
 			cell.grid_pos = Vector2i(x, y)
-			var letter := grid_data[y][x]
+			var letter: String = grid_data[y][x]
 			cell.set_letter(letter)
 			cell.cell_pressed.connect(_on_cell_pressed)
 			cell.position = Vector2(x * (cell_size.x + spacing), y * (cell_size.y + spacing))
 			cells_grid[y].append(cell)
-	var grid_w := grid_size * (cell_size.x + spacing) - spacing
-	var grid_h := grid_size * (cell_size.y + spacing) - spacing
+	var grid_w: float = grid_size * (cell_size.x + spacing) - spacing
+	var grid_h: float = grid_size * (cell_size.y + spacing) - spacing
 	custom_minimum_size = Vector2(grid_w, grid_h)
 
 func _on_cell_pressed(cell: WordCell) -> void:
@@ -90,10 +90,10 @@ func _clear_selection() -> void:
 func _validate_selection() -> void:
 	if selected_positions.is_empty():
 		return
-	var sel_str := ""
+	var sel_str: String = ""
 	for c in selected_path:
 		sel_str += c.letter
-	var sel_str_rev := sel_str.reverse()
+	var sel_str_rev: String = sel_str.reverse()
 	for i in placements.size():
 		var p := placements[i]
 		if p.word == sel_str or p.word == sel_str_rev:
