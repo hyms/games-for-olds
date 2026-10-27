@@ -1,269 +1,245 @@
-# Plan de Pruebas Global — Clásicos Mente Activa 2D
+# Plan General de Pruebas — Clásicos Mente Activa 2D (v0.3)
 
-> **Documento SDD global del producto.**
-> Define la estrategia, los entornos y las pruebas que aplican a toda la app.
-> El detalle de cada juego vive en su propio `test.md`.
+> **Documento SDD global de pruebas y calidad.**
+> Define la estrategia, los servicios core, la accesibilidad, las estadísticas y
+> la publicidad transversal. Las pruebas de cada juego viven en su `test.md`.
 >
-> Planes por minijuego:
-> - [Sopa de Letras](../minigames/word_search/test.md) (disponible)
-> - Tangram / Puzles de encaje (pendiente)
-> - Lógica de Bloques (pendiente)
+> **Versión:** 0.3 · **Fecha:** 26/10/2026 · **Estado:** MVP en definición
+> **Documentación relacionada:** [Spec global](spec.md) · [Plan global](plan.md) ·
+> [Pruebas de Sopa de Letras](../minigames/word_search/test.md)
 
 ---
 
 ## 1. Estrategia
 
-### 1.1 Niveles de prueba
+### 1.1 Framework
 
-| Nivel | Cuándo | Dónde | Responsable |
-|-------|--------|-------|-------------|
-| Humo | Tras cada cambio | Editor de Godot | Desarrollo |
-| Funcional del juego | Al cerrar cada fase | Editor + Android | Desarrollo |
-| Regresión | Antes de cada entrega | Editor + Android | Desarrollo |
-| Accesibilidad | Al cerrar cada juego | Android real | Desarrollo + revisión |
-| Usabilidad | Antes de publicar | Con usuario 40+ | Producto |
+- **GdUnit4** como único framework de pruebas.
+- Pruebas unitarias de lógica pura y servicios, sin cargar escenas visuales.
+- Pruebas de integración para señales, navegación y persistencia.
+- Pruebas manuales para accesibilidad, publicidad real y usabilidad.
+- Ejecución headless en CI: el comando debe fallar con código distinto de cero
+  cuando una prueba falla.
 
-### 1.2 Enfoque
+### 1.2 Niveles
 
-- **Caja negra:** se prueba lo que ve y hace el jugador.
+| Nivel | Cuándo | Dónde |
+|-------|--------|-------|
+| Humo | Tras cada cambio | Editor de Godot |
+| Unitario | Al cerrar cada servicio | GdUnit4 headless |
+| Integración | Al cerrar cada fase | Editor + Android |
+| Accesibilidad | Al cerrar cada pantalla | Android real |
+| Usabilidad | Antes de publicar | Con usuario 40+ |
+
+### 1.3 Enfoque
+
+- **Caja negra** para lo que ve el jugador; **caja blanca** para servicios.
 - **Accesibilidad como requisito funcional:** un fallo de accesibilidad es un
   defecto, no una mejora.
-- **Casos límite siempre:** selecciones incompletas, reinicios, volver y entrar,
-  pantallas extremas y primera ejecución.
-- **Repetición:** los contenidos aleatorios se prueban al menos 10 veces.
+- **Casos límite siempre:** texto grande, JSON corrupto, offline, reinicios,
+  cambios de escena repetidos y primera ejecución.
 - **Trazabilidad:** cada caso tiene ID y cada defecto referencia su caso.
-
-### 1.3 Pirámide de pruebas del producto
-
-1. **Humo global:** la app arranca, muestra el menú y permite entrar y salir de
-   cada juego.
-2. **Funcional por juego:** cubierto en el `test.md` de cada minijuego.
-3. **Transversal:** navegación, accesibilidad, rendimiento, estabilidad,
-   persistencia, audio y offline.
-4. **Regresión y entrega:** checklist completo antes de publicar.
-5. **Usabilidad:** validación con el perfil objetivo.
 
 ---
 
-## 2. Entornos y matriz de dispositivos
-
-### 2.1 Dispositivos / configuraciones
+## 2. Entornos
 
 | ID | Entorno | Uso |
 |----|---------|-----|
-| E1 | Editor Godot, ventana 360×640 | Desarrollo diario |
-| E2 | Editor Godot, ventana 720×1280 | Escalado intermedio |
-| E3 | Android gama baja (2–3 GB RAM) | Rendimiento mínimo aceptable |
-| E4 | Android gama media (4–6 GB RAM) | Experiencia de referencia |
-| E5 | Pantalla 20:9 (1080×2400 o similar) | Comprobar que no hay recortes |
+| E1 | Editor Godot, 360×640 | Desarrollo diario |
+| E2 | Editor Godot, 720×1280 | Escalado intermedio |
+| E3 | Android gama baja (2–3 GB RAM) | Rendimiento mínimo |
+| E4 | Android gama media (4–6 GB RAM) | Referencia |
+| E5 | Pantalla 20:9 | Sin recortes |
 | E6 | Tablet vertical | Escalado y centrado |
 | E7 | Modo avión | Uso 100 % offline |
 
-### 2.2 Configuraciones de prueba
-
-- Texto normal y texto grande (cuando exista el ajuste).
-- Sonido activado y desactivado.
-- Orientación vertical únicamente.
-- Primera ejecución (sin datos) y ejecución con progreso previo.
-- Instalación limpia y actualización sobre una instalación anterior.
+Configuraciones: texto Normal / Grande / Muy grande; sonido on/off; primera
+ejecución y ejecución con datos previos; instalación limpia y actualización.
 
 ---
 
-## 3. Pruebas transversales
+## 3. Pruebas de servicios core
 
-### 3.1 Instalación y arranque
+### 3.1 `SaveManager`
 
-| ID | Caso | Pasos | Resultado esperado | Prioridad |
-|----|------|-------|--------------------|-----------|
-| APP-01 | Instalación limpia | Instalar el APK en dispositivo sin datos previos | Instala y abre sin errores | P1 |
-| APP-02 | Actualización | Instalar una versión nueva sobre la anterior | Conserva preferencias y progreso | P1 |
-| APP-03 | Arranque en frío | Abrir la app cerrada | Menú principal en < 3 s | P1 |
-| APP-04 | Arranque sin conexión | Abrir en modo avión | Funciona igual que con conexión | P1 |
-| APP-05 | Permisos | Revisar permisos solicitados | Solo los mínimos necesarios; ninguno innecesario | P1 |
-| APP-06 | Cierre correcto | Pulsar Salir | La app se cierra sin errores | P2 |
+| ID | Caso | Pasos | Resultado esperado |
+|----|------|-------|--------------------|
+| `CORE-SAVE-01` | Archivo por defecto | Borrar `user://save_data.json` e iniciar `load_data()` | Se crea JSON válido con `version`, ajustes por defecto y estadísticas vacías; sin contador global de pistas |
+| `CORE-SAVE-02` | Registrar resultado | Registrar una victoria de Sopa nivel 2 con tiempo y puntaje; recargar | `current_level` avanza si se completó; `best_time_seconds` y `best_score` solo mejoran; `plays` y `wins` se incrementan |
+| `CORE-SAVE-03` | JSON corrupto | Escribir texto inválido y ejecutar `load_data()` | Se detecta, se guarda respaldo, se restauran valores por defecto y no se cierra la app |
+| `CORE-SAVE-04` | Escritura segura | Interrumpir la escritura y volver a cargar | El archivo anterior sigue siendo válido; no queda un JSON a medias |
+| `CORE-SAVE-05` | Migración de versión | Abrir un archivo con `version` anterior | Se migra al esquema actual conservando ajustes y estadísticas |
+| `CORE-SAVE-06` | Reinicio de estadísticas | Ejecutar `reset_stats()` con confirmación | Todos los juegos vuelven a nivel 1 y a valores iniciales |
 
-### 3.2 Navegación global
+### 3.2 `ThemeManager`
 
-| ID | Caso | Pasos | Resultado esperado | Prioridad |
-|----|------|-------|--------------------|-----------|
-| NAV-01 | Menú principal | Abrir la app | Se ven los tres juegos y Salir, claramente | P1 |
-| NAV-02 | Entrar a cada juego | Menú → cada juego | Cada entrada lleva a su pantalla correspondiente | P1 |
-| NAV-03 | Volver al menú | Desde cada juego, volver | Se llega al menú en un máximo de dos toques | P1 |
-| NAV-04 | Ida y vuelta repetida | Entrar y salir 20 veces alternando juegos | Sin bloqueos, sin estado viejo, sin errores | P1 |
-| NAV-05 | Juego no disponible | Entrar a un juego aún no implementado | No hay pantalla vacía ni bloqueo; se informa claramente | P2 |
-| NAV-06 | Botón atrás del sistema | Pulsar atrás en menú y en juego | Comportamiento predecible; no cierra la app de forma accidental | P2 |
-| NAV-07 | Rotación del dispositivo | Girar el móvil | La app permanece en vertical | P2 |
+| ID | Caso | Pasos | Resultado esperado |
+|----|------|-------|--------------------|
+| `CORE-THEME-01` | Cambio de tema | Conectar `theme_changed`; llamar `set_theme("dark_contrast")` | Se emite la señal con el tema actualizado y la UI cambia |
+| `CORE-THEME-02` | Tamaño de texto | Llamar `set_text_size("large")` | Cambian los tamaños de fuente; **no** cambia el viewport ni se reducen los objetivos táctiles |
+| `CORE-THEME-03` | Persistencia de texto | Cambiar a "xlarge", reiniciar la app | El tamaño se conserva y se aplica al arrancar |
 
-### 3.3 Accesibilidad
+### 3.3 `AudioManager`
 
-| ID | Caso | Pasos | Resultado esperado | Prioridad |
-|----|------|-------|--------------------|-----------|
-| ACC-01 | Objetivos táctiles | Medir botones de menús y selectores | ≥ 56×56 px lógicos | P1 |
-| ACC-02 | Contraste | Revisar textos y elementos sobre fondo | Contraste alto y legible | P1 |
-| ACC-03 | Información no solo por color | Revisar estados en todos los juegos | Siempre hay forma, borde, icono o texto adicional | P1 |
-| ACC-04 | Tipografía | Revisar tamaños de texto | ≥ 20 px en textos principales | P1 |
-| ACC-05 | Feedback inmediato | Tocar botones y celdas | Respuesta visual en < 0,2 s | P1 |
-| ACC-06 | Navegación por foco | Recorrer menús con teclado o mando | Foco visible y orden lógico | P2 |
-| ACC-07 | Sin gestos finos obligatorios | Jugar cada juego solo con toques | Toda acción tiene alternativa táctil simple | P1 |
-| ACC-08 | Sin presión de tiempo | Observar Sopa y Tangram | No hay cronómetros ni derrotas por tiempo | P1 |
-| ACC-09 | Textos grandes sin desbordar | Activar texto grande (cuando exista) | Nada se corta ni se sale de pantalla | P2 |
+| ID | Caso | Pasos | Resultado esperado |
+|----|------|-------|--------------------|
+| `CORE-AUDIO-01` | Volumen por bus | Cambiar BGM y SFX | Cada bus cambia sin afectar al otro |
+| `CORE-AUDIO-02` | Silencio total | Activar mute | No suena nada hasta desactivarlo |
+| `CORE-AUDIO-03` | Segundo plano | Minimizar y volver | El audio se pausa y reanuda correctamente |
 
-### 3.4 Rendimiento y estabilidad
+### 3.4 `AdManager`
 
-| ID | Caso | Pasos | Resultado esperado | Prioridad |
-|----|------|-------|--------------------|-----------|
-| PERF-01 | FPS en gama baja | Usar la app 5 minutos en E3 | 60 fps estables | P1 |
-| PERF-02 | Memoria | Sesión de 15 minutos | Sin crecimiento anómalo | P2 |
-| PERF-03 | Cambios de escena | Entrar y salir 20 veces | Sin fugas visibles ni errores | P1 |
-| PERF-04 | Segundo plano | Minimizar y volver a la app | Se recupera sin errores ni pérdida de estado | P2 |
-| PERF-05 | Sesión larga | 20–30 minutos de uso | Sin degradación, sin cierres | P2 |
+> En el MVP el proveedor es **no-op**. La publicidad real entra en la Fase 8.
 
-### 3.5 Consola y errores
-
-| ID | Caso | Pasos | Resultado esperado | Prioridad |
-|----|------|-------|--------------------|-----------|
-| LOG-01 | Arranque limpio | Abrir la app y recorrer el menú | Sin errores ni advertencias | P1 |
-| LOG-02 | Carga de contenidos | Entrar a cada juego y selector | Todos los recursos cargan sin avisos | P1 |
-| LOG-03 | Reinicios | Reiniciar partidas y volver a entrar | Sin errores de nodos liberados | P1 |
-
-### 3.6 Persistencia y ajustes (cuando existan)
-
-| ID | Caso | Pasos | Resultado esperado | Prioridad |
-|----|------|-------|--------------------|-----------|
-| PER-01 | Guardado de preferencias | Cambiar sonido o tamaño de texto y reabrir | La preferencia se conserva | P1 |
-| PER-02 | Guardado de progreso | Completar contenido y reabrir | El progreso se conserva | P1 |
-| PER-03 | Restablecer progreso | Usar la opción de restablecer | Vuelve al estado inicial con confirmación | P2 |
-| PER-04 | Partida en curso | Salir de la app a mitad de partida y volver | Estado manejado sin errores (conservado o reiniciado de forma clara) | P2 |
-
-### 3.7 Audio
-
-| ID | Caso | Pasos | Resultado esperado | Prioridad |
-|----|------|-------|--------------------|-----------|
-| AUD-01 | Efectos | Realizar acciones en cada juego | Sonidos suaves, sin saturación | P2 |
-| AUD-02 | Silencio total | Activar silencio | No suena nada hasta reactivarlo | P2 |
-| AUD-03 | Mezcla | Música y efectos a la vez | Los efectos se distinguen de la música | P3 |
-| AUD-04 | Segundo plano | Minimizar durante el juego | El audio se pausa correctamente | P3 |
+| ID | Caso | Pasos | Resultado esperado |
+|----|------|-------|--------------------|
+| `CORE-AD-01` | No-op en editor | Ejecutar `show_banner("main_menu")` en editor | No se carga ningún anuncio y no hay errores |
+| `CORE-AD-02` | Offline | Simular offline y mostrar banner | Se emite `banner_failed`, el banner se oculta y el layout no se rompe |
+| `CORE-AD-03` | Ubicaciones permitidas | Recorrer menú y estadísticas | Solo existe contenedor de banner en menú principal y estadísticas |
+| `CORE-AD-04` | Sin anuncios en partida | Entrar a cada juego | No hay banner ni contenedor publicitario en la partida |
 
 ---
 
-## 4. Pruebas por juego
+## 4. Estadísticas y progresión
 
-El detalle completo está en el plan de pruebas de cada minijuego. Aquí se define
-el **humo mínimo** que todo juego debe pasar antes de su prueba funcional.
-
-### 4.1 Humo mínimo por juego
-
-| ID | Caso | Resultado esperado |
-|----|------|--------------------|
-| SMK-01 | Entrar al juego desde el menú | Se abre la pantalla correcta |
-| SMK-02 | Iniciar una partida | El contenido se genera/carga sin errores |
-| SMK-03 | Realizar una acción principal | Hay feedback visual inmediato |
-| SMK-04 | Salir del juego | Se vuelve al menú sin bloqueos |
-| SMK-05 | Volver a entrar | El juego arranca limpio |
-| SMK-06 | Consola | Sin errores ni advertencias |
-
-### 4.2 Sopa de Letras
-
-Ver [minigames/word_search/test.md](../minigames/word_search/test.md):
-tablero y layout (TAB), generación (GEN), selección (SEL), progreso (PRG),
-pista (HIN) y pantalla/controles (UI).
-
-### 4.3 Tangram / Puzles de encaje
-
-Plan de pruebas pendiente de crear junto con el minijuego. Debe cubrir al menos:
-arrastre, rotación por botones, snap con tolerancia, encaje incorrecto,
-completar nivel, reiniciar, pista, progreso guardado y ausencia de tiempo límite.
-
-### 4.4 Lógica de Bloques
-
-Plan de pruebas pendiente de crear junto con el minijuego. Debe cubrir al menos:
-caída, movimiento, giro, aterrizaje, eliminación de cuatro o más, cadenas,
-límites del tablero, fin de nivel, fin de partida, pausa, modo relajado y
-distinción de colores por forma.
+| ID | Caso | Pasos | Resultado esperado |
+|----|------|-------|--------------------|
+| `STAT-01` | Estadísticas por juego | Abrir la pantalla de estadísticas | Cada juego muestra nivel actual, mejor tiempo del nivel y mejor puntaje |
+| `STAT-02` | Nivel actual | Completar el nivel 1 de un juego | `current_level` avanza al siguiente nivel |
+| `STAT-03` | Mejor tiempo | Completar el mismo nivel más rápido | `best_time_seconds` baja; si es más lento, no empeora |
+| `STAT-04` | Mejor puntaje | Completar el mismo nivel con más puntaje | `best_score` sube; si es menor, no baja |
+| `STAT-05` | Nivel sin terminar | Abandonar una partida | No se registra victoria ni mejor tiempo |
+| `STAT-06` | Reinicio | Restablecer estadísticas y confirmar | Todos los juegos vuelven al estado inicial |
+| `STAT-07` | Persistencia | Reiniciar la app | Nivel, mejor tiempo y mejor puntaje se conservan |
 
 ---
 
-## 5. Regresión global
+## 5. Accesibilidad
 
-Se ejecuta antes de cada entrega:
+| ID | Caso | Pasos | Resultado esperado |
+|----|------|-------|--------------------|
+| `UI-ACC-01` | Objetivos táctiles | Medir botones en menú, ajustes, estadísticas y juegos | ≥ 56×56 px en todos los tamaños de texto |
+| `UI-ACC-02` | Tamaño de texto Normal | Revisar etiquetas y botones | Texto base ≥ 20 px |
+| `UI-ACC-03` | Tamaño Grande | Activar Grande | Texto principal ≥ 24 px; controles siguen ≥ 56×56 |
+| `UI-ACC-04` | Tamaño Muy grande | Activar Muy grande | Texto principal ≥ 28 px; nada se corta ni se sale de pantalla |
+| `UI-ACC-05` | Sin desbordes con texto grande | Recorrer menú, ajustes, estadísticas y partidas en E1/E5/E6 | Todo el texto se lee completo; los botones no se solapan |
+| `UI-ACC-06` | Contraste por paleta | Medir texto y bordes en Papel Cálido, Oscuro Alto Contraste y Azul Calma | ≥ 4,5:1 en texto y ≥ 3:1 en bordes/estados |
+| `UI-ACC-07` | Nunca solo color | Revisar estados seleccionado/encontrado/error | Siempre hay forma, borde, icono o texto adicional |
+| `UI-ACC-08` | Feedback inmediato | Tocar celdas y botones | Respuesta visual en < 0,2 s |
+| `UI-ACC-09` | Movimiento reducido | Activar la opción | El fondo animado se detiene y la app sigue usable |
+| `UI-ACC-10` | Sin gestos finos | Jugar solo con toques | Toda acción tiene alternativa táctil simple |
+
+---
+
+## 6. Navegación y humo global
+
+| ID | Caso | Pasos | Resultado esperado |
+|----|------|-------|--------------------|
+| `NAV-01` | Menú principal | Abrir la app | Se ven los tres juegos, Estadísticas, Ajustes y Salir |
+| `NAV-02` | Entrar a cada juego | Menú → cada juego | Se abre la pantalla correcta |
+| `NAV-03` | Volver | Desde cada pantalla, volver | Menú en máximo dos toques |
+| `NAV-04` | Ida y vuelta | Entrar y salir 20 veces | Sin bloqueos ni estado viejo |
+| `NAV-05` | Juego pendiente | Entrar a Tangram o Bloques si aún no existen | Mensaje claro; sin pantalla vacía ni bloqueo |
+| `NAV-06` | Atrás del sistema | Pulsar atrás en menú y partida | Comportamiento predecible; no cierra por accidente |
+| `NAV-07` | Rotación | Girar el móvil | La app permanece vertical |
+| `SMK-01` | Humo de juego | Entrar, iniciar, actuar y salir | Sin errores y con feedback visual |
+| `SMK-02` | Consola | Recorrer el flujo completo | Sin errores ni advertencias nuevas |
+
+---
+
+## 7. Publicidad (Fase 8)
+
+| ID | Caso | Pasos | Resultado esperado |
+|----|------|-------|--------------------|
+| `ADS-01` | Banner en menú | Activar publicidad de prueba | Banner en la parte superior, sin tapar botones |
+| `ADS-02` | Banner en estadísticas | Abrir estadísticas | Banner en la parte superior, sin tapar tarjetas ni botones |
+| `ADS-03` | Sin anuncios en partida | Entrar a cada juego | No aparece ningún anuncio |
+| `ADS-04` | Offline | Activar modo avión | El banner se oculta y el layout se reacomoda sin saltos |
+| `ADS-05` | Fallo de carga | Simular `banner_failed` | Mensaje discreto o espacio vacío; el juego sigue funcionando |
+| `ADS-06` | Sin rewarded | Revisar la app | No existe flujo de anuncio bonificado en el MVP |
+| `ADS-07` | Consentimiento | Primera ejecución con publicidad | Se solicita consentimiento antes de cargar anuncios |
+
+---
+
+## 8. Rendimiento y estabilidad
+
+| ID | Caso | Pasos | Resultado esperado |
+|----|------|-------|--------------------|
+| `PERF-01` | FPS en gama baja | Usar 5 minutos en E3 | 60 fps estables (mínimo 55 puntual) |
+| `PERF-02` | Arranque | Abrir en frío | < 3 s hasta el menú |
+| `PERF-03` | Carga de nivel | Iniciar una partida | < 0,5 s hasta que el tablero es jugable |
+| `PERF-04` | Memoria | Sesión de 15 minutos | < 150 MB y sin crecimiento anómalo |
+| `PERF-05` | Cambios de escena | Entrar y salir 20 veces | Sin fugas ni errores de nodos liberados |
+| `PERF-06` | Segundo plano | Minimizar y volver | Se recupera sin perder estado |
+
+---
+
+## 9. Usabilidad
+
+Protocolo con adultos 40+ y 60+:
+
+1. **Autonomía inicial:** "Abre la app, agranda el texto y empieza una Sopa en
+   nivel Fácil". Éxito en ≤ 45 s sin asistencia.
+2. **Comprensión de estadísticas:** "Mira tu nivel, tu mejor tiempo y tu mejor
+   puntaje". Éxito: identifica los tres datos sin ayuda.
+3. **Salida sin frustración:** "Sal a la mitad de una partida". Éxito: encuentra
+   Volver o Pausa en un intento.
+
+---
+
+## 10. Matriz de trazabilidad
+
+Cada requisito del [spec global](spec.md) debe tener al menos una prueba. Si un
+requisito no aparece aquí, no está cubierto.
+
+| Requisito (spec) | Pruebas | Fase |
+|------------------|---------|------|
+| §5.1 Menú principal | `NAV-01` | 4 |
+| §5.2 Estadísticas | `STAT-01`, `STAT-06`, `STAT-07`, `ADS-02` | 4 |
+| §5.3 Ajustes | `CORE-THEME-01`…`03`, `CORE-AUDIO-01`…`03` | 3–4 |
+| §5.4 Partida | `SMK-01`, `NAV-02`, `ADS-04` | 5–7 |
+| §5.5 Fin de partida | `PRG-*` del juego, `STAT-02`…`05` | 5–7 |
+| §5.6 Navegación | `NAV-01`…`NAV-07` | 3–4 |
+| §6 Accesibilidad | `UI-ACC-01`…`UI-ACC-10` | 4, 9 |
+| §7 Plataforma y rendimiento | `PERF-01`…`PERF-06`, `NAV-07` | 9 |
+| §8 Arquitectura y servicios | `CORE-SAVE-01`…`06`, `CORE-THEME-01`…`03`, `CORE-AUDIO-01`…`03`, `CORE-AD-01`…`04` | 3 |
+| §9 Publicidad | `ADS-01`…`ADS-07`, `CORE-AD-01`…`04` | 8 |
+| §10 Persistencia y estadísticas | `CORE-SAVE-01`…`06`, `STAT-01`…`STAT-07` | 3–4 |
+| §13 Criterios de aceptación | Regresión §11 + planes de cada juego | 9 |
+
+Regla de mantenimiento: al añadir un requisito al spec se añade su fila aquí y
+su caso concreto; al eliminar un caso, se revisa la fila para no dejar huecos.
+
+---
+
+## 11. Regresión y criterios de salida
+
+Antes de cada entrega:
 
 1. Instalación limpia y arranque en frío.
-2. Recorrido completo del menú y de los tres juegos.
-3. Humo mínimo de cada juego (SMK-01 a SMK-06).
-4. Accesibilidad básica (ACC-01 a ACC-05, ACC-07 y ACC-08).
-5. Cambios de escena repetidos (20 veces).
+2. Menú → estadísticas → ajustes → los tres juegos.
+3. Humo de cada juego.
+4. Accesibilidad básica (`UI-ACC-01` a `UI-ACC-08`).
+5. Cambios de escena repetidos 20 veces.
 6. Consola sin errores ni advertencias nuevas.
-7. Funcionamiento en modo avión.
-8. Actualización sobre instalación anterior.
-9. Una partida completa del juego que se modificó en la entrega.
+7. Modo avión.
+8. Actualización sobre una instalación anterior.
+9. Una partida completa del juego modificado.
+
+No se publica si existe un **P0** (cierre, bloqueo, pérdida de datos) o un **P1**
+abierto en navegación, accesibilidad básica, estadísticas o flujo principal.
 
 ---
 
-## 6. Checklist de publicación
-
-- [ ] Build firmado generado e instalado en dispositivo real.
-- [ ] Regresión global completa y sin P0 ni P1.
-- [ ] Los planes de prueba de los tres juegos ejecutados.
-- [ ] Accesibilidad verificada en dispositivo.
-- [ ] Rendimiento medido en gama baja.
-- [ ] Ficha de producto, icono y capturas listos.
-- [ ] Política de privacidad (sin datos recogidos) publicada.
-- [ ] Versión y notas de la entrega registradas.
-- [ ] Copia del build archivada.
-
----
-
-## 7. Criterios de salida (exit criteria)
-
-No se publica una entrega si:
-
-- Existe un defecto **P0**: cierre de la app, bloqueo, pérdida de datos o
-  contenido imposible de completar.
-- Existe un defecto **P1** abierto en navegación, accesibilidad básica o en el
-  flujo principal de un juego.
-- La consola muestra errores en el flujo principal.
-- El contenido crítico se recorta en E5 o E6.
-- Algún objetivo táctil principal queda por debajo del mínimo sin alternativa.
-
-Se considera lista cuando:
-
-- No quedan P0 ni P1 abiertos.
-- Toda la regresión global pasa.
-- Se completó al menos una prueba de usabilidad con el perfil objetivo.
-
----
-
-## 8. Severidades de defectos
+## 12. Severidades y reporte
 
 | Severidad | Descripción | Ejemplo |
 |-----------|-------------|---------|
 | P0 | Bloqueante total | La app se cierra al entrar a un juego |
-| P1 | Impide jugar o incumple accesibilidad básica | Un tablero no se ve o no se puede completar |
-| P2 | Molesto pero con alternativa | Un botón secundario no responde |
-| P3 | Cosmético | Un texto descentrado o un color poco fino |
+| P1 | Impide jugar o incumple accesibilidad | No se puede completar un nivel o el texto se corta |
+| P2 | Molesto con alternativa | Un botón secundario no responde |
+| P3 | Cosmético | Un texto descentrado |
 
-### Plantilla de reporte
-
-- **ID:**
-- **Título:**
-- **Severidad:** P0 / P1 / P2 / P3
-- **Juego / pantalla:**
-- **Entorno:** editor o dispositivo, resolución, versión
-- **Pasos para reproducir:**
-- **Resultado esperado:**
-- **Resultado obtenido:**
-- **Evidencia:** captura o video
-- **Frecuencia:** siempre / a veces / una vez
-- **Caso de prueba relacionado:**
-- **Notas:**
-
----
-
-## 9. Gestión de la calidad SDD
-
-- Cada juego no se cierra sin su `test.md` ejecutado y sin P0/P1.
-- Todo cambio de reglas actualiza primero el `spec` y luego las pruebas.
-- Los defectos encontrados durante el desarrollo se registran con su severidad y
-  se enlazan al caso que los detectó.
-- Las pruebas manuales actuales son la base; la automatización se evaluará
-  cuando el contenido se estabilice.
+Plantilla: ID, título, severidad, pantalla, entorno, pasos, resultado esperado,
+resultado obtenido, evidencia, frecuencia, caso relacionado y notas.

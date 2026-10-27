@@ -6,7 +6,7 @@
 script = ExtResource("1_pr3f5")
 theme_name = "Profesiones"
 description = "Oficios y trabajos conocidos"
-words = Array[String](["MEDICO", "ENFERMERO", "MAESTRO", "PROFESOR", "ABOGADO", "CARPINTERO", "PANADERO", "FONTANERO", "CAMIONERO", "POLICIA", "BOMBERO", "FARMACEUTICO"])
+words = Array[String](["MEDICO", "ENFERMERO", "MAESTRO", "PROFESOR", "ABOGADO", "CARPINTERO", "PANADERO", "FONTANERO", "CAMIONERO", "POLICIA", "BOMBERO", "MECANICO"])
 grid_size = 8
 max_words = 8
 min_word_length = 4
