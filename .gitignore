@@ -1,47 +1,91 @@
-# Godot 4.x
+# ============================================================================
+# Godot 4.x — Clásicos Mente Activa 2D
+# Basado en la plantilla oficial de GitHub (Godot.gitignore) y en la guía de
+# control de versiones de Godot 4.1+:
+# https://docs.godotengine.org/en/stable/tutorials/best_practices/version_control_systems.html
+#
+# SÍ se versionan:
+#   - project.godot
+#   - export_presets.cfg (desde Godot 4.1 ya no contiene credenciales)
+#   - *.uid (referencias estables de recursos en Godot 4.4+)
+#   - *.tscn, *.tres, *.gd, *.md, *.cfg propios
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# Caché y datos generados por el editor
+# ---------------------------------------------------------------------------
 .godot/
 .import/
-*.import
+.nomedia
 *.translation
 
-# Exportación
-export.cfg
-export_presets.cfg
+# ---------------------------------------------------------------------------
+# Credenciales de exportación (NUNCA versionar)
+# ---------------------------------------------------------------------------
+export_credentials.cfg
+*.keystore
+*.jks
+keystore.properties
+
+# ---------------------------------------------------------------------------
+# Exportaciones y builds
+# ---------------------------------------------------------------------------
+build/
 builds/
 dist/
 export/
-
-# Android export (generado)
-android/build/
-android/.gradle/
 *.apk
 *.aab
-*.keystore
-*.jks
+*.ipa
+*.pck
+*.exe
 
-# Mono / C# (por si en futuro, aunque usamos GDScript)
+# ---------------------------------------------------------------------------
+# Android (carpeta generada por el editor al instalar la plantilla de build)
+# Si se personaliza el build de Android, eliminar esta regla y versionar solo
+# los archivos propios (gradle.properties, build.gradle, etc.).
+# ---------------------------------------------------------------------------
+/android/
+
+# ---------------------------------------------------------------------------
+# Mono / C# (previsión futura; el proyecto usa GDScript)
+# ---------------------------------------------------------------------------
 .mono/
 data_*/
 mono_crash.*.json
+~*.dll
 
+# ---------------------------------------------------------------------------
 # Sistema operativo
+# ---------------------------------------------------------------------------
 .DS_Store
+._*
 Thumbs.db
 desktop.ini
 *~
 
+# ---------------------------------------------------------------------------
 # Editores / IDEs
+# ---------------------------------------------------------------------------
 .vscode/
 .idea/
 .fleet/
+.zed/
 *.code-workspace
+*.suo
+*.user
+*.userprefs
 
-# Temporales
+# ---------------------------------------------------------------------------
+# Temporales y logs
+# ---------------------------------------------------------------------------
 *.tmp
 *.bak
 *.swp
 *.swo
 *.log
 
-# Tests / coverage (futuro)
+# ---------------------------------------------------------------------------
+# Cobertura de pruebas (futuro)
+# ---------------------------------------------------------------------------
 coverage/

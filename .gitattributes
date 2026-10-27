@@ -1,0 +1,33 @@
+# ============================================================================
+# Normalización de finales de línea (recomendado por Godot 4.1+)
+# https://docs.godotengine.org/en/stable/tutorials/best_practices/version_control_systems.html
+#
+# Fuerza LF en todos los archivos de texto, independientemente de la
+# configuración de Git en cada máquina (evita cambios falsos en Windows).
+# ============================================================================
+* text=auto eol=lf
+
+# ----------------------------------------------------------------------------
+# Recursos binarios: evitar diffs inútiles y conversiones de línea
+# ----------------------------------------------------------------------------
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.bmp binary
+*.tga binary
+*.exr binary
+*.hdr binary
+*.ogg binary
+*.wav binary
+*.mp3 binary
+*.ttf binary
+*.otf binary
+*.res binary
+*.scn binary
+*.glb binary
+*.fbx binary
+*.blend binary
+
+# Las escenas y recursos de texto (.tscn, .tres) se dejan como texto para
+# poder revisarlos y fusionarlos con normalidad.
