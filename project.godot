@@ -24,6 +24,10 @@ boot_splash/show_image=false
 
 SceneManager="*res://autoloads/SceneManager.gd"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
+
 [display]
 
 window/size/viewport_width=360

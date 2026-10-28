@@ -104,14 +104,20 @@ dimensiones ni tolerancia.
 
 ## Fase 0.5 — Infraestructura de pruebas (P1)
 
-- [ ] Instalar GdUnit4 v6.2.2 en `addons/gdUnit4` y activar el plugin.
-- [ ] Documentar la ejecución headless:
+- [x] Instalar GdUnit4 v6.2.2 en `addons/gdUnit4` y activar el plugin.
+- [x] Documentar la ejecución headless:
       `./addons/gdUnit4/runtest.sh --godot_binary <ruta_a_godot> -a res://tests`
-      o, sin el script, `godot --headless -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests`.
-- [ ] Crear `tests/unit/` y `tests/integration/` con convención `*Test.gd`.
-- [ ] Primer test puro de `WordSearchTheme` (normalización y filtros).
-- [ ] Verificar que un test fallido devuelve código distinto de cero.
-- [ ] Excluir `addons/gdUnit4/*` de las exportaciones.
+      o, sin el script, `godot --headless -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests`
+      (ver `tests/README.md`).
+- [x] Crear `tests/unit/` y `tests/integration/` con convención `*Test.gd`.
+- [x] Primer test puro de `WordSearchTheme` (`tests/unit/WordSearchThemeTest.gd`):
+      mayúsculas, tildes/dieresis/Ñ y filtros por longitud; se añadió
+      `ACCENT_REPLACEMENTS` en `WordSearchTheme.gd` para normalizar a A–Z.
+- [ ] Ejecutar la suite en el editor y verificar que un test fallido devuelve
+      código distinto de cero (GdUnit4 lo garantiza; falta la comprobación en
+      este entorno porque no hay binario de Godot en la terminal).
+- [ ] Excluir `addons/gdUnit4/*` de las exportaciones (pendiente de
+      `export_presets.cfg`).
 
 ---
 

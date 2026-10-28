@@ -130,9 +130,10 @@ mínimas.
 
 ### 3.1 Infraestructura
 
-- [ ] Instalar GdUnit4 y documentar la ejecución headless.
-- [ ] Crear `tests/unit` y `tests/integration` con convención de nombres.
+- [x] Instalar GdUnit4 y documentar la ejecución headless (`tests/README.md`).
+- [x] Crear `tests/unit` y `tests/integration` con convención de nombres.
 - [ ] Primeros tests puros: `WordGenerator`, `WordSearchTheme` y serialización JSON.
+      (`WordSearchTheme` hecho en `tests/unit/WordSearchThemeTest.gd`.)
 - [ ] Comando de tests reproducible en CI.
 
 ### 3.2 SaveManager
@@ -394,9 +395,9 @@ Fuente: [`docs/art_direction.md`](art_direction.md) · Plantilla aprobada
 
 ### Paso 2 — Infraestructura de pruebas
 
-- [ ] Instalar GdUnit4.
-- [ ] Ejecución headless documentada.
-- [ ] Primeros tests puros.
+- [x] Instalar GdUnit4.
+- [x] Ejecución headless documentada.
+- [ ] Primeros tests puros. (`WordSearchTheme` hecho.)
 
 ### Paso 3 — Servicios core
 

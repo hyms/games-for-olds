@@ -17,6 +17,11 @@ extends Resource
 ## Longitud mínima de palabra aceptada
 @export_range(3, 8) var min_word_length: int = 4
 
+## Sustituciones de tildes, diéresis y Ñ para normalizar a A–Z (ESPAÑA → ESPANA)
+const ACCENT_REPLACEMENTS := {
+	"Á": "A", "É": "E", "Í": "I", "Ó": "O", "Ú": "U", "Ü": "U", "Ñ": "N",
+}
+
 ## Permite colocar palabras en diagonal
 @export var allow_diagonal: bool = true
 
@@ -32,11 +37,12 @@ func get_filtered_words() -> Array[String]:
 			continue
 		if clean.length() > grid_size:
 			continue
-		# Limpiar caracteres no alfabéticos
+		# Limpiar caracteres no alfabéticos y normalizar a A–Z
 		var cleaned: String = ""
 		for c in clean:
-			if c >= "A" and c <= "Z":
-				cleaned += c
+			var base: String = String(ACCENT_REPLACEMENTS.get(c, c))
+			if base >= "A" and base <= "Z":
+				cleaned += base
 		if cleaned.length() < min_word_length or cleaned.length() > grid_size:
 			continue
 		clean = cleaned
