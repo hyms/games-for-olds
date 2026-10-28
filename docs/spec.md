@@ -448,7 +448,7 @@ símbolo. Sus niveles, dificultades, ayudas y puntaje se definirán en su propio
 | Test de juego | `docs/<juego>/test.md` | Casos de prueba del juego |
 | Dirección de arte | `docs/art_direction.md` | Estilo visual, paleta, geometría e importación |
 | Manifiesto de assets | `assets/asset-manifest.json` | Lista de assets, estado, origen y licencia |
-| Plantilla visual | `assets/reference/` | Referencias visuales aprobadas (no se exportan) |
+| Plantilla visual | `docs/<juego>/` | Plantillas visuales aprobadas (no se exportan) |
 
 Regla: los documentos globales resumen y enlazan; no duplican las reglas de cada
 juego.

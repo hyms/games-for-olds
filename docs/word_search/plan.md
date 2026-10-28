@@ -12,7 +12,7 @@
 > [Manifiesto de assets](../../assets/asset-manifest.json)
 >
 > Ubicación del código: `minigames/word_search/` · Documentación: `docs/word_search/`.
-> Plantilla visual aprobada: `assets/reference/wathersoup.jpg`.
+> Plantilla visual aprobada: `docs/word_search/wathersoup.jpg`.
 
 ## Leyenda
 
@@ -124,21 +124,28 @@ dimensiones ni tolerancia.
 ## Fase 0.6 — Dirección de arte y componentes visuales (P2) 🔜
 
 Fuente: [`art_direction.md`](../art_direction.md) y plantilla
-`assets/reference/wathersoup.jpg`.
+`docs/word_search/wathersoup.jpg`.
 
 - [x] Analizar la plantilla: paleta, geometría y contrastes.
-- [x] Guardar la plantilla en `assets/reference/wathersoup.jpg` (referencia interna).
+- [x] Dejar la plantilla en `docs/word_search/wathersoup.jpg` (referencia interna;
+      `docs/.gdignore` evita que Godot la importe o exporte).
 - [x] Crear `docs/art_direction.md` y `assets/asset-manifest.json`.
-- [ ] Elegir fuente pixel para las letras (A–Z, licencia libre).
-- [ ] Elegir o generar el set de iconos (estrella, varita, lupa, refrescar,
-      candado, pausa, menú, reiniciar, volver, ✔).
-- [ ] Implementar `StyleBox` de celda, placa y botón con la paleta del template.
-- [ ] Aplicar los estados de celda: reposo, seleccionada (azul), encontrada
-      (borde turquesa + ✔) y pista (naranja con pulso).
-- [ ] Corregir los contrastes señalados: texto negro sobre turquesa, cian y azul;
-      borde oscuro `#535456` en placas y celdas.
-- [ ] Botones de navegación a **56×56 px lógicos** (mayores que en el template).
-- [ ] Comparar en editor con la plantilla a resolución nativa.
+- [x] Elegir fuente pixel para las letras: **Press Start 2P** (OFL) a 24 px, y
+      **Atkinson Hyperlegible** (OFL) para interfaz, ya en `core/AccessibleTheme.tres`.
+- [x] Generar el set de iconos (estrella, varita, lupa, refrescar, candado,
+      pausa, menú, reiniciar, volver, ✔) con `tools/generate_icons.py`
+      → `assets/icons/*.png` (16×16 → 32×32 nearest, contorno tinta).
+- [x] Implementar `StyleBox` de celda, placa y botón con la paleta del template
+      (`core/ui/PixelStyles.gd`) y recolorear `core/AccessibleTheme.tres`.
+- [x] Definir los estados de celda: reposo, seleccionada (azul `#6095fb`),
+      encontrada (borde `#04544d` + ✔) y pista (borde `#8a4600` con pulso);
+      se aplican al tablero real en la Fase 3.
+- [x] Corregir los contrastes señalados: texto negro sobre turquesa, cian y azul;
+      borde oscuro `#535456` en placas y celdas; fondo de pantalla a arena
+      `#b5ad96` (clear color + `MainMenu`).
+- [x] Botones de navegación a **56×56 px lógicos** (mayores que en el template),
+      verificado por `tests/unit/PixelStylesTest.gd`.
+- [ ] Comparar en editor con la plantilla a resolución nativa (usuario).
 
 > La validación final de estilo se cierra en la Fase 9; aquí solo se construyen
 > los componentes y se aprueba el primer tablero real.

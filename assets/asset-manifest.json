@@ -1,95 +1,100 @@
 {
   "schema_version": 1,
   "art_direction_brief": "docs/art_direction.md",
-  "approved_reference": "assets/reference/wathersoup.jpg",
+  "approved_reference": "docs/word_search/wathersoup.jpg",
   "conversion": "template_px / 1.594 = logical_px (viewport 360x640)",
   "assets": [
     {
       "id": "cell-tile",
-      "role": "celda del tablero",
-      "path": "res://core/ui/cell_tile (StyleBoxFlat, no-texture)",
-      "status": "planned",
-      "technical": { "dimensions": "41x41 logical", "alpha": false, "filtering": "nearest" },
-      "visual_locks": ["palette", "corner-radius", "border-dark-bottom-right"],
-      "source": { "kind": "stylebox", "url_or_tool": "docs/art_direction.md §4.1", "license": "project" }
+      "role": "celda del tablero (reposo, seleccionada, encontrada, pista)",
+      "path": "core/ui/PixelStyles.gd (cell_normal/cell_selected/cell_found/cell_hint)",
+      "status": "implemented",
+      "technical": { "dimensions": "41x41 logical base", "alpha": false, "filtering": "nearest", "corner_radius": 5 },
+      "visual_locks": ["palette", "corner-radius", "border-dark-2px"],
+      "source": { "kind": "stylebox", "url_or_tool": "docs/art_direction.md §4.1-4.2", "license": "project" },
+      "verification": { "technical_checks_passed": true, "approved_by": "tests/unit/PixelStylesTest.gd" }
     },
     {
       "id": "header-plate",
-      "role": "placa de encabezado de partida",
-      "path": "res://core/ui/header_plate (StyleBoxFlat)",
-      "status": "planned",
-      "technical": { "dimensions": "288x139 logical", "alpha": false, "filtering": "nearest" },
-      "visual_locks": ["palette", "three-tone-border"],
-      "source": { "kind": "stylebox", "url_or_tool": "docs/art_direction.md §4.3", "license": "project" }
+      "role": "placa de encabezado y modales",
+      "path": "core/ui/PixelStyles.gd (plate) + core/AccessibleTheme.tres (PanelContainer)",
+      "status": "implemented",
+      "technical": { "dimensions": "288x139 logical base", "alpha": false, "filtering": "nearest", "corner_radius": 5 },
+      "visual_locks": ["palette", "dark-border", "hard-shadow"],
+      "source": { "kind": "stylebox", "url_or_tool": "docs/art_direction.md §4.3", "license": "project" },
+      "verification": { "technical_checks_passed": true, "approved_by": "tests/unit/PixelStylesTest.gd" }
     },
     {
       "id": "nav-button",
-      "role": "botón cuadrado de navegación",
-      "path": "res://ui/components/BigButton.gd (estilo nuevo)",
-      "status": "planned",
-      "technical": { "dimensions": "56x56 logical", "alpha": false, "filtering": "nearest" },
-      "visual_locks": ["min-size-56", "icon-white-centered"],
-      "source": { "kind": "stylebox", "url_or_tool": "docs/art_direction.md §4.4", "license": "project" }
+      "role": "botón cuadrado de navegación (familias púrpura/amarillo/turquesa/cian)",
+      "path": "ui/components/BigButton.gd + core/AccessibleTheme.tres + core/ui/PixelStyles.gd (button/button_pressed/button_focus/button_disabled)",
+      "status": "implemented",
+      "technical": { "dimensions": "56x56 logical minimum", "alpha": false, "filtering": "nearest" },
+      "visual_locks": ["min-size-56", "dark-border", "focus-outline-3px", "pressed-by-shape"],
+      "source": { "kind": "stylebox", "url_or_tool": "docs/art_direction.md §4.4", "license": "project" },
+      "verification": { "technical_checks_passed": true, "approved_by": "tests/unit/PixelStylesTest.gd" }
     },
     {
       "id": "category-pill",
       "role": "píldora de categoría",
-      "path": "res://core/ui/category_pill (StyleBoxFlat)",
-      "status": "planned",
+      "path": "core/ui/PixelStyles.gd (pill)",
+      "status": "implemented",
       "technical": { "dimensions": "variable x 28 logical", "alpha": false, "filtering": "nearest" },
       "visual_locks": ["palette-purple", "white-text"],
-      "source": { "kind": "stylebox", "url_or_tool": "docs/art_direction.md §4.5", "license": "project" }
+      "source": { "kind": "stylebox", "url_or_tool": "docs/art_direction.md §4.5", "license": "project" },
+      "verification": { "technical_checks_passed": true, "approved_by": "tests/unit/PixelStylesTest.gd" }
     },
     {
       "id": "trace-line",
       "role": "trazo de selección en curso",
-      "path": "res://minigames/word_search/ (dibujado en código)",
+      "path": "dibujado en código en minigames/word_search/ (Fase 3)",
       "status": "planned",
       "technical": { "dimensions": "4 logical de grosor", "alpha": true, "filtering": "nearest" },
-      "visual_locks": ["color-blue-trace"],
+      "visual_locks": ["color-blue-trace-#2b56b8"],
       "source": { "kind": "drawn-in-code", "url_or_tool": "docs/art_direction.md §4.6", "license": "project" }
     },
     {
       "id": "hint-line",
-      "role": "resaltado de pista (3 s)",
-      "path": "res://minigames/word_search/ (dibujado en código)",
+      "role": "resaltado de pista (3 s con pulso)",
+      "path": "dibujado en código en minigames/word_search/ (Fase 6)",
       "status": "planned",
-      "technical": { "dimensions": "4 logical de grosor", "alpha": true, "filtering": "nearest" },
-      "visual_locks": ["color-orange-hint", "pulse-animation"],
+      "technical": { "dimensions": "borde 3 logical con pulso", "alpha": true, "filtering": "nearest" },
+      "visual_locks": ["color-orange-border-#8a4600"],
       "source": { "kind": "drawn-in-code", "url_or_tool": "docs/art_direction.md §4.6", "license": "project" }
     },
     {
       "id": "icon-set",
       "role": "iconos de navegación y acciones",
       "path": "assets/icons/*.png",
-      "status": "planned",
-      "technical": { "dimensions": "28x28 art", "alpha": true, "frames": 1, "filtering": "nearest" },
-      "visual_locks": ["white-stroke", "palette"],
+      "status": "generated",
+      "technical": { "dimensions": "32x32 png (16x16 de arte, escala x2 nearest)", "alpha": true, "frames": 1, "filtering": "nearest" },
+      "visual_locks": ["white-fill", "tinta-outline-1px", "palette"],
       "required": ["star", "wand", "magnifier", "refresh", "lock", "pause", "menu", "restart", "back", "check"],
-      "source": { "kind": "tbd", "url_or_tool": "", "license": "must be free for commercial use" }
+      "source": { "kind": "generated-by-script", "url_or_tool": "tools/generate_icons.py", "creator": "proyecto", "created_at": "2026-10-27", "license": "project" },
+      "verification": { "native_scale_reviewed": true, "technical_checks_passed": true, "approved_by": "usuario (pendiente de revisión en editor)" }
     },
     {
       "id": "font-letters",
       "role": "letras del tablero",
-      "path": "assets/fonts/*.ttf",
-      "status": "planned",
-      "technical": { "glyphs": "A-Z uppercase", "hinting": "none" },
+      "path": "assets/fonts/PressStart2P.ttf",
+      "status": "ready",
+      "technical": { "glyphs": "A-Z uppercase", "logical_size": "24", "grid": "8px", "hinting": "none" },
       "visual_locks": ["pixel-style", "legibility"],
-      "source": { "kind": "tbd", "url_or_tool": "", "license": "must be free for commercial use" }
+      "source": { "kind": "downloaded", "url_or_tool": "https://fonts.google.com/specimen/Press+Start+2P", "license": "SIL OFL 1.1", "attribution": "assets/fonts/OFL-PressStart2P.txt" }
     },
     {
       "id": "font-ui",
       "role": "texto de interfaz",
-      "path": "assets/fonts/ (ver README)",
-      "status": "planned",
+      "path": "assets/fonts/AtkinsonHyperlegible-Regular.ttf (+ -Bold.ttf)",
+      "status": "ready",
       "technical": { "glyphs": "latin + accents", "sizes": "20/24/28 logical" },
       "visual_locks": ["legibility-40-plus"],
-      "source": { "kind": "recommended", "url_or_tool": "Atkinson Hyperlegible", "license": "OFL" }
+      "source": { "kind": "downloaded", "url_or_tool": "https://fonts.google.com/specimen/Atkinson+Hyperlegible", "license": "SIL OFL 1.1", "attribution": "assets/fonts/OFL-AtkinsonHyperlegible.txt" }
     },
     {
       "id": "reference-template",
       "role": "plantilla visual aprobada",
-      "path": "assets/reference/wathersoup.jpg",
+      "path": "docs/word_search/wathersoup.jpg",
       "status": "reference-only",
       "technical": { "dimensions": "574x1024", "alpha": false },
       "source": { "kind": "user-provided", "url_or_tool": "tmp/wathersoup.jpg", "created_at": "2026-10-27", "license": "internal reference, excluded from export" }

@@ -222,18 +222,21 @@ mínimas.
 ### 4.5 Dirección de arte (P2)
 
 Fuente: [`docs/art_direction.md`](art_direction.md) · Plantilla aprobada
-`assets/reference/wathersoup.jpg` · Manifiesto `assets/asset-manifest.json`.
+`docs/word_search/wathersoup.jpg` · Manifiesto `assets/asset-manifest.json`.
 
 - [x] Analizar la plantilla y extraer paleta, geometría y contrastes.
 - [x] Crear `docs/art_direction.md` y `assets/asset-manifest.json`.
-- [ ] Elegir fuente pixel para las letras y fuente de interfaz definitivas.
-- [ ] Elegir o generar el set de iconos (licencia libre para uso comercial).
-- [ ] Implementar `StyleBox` de celda, placa, botón y píldora con la paleta.
-- [ ] Aplicar los contrastes verificados: texto negro sobre turquesa, cian y
-      azul; borde oscuro `#535456` en placas y celdas; blanco solo en púrpura.
-- [ ] Botones de navegación de 56×56 px lógicos (mayores que en el template).
-- [ ] Estados de celda nunca solo por color (borde, ✔ o pulso).
-- [ ] Comparar en editor con la plantilla a resolución nativa.
+- [x] Fuentes elegidas e instaladas: Press Start 2P (letras del tablero, OFL) y
+      Atkinson Hyperlegible (interfaz, OFL) en `assets/fonts/`.
+- [x] Iconos generados: `tools/generate_icons.py` → `assets/icons/*.png` (10 iconos).
+- [x] `StyleBox` de celda, placa, botón y píldora en `core/ui/PixelStyles.gd`
+      y `core/AccessibleTheme.tres` con la paleta del template.
+- [x] Contrastes verificados: texto negro sobre turquesa, cian y azul; borde
+      oscuro `#535456`; variantes de borde `#04544d` y `#8a4600` (≥ 3:1).
+      Automatizado en `tests/unit/PixelStylesTest.gd`.
+- [x] Botones de navegación de 56×56 px lógicos (mayores que en el template).
+- [x] Estados de celda nunca solo por color (borde, ✔ o pulso).
+- [ ] Comparar en editor con la plantilla a resolución nativa (usuario).
 
 ---
 

@@ -9,8 +9,8 @@
 > [Plan de la Sopa](word_search/plan.md) ·
 > [Manifiesto de assets](../assets/asset-manifest.json)
 >
-> **Plantilla de referencia:** `assets/reference/wathersoup.jpg` (copia de
-> `tmp/wathersoup.jpg`, aportada por el usuario el 27/10/2026).
+> **Plantilla de referencia:** `docs/word_search/wathersoup.jpg`, aportada por
+> el usuario el 27/10/2026 (originalmente en `tmp/`, que no se versiona).
 
 ---
 
@@ -47,11 +47,16 @@
 | Tinta | `#101010` | Letras y texto sobre claros |
 | Gris borde | `#838a94` / `#686f75` / `#535456` | Bordes de placas y celdas |
 | Púrpura primario | `#9944c6` | Botón principal, píldora de categoría |
+| Púrpura presionado | `#7a33a0` | Estado presionado del botón (blanco: 7,5:1) |
 | Amarillo acento | `#fdc109` | Acciones mágicas (pista) |
-| Turquesa acento | `#099c92` | Confirmación, estado encontrado |
+| Turquesa acento | `#099c92` | Confirmación, superficies grandes |
+| Turquesa borde | `#04544d` | Borde de celda encontrada (≥ 3:1) |
 | Cian acento | `#08d0df` | Acciones de sistema (refrescar, salir) |
-| Azul trazo | `#6095fb` | Selección en curso (línea de arrastre) |
-| Naranja pista | `#f9881e` | Palabra resaltada por pista |
+| Azul selección | `#6095fb` | Relleno de la celda en selección |
+| Azul trazo | `#2b56b8` | Línea de arrastre (≥ 3:1 sobre crema y arena) |
+| Naranja pista | `#f9881e` | Animación/acento de pista |
+| Naranja borde | `#8a4600` | Borde de celda en pista (≥ 3:1) |
+| Sombra dura | `#8f8874` | Sombra decorativa; no delimita (ver §2.3) |
 
 ### 2.3 Contraste verificado (WCAG 2.1)
 
@@ -63,9 +68,16 @@
 | Tinta sobre amarillo `#fdc109` | 11,6:1 | Sí |
 | **Negro** sobre turquesa `#099c92` | 5,6:1 | Sí (**blanco: 3,4:1, prohibido**) |
 | **Negro** sobre cian `#08d0df` | 10,1:1 | Sí (**blanco: 1,9:1, prohibido**) |
-| **Negro** sobre azul trazo `#6095fb` | 6,5:1 | Sí (**blanco: 2,9:1, prohibido**) |
+| **Negro** sobre azul selección `#6095fb` | 6,5:1 | Sí (**blanco: 2,9:1, prohibido**) |
 | Negro sobre naranja `#f9881e` | 7,8:1 | Sí |
 | Borde placa claro `#838a94` sobre fondo | 1,6:1 | No → usar `#535456` (3,4:1) |
+| Trazo `#2b56b8` sobre celda crema | 6,1:1 | Sí (antes `#6095fb`: 2,6:1, insuficiente) |
+| Borde encontrado `#04544d` sobre crema / arena | 8,0:1 / 3,9:1 | Sí (turquesa `#099c92`: 3,1:1 / 1,5:1, insuficiente) |
+| Borde pista `#8a4600` sobre crema / arena | 6,4:1 / 3,2:1 | Sí (naranja `#f9881e`: 2,2:1 / 1,1:1, insuficiente) |
+| Sombra `#8f8874` sobre fondo arena | 1,4:1 | No es necesaria: solo decorativa |
+
+> Estos valores se verifican automáticamente en
+> `tests/unit/PixelStylesTest.gd` (GdUnit4).
 
 **Reglas derivadas:**
 
@@ -100,18 +112,21 @@
 
 ### 4.1 Celda del tablero
 
-- Relleno crema `#fbf3da`, radio 5 px, borde inferior/derecho `#535456`,
-  brillo superior de 1 px `#ffffff` a baja opacidad, sombra dura de 2 px.
-- Letra centrada en tinta `#101010`, alto contraste.
+- Relleno crema `#fbf3da`, radio 5 px, borde `#535456` de 2 px, sombra dura de 2 px.
+- Letra centrada en tinta `#101010`, alto contraste (17,2:1).
+- **Simplificación respecto a la plantilla:** el bisel de dos tonos (claro
+  arriba / oscuro abajo) no es posible con `StyleBoxFlat` (un solo color de
+  borde); se usa borde oscuro uniforme, que además delimita mejor contra el
+  fondo arena (3,4:1) que el bisel claro original (1,6:1).
 
 ### 4.2 Estados de la celda
 
 | Estado | Señal visual | Complemento no cromático |
 |--------|--------------|--------------------------|
-| Reposo | Crema con borde oscuro | — |
-| Seleccionada (trazo en curso) | Relleno azul trazo `#6095fb` | Trazo continuo de 4 px sobre la celda |
-| Encontrada | Relleno crema + borde grueso turquesa `#099c92` | Marca “✔” y subrayado permanente |
-| Pista | Borde naranja `#f9881e` con parpadeo 3 s | Animación de pulso |
+| Reposo | Crema con borde `#535456` | — |
+| Seleccionada (trazo en curso) | Relleno azul `#6095fb` | Trazo continuo `#2b56b8` de 4 px sobre la celda |
+| Encontrada | Relleno crema + borde `#04544d` de 3 px | Marca “✔” y subrayado permanente |
+| Pista | Borde `#8a4600` de 3 px con pulso de grosor 3 s | Animación de pulso |
 | Selección inválida | Parpadeo breve y desvanecido (0,5 s) | Sin color rojo y sin penalización |
 
 ### 4.3 Placa de encabezado
@@ -134,17 +149,23 @@
 
 ### 4.6 Traza de selección y pista
 
-- Traza de arrastre: barra azul `#6095fb` redondeada de 4 px sobre la celda.
-- Pista: línea naranja `#f9881e` con el mismo grosor.
+- Traza de arrastre: barra redondeada de 4 px en `#2b56b8` sobre la celda
+  (6,1:1 contra crema; el relleno azul `#6095fb` se mantiene para la celda,
+  donde la letra negra da 6,5:1).
+- Pista: borde `#8a4600` con pulso de grosor; `#f9881e` queda como acento
+  decorativo sobre fondos oscuros.
 
 ---
 
 ## 5. Tipografía
 
-- **Letras del tablero:** fuente pixel (pendiente de elegir; debe cubrir
-  A–Z mayúsculas; el juego normaliza sin tildes ni Ñ).
-- **Interfaz:** sans-serif legible (Atkinson Hyperlegible, recomendada en
-  `assets/fonts/README.md`).
+Decidido el 27/10/2026 (ver `assets/fonts/README.md`):
+
+- **Letras del tablero:** `PressStart2P.ttf` (OFL), a **24 px** lógicos: la
+  fuente tiene rejilla de 8 px y24 es múltiplo, así los píxeles quedan nítidos
+  con filtrado `nearest`. Cubre A–Z; el juego normaliza sin tildes ni Ñ.
+- **Interfaz:** `AtkinsonHyperlegible-Regular.ttf` (OFL, Braille Institute),
+  ya referenciada en `core/AccessibleTheme.tres` como `default_font`.
 - Tamaños lógicos: Normal 20 px, Grande 24 px, Muy grande 28 px.
 
 ---
@@ -153,9 +174,13 @@
 
 - **No se recorta la plantilla JPEG.** Es un mockup con artefactos de compresión
   y chrome embebido; se usa solo como referencia de estilo.
-- Celdas, placas y botones se construyen con `StyleBoxFlat` o NinePatch limpios
-  usando la paleta de §2.2.
-- Iconos: PNG con alfa, trazo blanco de 2 px, generados o de un set libre.
+- Celdas, placas y botones se construyen con `StyleBoxFlat` usando la paleta de
+  §2.2; la fábrica es `core/ui/PixelStyles.gd` (única fuente de valores en
+  código; `core/AccessibleTheme.tres` replica los mismos valores para el tema
+  global y se contrasta con `tests/unit/PixelStylesTest.gd`).
+- Iconos: PNG con alfa de 16×16 px de arte escalado a 32×32, relleno blanco y
+  contorno tinta de 1 px. Se generan con `tools/generate_icons.py`
+  (star, wand, magnifier, refresh, lock, pause, menu, restart, back, check).
 - Todos los assets quedan listados en
   [`assets/asset-manifest.json`](../assets/asset-manifest.json) con estado,
   tamaño, origen y licencia.
@@ -172,11 +197,14 @@
 | Color space | sRGB |
 | Alpha | Sí en iconos; no en fondos |
 
+La carpeta `docs/` contiene `.gdignore`: la plantilla JPEG y la documentación
+no se importan ni se empaquetan en la exportación.
+
 ---
 
 ## 8. Validación
 
-1. Comparar la pantalla de partida con `assets/reference/wathersoup.jpg` a
+1. Comparar la pantalla de partida con `docs/word_search/wathersoup.jpg` a
    resolución nativa.
 2. Verificar que el tablero completo se ve en 360×640, 20:9 y tablet.
 3. Verificar ≥ 56×56 px lógicos en todos los botones.
@@ -189,6 +217,9 @@
 
 | Elemento | Origen | Licencia | Notas |
 |----------|--------|----------|-------|
-| Plantilla `assets/reference/wathersoup.jpg` | Aportada por el usuario (27/10/2026) | Uso interno como referencia | No se incluye en la exportación |
+| Plantilla `docs/word_search/wathersoup.jpg` | Aportada por el usuario (27/10/2026) | Uso interno como referencia | No se incluye en la exportación |
 | Paleta y geometría | Medidas del template con Pillow | — | Valores exactos en §2 y §3 |
-| Componentes implementados | Autoría propia (StyleBox/PNG) | Proyecto | Se registran en el manifiesto |
+| `PressStart2P.ttf` | Google Fonts (27/10/2026) | SIL OFL 1.1 (`assets/fonts/OFL-PressStart2P.txt`) | Letras del tablero |
+| `AtkinsonHyperlegible-*.ttf` | Google Fonts (27/10/2026) | SIL OFL 1.1 (`assets/fonts/OFL-AtkinsonHyperlegible.txt`) | Interfaz |
+| Iconos `assets/icons/*.png` | Generados con `tools/generate_icons.py` | Proyecto (arte original) | 16×16 → 32×32 nearest |
+| Componentes `StyleBoxFlat` | `core/ui/PixelStyles.gd` y `core/AccessibleTheme.tres` | Proyecto | Verificados por test |
