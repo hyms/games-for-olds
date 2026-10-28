@@ -4,11 +4,17 @@
 # control de versiones de Godot 4.1+:
 # https://docs.godotengine.org/en/stable/tutorials/best_practices/version_control_systems.html
 #
-# SÍ se versionan:
+# SÍ se versionan (NO agregar estas reglas):
 #   - project.godot
 #   - export_presets.cfg (desde Godot 4.1 ya no contiene credenciales)
-#   - *.uid (referencias estables de recursos en Godot 4.4+)
-#   - *.tscn, *.tres, *.gd, *.md, *.cfg propios
+#   - *.uid (referencias estables de recursos en Godot 4.4+; incluidos los de
+#     addons/gdUnit4, para que las referencias no cambien entre máquinas)
+#   - *.import (metadatos de importación: acompañan a ttf/png y deben ir en el repo)
+#   - *.tscn, *.tres, *.gd, *.md, *.cfg, *.py propios
+#   - addons/ (dependencias del editor, incluido GdUnit4)
+#
+# La carpeta docs/ lleva su propio .gdignore: Godot no importa ni exporta
+# la plantilla JPEG de referencia ni la documentación.
 # ============================================================================
 
 # ---------------------------------------------------------------------------
@@ -56,6 +62,37 @@ mono_crash.*.json
 ~*.dll
 
 # ---------------------------------------------------------------------------
+# Pruebas (GdUnit4)
+# ---------------------------------------------------------------------------
+# Informes HTML/XML que genera GdUnit4 en cada ejecución (res://reports/)
+reports/
+# Cobertura de pruebas (futuro)
+coverage/
+
+# ---------------------------------------------------------------------------
+# Python (herramientas de generación de assets en tools/)
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+
+# ---------------------------------------------------------------------------
+# JavaScript / Node (futuro; el proyecto usa SOLO pnpm)
+# ---------------------------------------------------------------------------
+node_modules/
+
+# ---------------------------------------------------------------------------
+# Temporales y archivos de trabajo sin versionar
+# ---------------------------------------------------------------------------
+# tmp/ → borradores locales (p. ej. plantillas de imagen antes de moverlas a
+# docs/ o assets/). No versionar.
+tmp/
+*.tmp
+*.bak
+*.swp
+*.swo
+*.log
+
+# ---------------------------------------------------------------------------
 # Sistema operativo
 # ---------------------------------------------------------------------------
 .DS_Store
@@ -75,18 +112,3 @@ desktop.ini
 *.suo
 *.user
 *.userprefs
-
-# ---------------------------------------------------------------------------
-# Temporales y logs
-# ---------------------------------------------------------------------------
-*.tmp
-*.bak
-*.swp
-*.swo
-*.log
-
-# ---------------------------------------------------------------------------
-# Cobertura de pruebas (futuro)
-# ---------------------------------------------------------------------------
-coverage/
-tmp/
