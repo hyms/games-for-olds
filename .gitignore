@@ -89,3 +89,4 @@ desktop.ini
 # Cobertura de pruebas (futuro)
 # ---------------------------------------------------------------------------
 coverage/
+tmp/

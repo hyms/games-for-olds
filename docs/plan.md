@@ -23,12 +23,29 @@
 | ID | Decisión | Resultado |
 |----|----------|-----------|
 | D1 | Estructura de carpetas | **Mantener la estructura actual del skill:** `autoloads/`, `core/`, `ui/`, `minigames/`, `resources/`, `assets/`, `tests/`, `docs/`. Sin migración a `scenes/`. |
-| D2 | Pistas | **Cada juego las define.** La Sopa usa 3 por partida, sin anuncios. El global no impone contadores. |
+| D2 | Pistas | **Cada juego las define.** La Sopa usa 3 por nivel, sin anuncios. El global no impone contadores. |
 | D3 | Tiempo y estadísticas | **Pantalla global por juego** con nivel actual, mejor tiempo del nivel actual y mejor puntaje. El tiempo se mide en segundo plano. |
 | D4 | Modo accesible | **Solo cambia el tamaño del texto:** Normal 20 px, Grande 24 px, Muy grande 28 px. No cambia el viewport ni reduce los objetivos táctiles. |
 | D5 | Publicidad | **Entra al final (Fase 8).** Solo banners en la parte superior del menú principal y de estadísticas. Nunca en partidas. Sin Rewarded Ads en el MVP. |
-| D6 | Dificultad | **Cada juego define sus dificultades.** La Sopa define Fácil (8×8), Medio (10×10) y Difícil (10×10 con invertidas). |
+| D6 | Dificultad | **Cada juego define sus dificultades.** La Sopa define cuatro: Fácil (8×8/5), Medio (10×10/8), Difícil (12×12/12) y Maestro (15×15/20). |
 | D7 | Framework de pruebas | **GdUnit4**, con ejecución headless. |
+
+### 1.1 Replan de la Sopa (27/10/2026) — C1–C8
+
+Tras la reescritura de `minigames/word_search/spec.md` y `test.md`, se cerraron
+ocho decisiones que ajustan D3 y D6 sin romperlos. Detalle completo en
+[minigames/word_search/plan.md §2](../minigames/word_search/plan.md).
+
+| # | Decisión |
+|---|----------|
+| C1 | Se mantiene la ruta `minigames/word_search/` (D1); se corrige la línea `scenes/…` de la spec. |
+| C2 | Sin anuncios en la Sopa: 3 pistas fijas por nivel; se retira `ST-WS-03` (rewarded). |
+| C3 | Se adoptan 4 dificultades: Fácil 8×8/5, Medio 10×10/8, Difícil 12×12/12, Maestro 15×15/20. |
+| C4 | Selección **solo por arrastre**, con excepción documentada al principio “sin gestos finos”. |
+| C5 | Viewport 360×640; 375×812 solo como equipo de prueba. |
+| C6 | 20 partidas ganadas para desbloquear cada nivel siguiente. |
+| C7 | Fórmula de puntaje nueva, definida en la Fase 8 de la Sopa. |
+| C8 | Zoom por pinch **más** botones + / − y Centrar. |
 
 ---
 
@@ -201,33 +218,52 @@ mínimas.
 - [ ] Verificar que el texto grande no desborda en 360×640, 20:9 y tablet.
 - [ ] Verificar 56×56 px en los tres tamaños de texto.
 
+### 4.5 Dirección de arte (P2)
+
+Fuente: [`docs/art_direction.md`](art_direction.md) · Plantilla aprobada
+`assets/reference/wathersoup.jpg` · Manifiesto `assets/asset-manifest.json`.
+
+- [x] Analizar la plantilla y extraer paleta, geometría y contrastes.
+- [x] Crear `docs/art_direction.md` y `assets/asset-manifest.json`.
+- [ ] Elegir fuente pixel para las letras y fuente de interfaz definitivas.
+- [ ] Elegir o generar el set de iconos (licencia libre para uso comercial).
+- [ ] Implementar `StyleBox` de celda, placa, botón y píldora con la paleta.
+- [ ] Aplicar los contrastes verificados: texto negro sobre turquesa, cian y
+      azul; borde oscuro `#535456` en placas y celdas; blanco solo en púrpura.
+- [ ] Botones de navegación de 56×56 px lógicos (mayores que en el template).
+- [ ] Estados de celda nunca solo por color (borde, ✔ o pulso).
+- [ ] Comparar en editor con la plantilla a resolución nativa.
+
 ---
 
 ## Fase 5 — Sopa de Letras: cierre de jugabilidad
 
-### 5.1 Selección (P1)
+### 5.1 Selección por arrastre (P1)
 
-- [ ] Construir la ruta recta completa entre primera y última celda.
+- [ ] Selección iniciada con `ScreenTouch` y seguida con `ScreenDrag`.
+- [ ] Construir la ruta recta completa al soltar (extremos incluidos).
 - [ ] Rechazar selecciones no alineadas o de una sola celda.
 - [ ] Validar por secuencia de celdas y por palabra, en cualquier sentido.
-- [ ] Feedback de selección inválida sin penalización.
+- [ ] Feedback de selección inválida sin penalización (desvanecido 0,5 s).
 - [ ] Impedir iniciar selección en celdas ya encontradas.
 
 ### 5.2 Tablero y niveles (P1)
 
-- [ ] Tablero visible y completo en 8×8 y 10×10.
+- [ ] Tablero visible y completo en 8×8, 10×10, 12×12 y 15×15.
 - [ ] Celda adaptable al espacio disponible (sin 48 px fijos).
+- [ ] Proporciones del template: celda 41 px, separación 6 px, margen 19 px.
 - [ ] Variación de estilo “WordCell”.
 - [ ] Temática por defecto si se abre la escena directamente.
 - [ ] Handoff del selector con la señal oficial de cambio de escena.
-- [ ] Selector de nivel Fácil / Medio / Difícil.
+- [ ] Selector de nivel Fácil / Medio / Difícil / Maestro con candados y
+      progreso “X/20”.
 - [ ] Tablero completo en 360×640, 20:9 y tablet.
 
 ### 5.3 Lista de palabras y pistas (P1)
 
-- [ ] Lista de palabras pendientes visible y actualizada.
-- [ ] Palabras encontradas tachadas o marcadas.
-- [ ] 3 pistas por partida, con contador visible.
+- [ ] Lista de palabras visible y actualizada; las encontradas se tachan y
+      pasan al final.
+- [ ] 3 pistas por nivel, con contador visible.
 - [ ] Pista resalta una palabra pendiente durante 3 s.
 - [ ] Botón “Sin pistas” al agotarlas; se restauran al reiniciar.
 - [ ] Feedback no cromático al usar la pista.
@@ -235,8 +271,9 @@ mínimas.
 ### 5.4 Progreso, puntaje y estadísticas (P1)
 
 - [ ] Contador sincronizado y reinicio limpio.
+- [ ] Desbloqueo del nivel siguiente tras 20 partidas ganadas (C6).
 - [ ] Mensaje de victoria con tiempo, puntaje, Repetir y Volver.
-- [ ] Fórmula de puntaje de la Sopa y multiplicador por nivel.
+- [ ] Fórmula de puntaje de la Sopa y multiplicador por nivel (C7).
 - [ ] Registro de nivel, tiempo y puntaje al terminar.
 - [ ] `best_time_seconds` y `best_score` del nivel actual.
 - [ ] Pausa con acceso a ajustes.

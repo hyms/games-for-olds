@@ -171,6 +171,9 @@ Cada cambio se guarda de inmediato.
 7. **Tolerancia al error:** selección por toques, deshacer donde aplique y
    feedback suave ante una acción inválida.
 8. **Sin gestos finos obligatorios:** toda acción tiene alternativa táctil simple.
+   Excepción cerrada para la Sopa de Letras: la selección es solo por arrastre
+   (decisión C4), compensada con celdas grandes, bloqueo de dirección y
+   tolerancia; se valida con el perfil 60+ antes de su cierre.
 9. **Sin desbordes:** los textos largos se ajustan o envuelven; nada se corta en
    360×640, 20:9 o tablet.
 10. **Movimiento reducido:** opción para desactivar el fondo animado.
@@ -343,7 +346,8 @@ y reemplazo) y respaldo ante corrupción.
 - `best_time_seconds`: menor tiempo para completar **el nivel actual**.
 - `best_score`: mayor puntaje obtenido en **el nivel actual**.
 - `plays` y `wins`: partidas jugadas y completadas en ese nivel.
-- El tiempo se mide en segundo plano; la Sopa no lo muestra durante la partida.
+- El tiempo se mide en segundo plano; la Sopa lo muestra transcurrido y nunca
+  como cuenta atrás.
 - El puntaje lo define cada juego en su `spec.md`; el global solo lo almacena.
 - Las dificultades también las define cada juego; el global no impone nombres ni
   cantidades.
@@ -356,9 +360,11 @@ y reemplazo) y respaldo ante corrupción.
 
 ### 11.1 Sopa de Letras
 
-Buscar palabras en un tablero de 8×8 o 10×10 según el nivel, con cinco temáticas,
-tres dificultades propias, 3 pistas por partida y sin anuncios. Especificación
-completa en [minigames/word_search/spec.md](../minigames/word_search/spec.md).
+Buscar palabras en un tablero de 8×8, 10×10, 12×12 o 15×15 según el nivel, con
+diez categorías, cuatro dificultades propias (Fácil, Medio, Difícil y Maestro),
+selección por arrastre, 3 pistas por nivel sin anuncios y desbloqueo del nivel
+siguiente tras 20 partidas ganadas. Especificación completa en
+[minigames/word_search/spec.md](../minigames/word_search/spec.md).
 
 ### 11.2 Tangram / Puzles de encaje
 
@@ -440,6 +446,9 @@ símbolo. Sus niveles, dificultades, ayudas y puntaje se definirán en su propio
 | Spec de juego | `minigames/<juego>/spec.md` | Reglas y objetivos del juego |
 | Plan de juego | `minigames/<juego>/plan.md` | Checklist del juego |
 | Test de juego | `minigames/<juego>/test.md` | Casos de prueba del juego |
+| Dirección de arte | `docs/art_direction.md` | Estilo visual, paleta, geometría e importación |
+| Manifiesto de assets | `assets/asset-manifest.json` | Lista de assets, estado, origen y licencia |
+| Plantilla visual | `assets/reference/` | Referencias visuales aprobadas (no se exportan) |
 
 Regla: los documentos globales resumen y enlazan; no duplican las reglas de cada
 juego.
