@@ -6,7 +6,7 @@
 >
 > **Versión:** 0.1 · **Fecha:** 27/10/2026 · **Estado:** Plantilla aprobada
 > **Documentación relacionada:** [Spec global](spec.md) · [Plan global](plan.md) ·
-> [Plan de la Sopa](../minigames/word_search/plan.md) ·
+> [Plan de la Sopa](word_search/plan.md) ·
 > [Manifiesto de assets](../assets/asset-manifest.json)
 >
 > **Plantilla de referencia:** `assets/reference/wathersoup.jpg` (copia de

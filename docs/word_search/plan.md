@@ -5,13 +5,13 @@
 > [plan de pruebas](test.md).
 >
 > **Versión:** 0.4 · **Fecha:** 27/10/2026 · **Estado:** Replaneación con decisiones cerradas
-> **Documentación relacionada:** [Spec global](../../docs/spec.md) ·
-> [Plan global](../../docs/plan.md) · [Pruebas globales](../../docs/test.md) ·
+> **Documentación relacionada:** [Spec global](../spec.md) ·
+> [Plan global](../plan.md) · [Pruebas globales](../test.md) ·
 > [Spec del juego](spec.md) · [Pruebas del juego](test.md) ·
-> [Dirección de arte](../../docs/art_direction.md) ·
+> [Dirección de arte](../art_direction.md) ·
 > [Manifiesto de assets](../../assets/asset-manifest.json)
 >
-> Ubicación real del minijuego: `minigames/word_search/`.
+> Ubicación del código: `minigames/word_search/` · Documentación: `docs/word_search/`.
 > Plantilla visual aprobada: `assets/reference/wathersoup.jpg`.
 
 ## Leyenda
@@ -117,7 +117,7 @@ dimensiones ni tolerancia.
 
 ## Fase 0.6 — Dirección de arte y componentes visuales (P2) 🔜
 
-Fuente: [`docs/art_direction.md`](../../docs/art_direction.md) y plantilla
+Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 `assets/reference/wathersoup.jpg`.
 
 - [x] Analizar la plantilla: paleta, geometría y contrastes.

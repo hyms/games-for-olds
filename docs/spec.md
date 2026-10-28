@@ -7,7 +7,7 @@
 >
 > **Versión:** 0.3 · **Fecha:** 26/10/2026 · **Estado:** MVP en definición
 > **Documentación relacionada:** [Plan global](plan.md) · [Pruebas globales](test.md) ·
-> [Sopa de Letras](../minigames/word_search/spec.md)
+> [Sopa de Letras](word_search/spec.md)
 
 ---
 
@@ -79,7 +79,7 @@ pocas opciones por pantalla.
 
 | Juego | Estado | Especificación |
 |-------|--------|----------------|
-| Sopa de Letras | Base funcional; en cierre de jugabilidad | [Ver spec](../minigames/word_search/spec.md) |
+| Sopa de Letras | Base funcional; en cierre de jugabilidad | [Ver spec](word_search/spec.md) |
 | Tangram / Puzles de encaje | Pendiente | Se creará con su implementación |
 | Lógica de Bloques (estilo *Dr. Mario*) | Pendiente | Se creará con su implementación |
 
@@ -230,7 +230,7 @@ res://
 ├── assets/
 │   └── fonts/
 ├── tests/                       # Pruebas GdUnit4
-└── docs/                        # Documentación SDD
+└── docs/                        # Documentación SDD (globales y por juego)
 ```
 
 ### 8.1 Un solo autoload
@@ -364,7 +364,7 @@ Buscar palabras en un tablero de 8×8, 10×10, 12×12 o 15×15 según el nivel, 
 diez categorías, cuatro dificultades propias (Fácil, Medio, Difícil y Maestro),
 selección por arrastre, 3 pistas por nivel sin anuncios y desbloqueo del nivel
 siguiente tras 20 partidas ganadas. Especificación completa en
-[minigames/word_search/spec.md](../minigames/word_search/spec.md).
+[docs/word_search/spec.md](word_search/spec.md).
 
 ### 11.2 Tangram / Puzles de encaje
 
@@ -443,9 +443,9 @@ símbolo. Sus niveles, dificultades, ayudas y puntaje se definirán en su propio
 | Spec global | `docs/spec.md` | Visión, objetivos y requisitos transversales |
 | Plan global | `docs/plan.md` | Fases, decisiones y checklist |
 | Test global | `docs/test.md` | Estrategia y pruebas transversales |
-| Spec de juego | `minigames/<juego>/spec.md` | Reglas y objetivos del juego |
-| Plan de juego | `minigames/<juego>/plan.md` | Checklist del juego |
-| Test de juego | `minigames/<juego>/test.md` | Casos de prueba del juego |
+| Spec de juego | `docs/<juego>/spec.md` | Reglas y objetivos del juego |
+| Plan de juego | `docs/<juego>/plan.md` | Checklist del juego |
+| Test de juego | `docs/<juego>/test.md` | Casos de prueba del juego |
 | Dirección de arte | `docs/art_direction.md` | Estilo visual, paleta, geometría e importación |
 | Manifiesto de assets | `assets/asset-manifest.json` | Lista de assets, estado, origen y licencia |
 | Plantilla visual | `assets/reference/` | Referencias visuales aprobadas (no se exportan) |

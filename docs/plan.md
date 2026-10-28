@@ -6,7 +6,7 @@
 >
 > **Versión:** 0.3 · **Fecha:** 26/10/2026 · **Estado:** Fase 3 en curso
 > **Documentación relacionada:** [Spec global](spec.md) · [Pruebas globales](test.md) ·
-> [Sopa de Letras](../minigames/word_search/spec.md)
+> [Sopa de Letras](word_search/spec.md)
 
 ## Leyenda
 
@@ -32,9 +32,9 @@
 
 ### 1.1 Replan de la Sopa (27/10/2026) — C1–C8
 
-Tras la reescritura de `minigames/word_search/spec.md` y `test.md`, se cerraron
+Tras la reescritura de `docs/word_search/spec.md` y `test.md`, se cerraron
 ocho decisiones que ajustan D3 y D6 sin romperlos. Detalle completo en
-[minigames/word_search/plan.md §2](../minigames/word_search/plan.md).
+[docs/word_search/plan.md §2](word_search/plan.md).
 
 | # | Decisión |
 |---|----------|
@@ -115,9 +115,9 @@ mínimas.
 - [x] Reescribir `docs/spec.md` con estructura actual, estadísticas, texto accesible y publicidad al final.
 - [x] Reescribir `docs/test.md` con GdUnit4, servicios, estadísticas y banners.
 - [x] Reescribir este plan con el orden definitivo.
-- [x] Actualizar `minigames/word_search/spec.md` con niveles, 3 pistas y puntaje.
-- [x] Actualizar `minigames/word_search/plan.md` con estados reales.
-- [x] Actualizar `minigames/word_search/test.md` con límite de pistas, niveles y estadísticas.
+- [x] Actualizar `docs/word_search/spec.md` con niveles, 3 pistas y puntaje.
+- [x] Actualizar `docs/word_search/plan.md` con estados reales.
+- [x] Actualizar `docs/word_search/test.md` con límite de pistas, niveles y estadísticas.
 - [x] Revisar enlaces y rutas entre documentos (0 enlaces rotos).
 - [x] Cerrar la revisión SDD de la Sopa sin P0/P1 documentales.
 
@@ -388,8 +388,8 @@ Fuente: [`docs/art_direction.md`](art_direction.md) · Plantilla aprobada
 
 ### Paso 1 — Cerrar la documentación de la Sopa
 
-- [x] Actualizar `minigames/word_search/plan.md` con estados reales.
-- [x] Actualizar `minigames/word_search/test.md` con pistas, niveles y estadísticas.
+- [x] Actualizar `docs/word_search/plan.md` con estados reales.
+- [x] Actualizar `docs/word_search/test.md` con pistas, niveles y estadísticas.
 - [x] Revisar enlaces y matriz de trazabilidad.
 
 ### Paso 2 — Infraestructura de pruebas

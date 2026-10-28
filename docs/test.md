@@ -6,7 +6,7 @@
 >
 > **Versión:** 0.3 · **Fecha:** 26/10/2026 · **Estado:** MVP en definición
 > **Documentación relacionada:** [Spec global](spec.md) · [Plan global](plan.md) ·
-> [Pruebas de Sopa de Letras](../minigames/word_search/test.md)
+> [Pruebas de Sopa de Letras](word_search/test.md)
 
 ---
 
