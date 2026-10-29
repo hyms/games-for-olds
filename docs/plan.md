@@ -92,6 +92,11 @@ mínimas.
 
 ## Fase 1 — Sopa de Letras: base funcional
 
+> **Actualización 28/10/2026:** el banco de la Sopa pasó de 5 temáticas a
+> **10 categorías y 693 palabras** (Fase 1 del [plan del juego](word_search/plan.md),
+> decisión C9), con `WordBank` y `ShuffleBagSystem` validados por `UT-WS-06`
+> y `UT-WS-07`.
+
 - [x] Spec, plan y pruebas del minijuego.
 - [x] Recurso de temática editable y cinco temáticas.
 - [x] Normalización de palabras y filtros de longitud.

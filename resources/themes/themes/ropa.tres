@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
+
+[resource]
+script = ExtResource("1_bank")
+category_id = "ropa"
+theme_name = "Ropa y Costura"
+description = "Ropa, calzado y materiales de costura"
+words = Array[String](["CAMISA", "PANTALON", "CAMISETA", "FALDA", "BLUSA", "VESTIDO", "BUFANDA", "CHAQUETA", "ABRIGO", "SACO", "TRAJE", "CORBATA", "SOMBRERO", "BOINA", "PIJAMA", "BATA", "OVEROL", "TUNICA", "ESTOLA", "DELANTAL", "ZAPATO", "ZAPATILLA", "BOTAS", "SANDALIA", "BOTIN", "ESCARPIN", "PANTUFLA", "CHANCLETA", "ZUECOS", "ALPARGATA", "SUELA", "TACON", "CINTURON", "GUANTE", "GORRA", "GORRO", "PANUELO", "VELO", "MANTON", "REBOZO", "CHAL", "VISERA", "CALCETIN", "MEDIAS", "ROPA", "HILO", "AGUJA", "PUNTADA", "TELAR", "MAQUINA", "CIERRE", "BOTON", "COSTURA", "BORDADO", "LANA", "ALGODON", "SEDA", "TERCIOPELO", "SATEN", "DEDAL", "HEBILLA", "CORCHETE", "CREMALLERA", "OJAL", "AROS", "COLLAR", "PULSERA", "CADENA"])

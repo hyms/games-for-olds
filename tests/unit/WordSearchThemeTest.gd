@@ -46,3 +46,50 @@ func test_el_filtro_no_modifica_la_lista_original() -> void:
 	var ws_theme := _make_theme(["sol", "mesa"])
 	var _first: Array[String] = ws_theme.get_filtered_words()
 	assert_array(ws_theme.words).contains_exactly(["sol", "mesa"])
+
+
+# --- Fase 1: validate() del banco (spec §5) ----------------------------------
+
+const LETTERS := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
+## Categoría de prueba válida: identificador, nombre y `count` palabras únicas.
+func _make_category(words: Array[String]) -> WordSearchTheme:
+	var category := _make_theme(words, 15, 4)
+	category.category_id = "prueba"
+	category.theme_name = "Prueba"
+	return category
+
+
+## `count` palabras únicas de 6 letras A–Z (p. ej. "AACASA", "ABCASA", ...).
+func _valid_words(count: int) -> Array[String]:
+	var out: Array[String] = []
+	var index := 0
+	while out.size() < count:
+		var first := LETTERS.substr(int(index / 26.0), 1)
+		var second := LETTERS.substr(index % 26, 1)
+		out.append(first + second + "CASA")
+		index += 1
+	return out
+
+
+func test_validate_acepta_una_categoria_completa() -> void:
+	var category := _make_category(_valid_words(60))
+	assert_bool(category.validate().is_empty()) \
+		.override_failure_message("validate() = %s" % str(category.validate())) \
+		.is_true()
+
+
+func test_validate_detecta_duplicados_longitud_y_palabras_sin_normalizar() -> void:
+	var words := _valid_words(60)
+	words.append(words[0])       # duplicada
+	words.append("ABC")          # demasiado corta
+	words.append("MESAÑ")        # con Ñ: debe ir como MESAN
+	var errors: PackedStringArray = _make_category(words).validate()
+	assert_int(errors.size()).is_equal(3)
+
+
+func test_validate_marca_como_invalida_una_categoria_vacia() -> void:
+	var errors: PackedStringArray = _make_category([]).validate()
+	# sin palabras: mínimo 60 incumplido + categoría vacía tras el filtro
+	assert_int(errors.size()).is_greater_equal(2)

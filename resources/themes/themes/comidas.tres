@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
+
+[resource]
+script = ExtResource("1_bank")
+category_id = "comidas"
+theme_name = "Comidas y Postres"
+description = "Platos cotidianos, guisos, mariscos y postres"
+words = Array[String](["PASTEL", "PAELLA", "CHOCOLATE", "EMPANADA", "GALLETA", "ARROZ", "ENSALADA", "SANDWICH", "HAMBURGUESA", "PIZZA", "TACOS", "BURRITO", "AREPA", "TAMALES", "RAMEN", "SUSHI", "PASTA", "LASANA", "GNOCCHI", "TORTILLA", "BOCADILLO", "PICADILLO", "LENTEJAS", "GARBANZOS", "FIDEO", "SOPA", "CALDO", "GUISO", "ESTOFADO", "MINESTRA", "GAZPACHO", "MOJETE", "CAZUELA", "MIGAS", "TAPAS", "FIDEUA", "FABADA", "PUCHERO", "COCIDO", "SALMOREJO", "JAMON", "QUESO", "CARNE", "POLLO", "PESCADO", "CAMARON", "LANGOSTINO", "ATUN", "SALMON", "MERLUZA", "SARDINA", "ANCHOVA", "CALAMARES", "CHULETA", "MARISCO", "GAMBAS", "MEJILLONES", "ALMEJAS", "BOQUERON", "NATILLAS", "CREMA", "TIRAMISU", "HELADO", "SORBETE", "TARTA", "MILHOJA", "CHURROS", "BUNUELO", "TORRIJA", "BIZCOCHO", "POLVORON", "TRUFAS", "CARLOTA", "SUSPIRO", "MAZAPAN", "BROWNIE", "CAFE", "LECHE", "MIEL"])

@@ -1,10 +1,10 @@
-# Plan de Trabajo — Sopa de Letras (v0.4)
+# Plan de Trabajo — Sopa de Letras (v0.5)
 
 > **Documento SDD** del minijuego *Sopa de Letras*.
 > Checklist de construcción alineado con la nueva [spec](spec.md) y el nuevo
 > [plan de pruebas](test.md).
 >
-> **Versión:** 0.4 · **Fecha:** 27/10/2026 · **Estado:** Replaneación con decisiones cerradas
+> **Versión:** 0.5 · **Fecha:** 28/10/2026 · **Estado:** Fase 1 completada (banco y Shuffle Bag, a la espera de verificación en editor)
 > **Documentación relacionada:** [Spec global](../spec.md) ·
 > [Plan global](../plan.md) · [Pruebas globales](../test.md) ·
 > [Spec del juego](spec.md) · [Pruebas del juego](test.md) ·
@@ -28,7 +28,7 @@
 
 | Área | Hoy en el repositorio | Objetivo de la nueva spec | Acción |
 |------|-----------------------|---------------------------|--------|
-| Categorías | 5 temáticas | 10 categorías, 50–100 palabras cada una (≥ 600) | Ampliar y migrar |
+| Categorías | 10 categorías (693 palabras, Fase 1) | 10 categorías, 50–100 palabras cada una (≥ 600) | Hecho (C9) |
 | Dificultades | 3 niveles (8/10/10) | 4 niveles (8/10/12/15) con reglas propias | Rediseñar como datos |
 | Generador | `WordGenerator` con `WordSearchTheme` | `WordSearchGenerator` + `DifficultyConfig` (Strategy) | Renombrar y separar |
 | Tablero | `WordGrid` con celdas fijas de 48 px | `WordGridContainer` con encaje y zoom | Renombrar y rehacer layout |
@@ -46,11 +46,11 @@
 
 ---
 
-## 2. Decisiones de la replaneación (C1–C8)
+## 2. Decisiones de la replaneación (C1–C9)
 
-Estas decisiones se tomaron el 27/10/2026 y sustituyen a la propuesta anterior
-de cada punto. Las que afectan al SDD global se reflejan en `docs/` al cerrar la
-Fase 9.
+Estas decisiones se tomaron el 27/10/2026 (C1–C8) y el 28/10/2026 (C9); sustituyen
+a la propuesta anterior de cada punto. Las que afectan al SDD global se reflejan
+en `docs/` al cerrar la Fase 9.
 
 | # | Tema | Decisión | Efecto |
 |---|------|----------|--------|
@@ -62,6 +62,7 @@ Fase 9.
 | C6 | Desbloqueo | **20 partidas por nivel** para desbloquear el siguiente. | Fácil abierto; Medio tras 20 de Fácil; Difícil tras 20 de Medio; Maestro tras 20 de Difícil. |
 | C7 | Puntaje | **Fórmula nueva** definida en la Fase 8. | Se mantiene `best_score` en estadísticas. |
 | C8 | Zoom | Pinch de 2 dedos **más botones + / − y Centrar**. | El zoom nunca es la única forma de ampliar. |
+| C9 | Banco de palabras (Fase 1) | Recursos **`.tres`** en `resources/themes/themes/` (offline, editables en el editor). El modelo es una **evolución de `WordSearchTheme`** (nuevo `category_id`, sin clase nueva), con `validate()` y `normalize_word()`. `category_id` = nombre del archivo; palabras normalizadas A–Z, únicas también **entre** categorías (evita palabras ambiguas al combinar 2 o 4 grupos). | `WordBank` carga las 10 rutas en orden de spec §5.1; el Shuffle Bag (`minigames/word_search/ShuffleBagSystem.gd`) trabaja con ids. |
 
 **Regla:** ninguna decisión de la spec se implementa si contradice esta tabla.
 Si cambia una decisión, se actualiza primero aquí y luego el código.
@@ -152,40 +153,53 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ---
 
-## Fase 1 — Banco de palabras y 10 categorías (P1)
+## Fase 1 — Banco de palabras y 10 categorías (P1) 🔜
+
+> Cerrada la Fase 0.6. Decisiones de esta fase: **C9** (ver §2).
 
 ### 1.1 Modelo de datos
 
-- [ ] Definir `WordSearchCategory` (o evolución de `WordSearchTheme`) con
-      `category_id`, nombre, descripción y `Array[String]` de palabras.
-- [ ] Decidir el formato del banco: recursos `.tres` incluidos en la app
-      (recomendado para offline) o `user://word_bank.json`.
-- [ ] Normalizar a A–Z sin tildes, diéresis ni Ñ (ESPAÑA → ESPANA).
-- [ ] Validar duplicados, longitud mínima 4 y máxima igual al tablero.
-- [ ] Validar que ninguna categoría quede vacía tras el filtro.
+- [x] Definir el modelo: **evolución de `WordSearchTheme`** (C9) con
+      `category_id`, `theme_name`, descripción y `Array[String]` de palabras
+      normalizadas; se añaden `normalize_word()` y `validate()`.
+- [x] Formato del banco: **recursos `.tres`** en `resources/themes/themes/`
+      (C9; offline, editables en el editor, sin escritura en `user://`).
+      Catálogo `resources/themes/WordBank.gd` con las 10 rutas en orden de spec.
+- [x] Normalizar a A–Z sin tildes, diéresis ni Ñ (ESPAÑA → ESPANA).
+- [x] Validar duplicados, longitud 4–15 y normalización en `WordSearchTheme.validate()`.
+- [x] Validar que ninguna categoría quede vacía tras el filtro (y ≥60 palabras,
+      mínimo que garantiza el total ≥600).
 
 ### 1.2 Contenido (10 categorías · ≥ 600 palabras)
 
-- 🟡 Animales y Naturaleza (existe `animales.tres`; falta migrar al modelo nuevo).
-- 🟡 Frutas y Verduras (existe `frutas_verduras.tres`; falta migrar).
-- 🟡 Países y Geografía (existe `paises_ciudades.tres`; falta migrar).
-- 🟡 Cosas del Hogar (existe `objetos.tres`; falta migrar).
-- 🟡 Profesiones y Oficios (existe `profesiones.tres`; se mantiene `MECANICO`).
-- [ ] Plantas y Flores.
-- [ ] Comidas y Postres.
-- [ ] Instrumentos Musicales.
-- [ ] Herramientas y Bricolaje.
-- [ ] Ropa y Costura.
-- [ ] Completar 50–100 palabras por categoría (≥ 60 por categoría para dejar margen al filtro).
-- [ ] Revisar que todas las palabras sean cotidianas para el perfil 40+/60+.
+- [x] Animales y Naturaleza (`animales.tres`, 66 palabras).
+- [x] Plantas y Flores (`plantas.tres`, 66).
+- [x] Frutas y Verduras (`frutas_verduras.tres`, 65).
+- [x] Cosas del Hogar (`objetos.tres`, 73).
+- [x] Profesiones y Oficios (`profesiones.tres`, 71; se mantiene `MECANICO`).
+- [x] Países y Geografía (`paises_ciudades.tres`, 69).
+- [x] Comidas y Postres (`comidas.tres`, 79).
+- [x] Instrumentos Musicales (`instrumentos.tres`, 69).
+- [x] Herramientas y Bricolaje (`herramientas.tres`, 67).
+- [x] Ropa y Costura (`ropa.tres`, 68).
+- [x] Total: **693 palabras** (≥60 por categoría, todas normalizadas A–Z de
+      4–15 letras y sin repetirse entre categorías).
+- [x] Generador del banco: `tools/build_word_bank.py` (valida y escribe los
+      `.tres`; herramienta puntual, no re-ejecutar si se edita a mano).
+- [ ] Revisión de vocabulario cotidiano del perfil 40+/60+ (usuario).
 
 ### 1.3 Shuffle Bag (P1)
 
-- [ ] Implementar bolsa de 10 grupos sin repetición.
-- [ ] Garantizar 2 apariciones de cada grupo en 20 partidas.
-- [ ] Reiniciar la bolsa solo al agotarla.
-- [ ] Persistir el estado de la bolsa en `SaveManager`.
-- [ ] Test `UT-WS-06`.
+- [x] `ShuffleBagSystem` (`minigames/word_search/ShuffleBagSystem.gd`): bolsa de
+      10 grupos × 2 copias = 20 sacadas sin repetir por vuelta.
+- [x] Cada grupo aparece 2 veces en cada bolsa de 20 partidas (spec §4.3).
+- [x] La bolsa solo se rebaraja al agotarla (`refill_count` lo comprueba).
+- [x] Estado serializable para `SaveManager` (`to_dict()`/`from_dict()`, con
+      versión); el guardado real llega con `SaveManager` (Fase 3 global).
+- [x] Test `UT-WS-06` (`tests/unit/ShuffleBagSystemTest.gd`, 5 casos).
+- [x] Tests del banco `UT-WS-07` (`tests/unit/WordBankTest.gd`) y de
+      `validate()` en `tests/unit/WordSearchThemeTest.gd`.
+- [ ] Ejecutar la suite en el editor: 15 + 14 tests (usuario).
 
 ---
 
@@ -384,7 +398,7 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ### 9.4 Pruebas y entrega
 
-- [ ] Ejecutar `UT-WS-01` a `UT-WS-06` en GdUnit4 headless.
+- [ ] Ejecutar `UT-WS-01` a `UT-WS-07` en GdUnit4 headless.
 - [ ] Ejecutar `IT-WS-01` a `IT-WS-04` con SceneRunner.
 - [ ] Ejecutar `ST-WS-01`, `ST-WS-02`, `ST-WS-04` y `ST-WS-05` en editor y Android
       (`ST-WS-03` retirado por C2).
@@ -407,8 +421,8 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 | §4.1 Submenú de dificultad | 7 | `ST-WS-04` | Pendiente |
 | §4.2 Matriz de dificultades | 2 | `UT-WS-01`…`UT-WS-05` | Pendiente |
 | §4.3 Desbloqueo | 7 | `ST-WS-04` | Pendiente |
-| §5 Banco y Shuffle Bag | 1 | `UT-WS-06` | Pendiente |
-| §5.1 Diez categorías | 1 | Revisión de contenido | Parcial (5/10) |
+| §5 Banco y Shuffle Bag | 1 | `UT-WS-06`, `UT-WS-07` | Implementado (en espera de ejecución en editor) |
+| §5.1 Diez categorías | 1 | `UT-WS-07` + revisión de contenido | Implementado (10/10 · 693 palabras; revisión 40+ pendiente) |
 | §6 Arquitectura | 2, 3, 9 | Revisión de código | Pendiente |
 | Puntaje (C7) | 8 | Casos `STAT` globales | Pendiente |
 

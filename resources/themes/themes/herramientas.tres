@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
+
+[resource]
+script = ExtResource("1_bank")
+category_id = "herramientas"
+theme_name = "Herramientas y Bricolaje"
+description = "Herramientas de mano, taller y bricolaje"
+words = Array[String](["MARTILLO", "ALICATE", "TALADRO", "SIERRA", "CLAVO", "DESTORNILLADOR", "CINCEL", "GRAPA", "NIVEL", "CINTA", "REGLA", "ESCUADRA", "LISTON", "LIJA", "TORNILLO", "TUERCA", "ARANDELA", "BROCA", "BROCHA", "PINCEL", "RODILLO", "BALDE", "PERNO", "METRO", "ALAMBRE", "GANCHO", "TIJERA", "ESMERIL", "ESMERILADORA", "YUNQUE", "BIGORNIA", "LIMADORA", "TRINCHETA", "CIZALLA", "SOPLETE", "SOLDADOR", "CUCHILLA", "BISTURI", "MOSQUETON", "CALIBRADOR", "FORMON", "ESCOPLO", "PUNZON", "GUBIA", "MAZA", "PEGAMENTO", "SILICONA", "ESPATULA", "HERRAMIENTA", "BARRENA", "BISEL", "ATORNILLADOR", "GRAPADORA", "MOLDE", "PLANTILLA", "CARRETILLA", "ESCALERA", "ANDAMIO", "ABRAZADERA", "TENAZA", "PINZA", "HACHA", "PICO", "PALA", "AZADON", "AZADA", "ESPOSA"])

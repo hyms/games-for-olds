@@ -1,14 +1,10 @@
 [gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3 uid="uid://xjv4p8k5m3qh"]
 
-[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_o8h2m"]
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
 
 [resource]
-script = ExtResource("1_o8h2m")
-theme_name = "Objetos del Hogar"
-description = "Utensilios y objetos cotidianos"
-words = Array[String](["MESA", "SILLA", "COCINA", "HORNO", "LAVABO", "ARMARIO", "ESTUFA", "TAZA", "PLATO", "CUCHARA", "TENEDOR", "VASO", "TELEVISOR"])
-grid_size = 8
-max_words = 8
-min_word_length = 4
-allow_diagonal = true
-allow_backwards = true
+script = ExtResource("1_bank")
+category_id = "objetos"
+theme_name = "Cosas del Hogar"
+description = "Muebles, utensilios y enseres de casa"
+words = Array[String](["MESA", "SILLA", "MUEBLE", "SILLON", "BUTACA", "ARMARIO", "ESTANTE", "CAJON", "DESPENSA", "VITRINA", "CABECERO", "CAMA", "CUCHARA", "CUCHARON", "CUCHILLO", "TENEDOR", "PLATO", "VASO", "TAZA", "OLLA", "SARTEN", "JARRA", "BANDEJA", "TAPADERA", "ESPUMADERA", "SERVILLETA", "MANTEL", "CEPILLO", "TOALLA", "ESCOBA", "TRAPEADOR", "BANERA", "DUCHA", "GRIFO", "LAVADORA", "JABONERA", "REJILLA", "TENDEDERO", "SABANA", "COBERTOR", "ALMOHADA", "ALMOHADON", "MANTA", "COLCHA", "FUNDA", "ESPEJO", "ALFOMBRA", "CORTINA", "PERSIANA", "TAPETE", "LAMPARA", "RELOJ", "CANDADO", "CERRADURA", "LLAVE", "LINTERNA", "VELA", "CENICERO", "PAPELERA", "REFRIGERADOR", "TELEVISION", "MICROONDAS", "HORNO", "ESTUFA", "PLANCHA", "SECADOR", "CESTA", "CANASTO", "TABLA", "FLORERO", "JARRON", "ALARMA", "PEINE"])

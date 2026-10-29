@@ -1,14 +1,10 @@
 [gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3 uid="uid://h6k9n3xv2p8t"]
 
-[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_pr3f5"]
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
 
 [resource]
-script = ExtResource("1_pr3f5")
-theme_name = "Profesiones"
-description = "Oficios y trabajos conocidos"
-words = Array[String](["MEDICO", "ENFERMERO", "MAESTRO", "PROFESOR", "ABOGADO", "CARPINTERO", "PANADERO", "FONTANERO", "CAMIONERO", "POLICIA", "BOMBERO", "MECANICO"])
-grid_size = 8
-max_words = 8
-min_word_length = 4
-allow_diagonal = true
-allow_backwards = true
+script = ExtResource("1_bank")
+category_id = "profesiones"
+theme_name = "Profesiones y Oficios"
+description = "Trabajos, oficios y profesiones de toda la vida"
+words = Array[String](["MEDICO", "ENFERMERA", "FARMACEUTICO", "DENTISTA", "VETERINARIO", "MASAJISTA", "MAESTRO", "PROFESOR", "ABOGADO", "NOTARIO", "FISCAL", "CARPINTERO", "MECANICO", "ELECTRICISTA", "PLOMERO", "PINTOR", "ESCULTOR", "CERRAJERO", "CERAMISTA", "SASTRE", "COSTURERA", "ZAPATERO", "PELUQUERO", "BARBERO", "ALBANIL", "OBRERO", "MINERO", "COCINERO", "PANADERO", "CARNICERO", "FRUTERO", "QUESERO", "CAMARERO", "CAJERO", "VENDEDOR", "REPARTIDOR", "CHOFER", "CONDUCTOR", "COBRADOR", "RECEPCIONISTA", "CONTADOR", "ADMINISTRADOR", "ECONOMISTA", "TECNICO", "TRADUCTOR", "FOTOGRAFO", "LIBRERO", "GRANJERO", "GANADERO", "PESCADOR", "JARDINERO", "AGRONOMO", "APICULTOR", "BOTICARIO", "ARQUITECTO", "INGENIERO", "BOMBERO", "POLICIA", "SOLDADO", "GUARDIA", "PILOTO", "MUSICO", "BAILARIN", "ESCRITOR", "PERIODISTA", "MONJE", "OBISPO", "MISIONERO", "ATLETA", "DEPORTISTA", "MAQUINISTA"])

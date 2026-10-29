@@ -49,6 +49,7 @@ func test_overlap_validity():
 | **UT-WS-04** | `WordSearchGenerator` | Normalización de texto | Convierte "ESPAÑA" a "ESPANA" y "ZANAHORIA" sin tildes/caracteres especiales. |
 | **UT-WS-05** | `WordSearchGenerator` | Margen de tolerancia 20% | Si se piden 20 palabras en $15\times 15$ y solo caben 17, aprueba el tablero ($\ge 16$). |
 | **UT-WS-06** | `ShuffleBagSystem` | Distribución de categorías | En 20 partidas de Fácil, cada uno de los 10 grupos temáticos aparece al menos 2 veces. |
+| **UT-WS-07** | `WordBank` + `WordSearchTheme.validate` | Banco de palabras (spec §5 y §5.1) | Carga 10 categorías con sus ids y nombres; cada una supera `validate()` con ≥60 palabras válidas (4–15 letras A–Z, sin duplicados); ≥600 en total; ninguna palabra repetida entre categorías. |
 
 ---
 
