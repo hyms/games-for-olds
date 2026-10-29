@@ -31,7 +31,7 @@ func test_descarta_palabras_mas_cortas_que_el_minimo() -> void:
 
 
 func test_descarta_palabras_mas_largas_que_el_tablero() -> void:
-	var ws_theme := _make_theme(["mesa", "refrigerador"], grid_size = 8)
+	var ws_theme := _make_theme(["mesa", "refrigerador"], 8)
 	var result: Array[String] = ws_theme.get_filtered_words()
 	assert_array(result).contains_exactly(["MESA"])
 
