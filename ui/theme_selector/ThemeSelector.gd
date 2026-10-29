@@ -2,6 +2,11 @@ extends Control
 class_name ThemeSelector
 
 ## Selector de temáticas para WordSearch
+##
+## PROVISIONAL: la spec (§4.1) pide un submenú de dificultad, no de grupo de
+## palabras; los grupos los sortea la Shuffle Bag según `category_count`.
+## Este nodo se sustituye en la Fase 2 §2.3 y se da de baja junto con su escena.
+## Ver `docs/word_search/plan.md` (brecha “Selector”).
 
 @onready var btn_theme1: BigButton = %BtnTheme1
 @onready var btn_theme2: BigButton = %BtnTheme2

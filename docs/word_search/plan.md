@@ -39,10 +39,16 @@
 | HUD | Encabezado simple | Pausa, contador y tiempo no punitivo | Implementar |
 | Lista de palabras | No visible | Footer aleatorio que reordena al encontrar | Implementar |
 | Puntaje | Fórmula definida (spec anterior) | Fórmula nueva definida en este plan (C7) | Implementar |
+| Selector | Pantalla de temáticas (5 botones de `ThemeSelector`) | **Submenú de dificultad** (spec §4.1); el grupo de palabras lo sortea la Shuffle Bag | Reemplazar `ThemeSelector` en la Fase 2 (entrada provisional) y darle candados/progreso en la Fase 7 |
 
 > **Selección actual:** el código vigente usa toque inicial/final y además está
 > roto (`_end_selection()` ignora la última celda). La nueva spec pide arrastre,
 > así que ese código se reemplaza, no se repara.
+
+> **Pantalla actual:** `ui/theme_selector/` deja elegir *grupo de palabras*, lo
+> cual contradice la spec: el jugador **solo elige dificultad** (§4.1) y los
+> grupos se reparten automáticamente con la Shuffle Bag según `category_count`
+> (1/1/2/4 · C3 y §5). Ver Fase 2 §2.3 y Fase 7.
 
 ---
 
@@ -236,6 +242,18 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 - [ ] Medir tiempo de generación en 15×15 (< 0,5 s).
 - [ ] Tests `UT-WS-01` a `UT-WS-05`.
 
+### 2.3 Entrada a la partida (selector provisional)
+
+- [ ] Sustituir el selector de temáticas por un **selector de dificultad**:
+      4 botones (Fácil, Medio, Difícil, Maestro) de al menos 56×56 px, con el
+      nombre y los datos del nivel (tablero y objetivo) visibles.
+- [ ] El jugador **no elige grupo de palabras**: al entrar se cargan las 10
+      categorías (`WordBank.load_all()`) y la `ShuffleBagSystem` reparte los
+      grupos según `category_count` de la dificultad (1/1/2/4 · C3 y §5).
+- [ ] Provisional (hasta la Fase 7): todos los niveles entran sin candado.
+- [ ] Dar de baja `ui/theme_selector/` (`ThemeSelector.gd/.tscn`) y sus
+      referencias, dejando el flujo spec → selector de dificultad → tablero.
+
 ---
 
 ## Fase 3 — Selección por arrastre (P1)
@@ -341,7 +359,8 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ## Fase 7 — Progresión, desbloqueo y submenú (P1)
 
-- [ ] Submenú de dificultad previo al tablero.
+- [ ] Submenú de dificultad previo al tablero: versión final del selector
+      provisional de la Fase 2 §2.3 (aquí se añaden candados y progreso).
 - [ ] Mostrar candado y progreso “X/20” por nivel.
 - [ ] Fácil desbloqueado por defecto.
 - [ ] Medio tras 20 partidas de Fácil; Difícil tras 20 de Medio; Maestro tras 20 de Difícil.
