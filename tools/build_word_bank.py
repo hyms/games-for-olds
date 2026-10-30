@@ -330,10 +330,10 @@ def write_tres(cat: dict) -> None:
         "",
         "[resource]",
         'script = ExtResource("1_bank")',
-        f'category_id = "{cat["id"]}"',
-        f'theme_name = "{cat["name"]}"',
-        f'description = "{cat["desc"]}"',
-        f"words = Array[String]([{words}])",
+        f'CategoryId = "{cat["id"]}"',
+        f'ThemeName = "{cat["name"]}"',
+        f'Description = "{cat["desc"]}"',
+        f"Words = Array[String]([{words}])",
         "",
     ]
     path.write_text("\n".join(lines), encoding="utf-8")

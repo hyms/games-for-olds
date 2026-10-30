@@ -47,7 +47,7 @@
 | Tinta | `#101010` | Letras y texto sobre claros |
 | Gris borde | `#838a94` / `#686f75` / `#535456` | Bordes de placas y celdas |
 | Púrpura primario | `#9944c6` | Botón principal, píldora de categoría |
-| Púrpura presionado | `#7a33a0` | Estado presionado del botón (blanco: 7,5:1) |
+| Púrpura presionado | `#8a3cb4` | Estado presionado del botón (tinta 3,1:1 · blanco 6,2:1) |
 | Amarillo acento | `#fdc109` | Acciones mágicas (pista) |
 | Turquesa acento | `#099c92` | Confirmación, superficies grandes |
 | Turquesa borde | `#04544d` | Borde de celda encontrada (≥ 3:1) |
@@ -77,7 +77,7 @@
 | Sombra `#8f8874` sobre fondo arena | 1,4:1 | No es necesaria: solo decorativa |
 
 > Estos valores se verifican automáticamente en
-> `tests/unit/PixelStylesTest.gd` (GdUnit4).
+> `tests/unit/PixelStylesTest.cs` (GdUnit4Net).
 
 **Reglas derivadas:**
 
@@ -175,9 +175,9 @@ Decidido el 27/10/2026 (ver `assets/fonts/README.md`):
 - **No se recorta la plantilla JPEG.** Es un mockup con artefactos de compresión
   y chrome embebido; se usa solo como referencia de estilo.
 - Celdas, placas y botones se construyen con `StyleBoxFlat` usando la paleta de
-  §2.2; la fábrica es `core/ui/PixelStyles.gd` (única fuente de valores en
+  §2.2; la fábrica es `core/ui/PixelStyles.cs` (única fuente de valores en
   código; `core/AccessibleTheme.tres` replica los mismos valores para el tema
-  global y se contrasta con `tests/unit/PixelStylesTest.gd`).
+  global y se contrasta con `tests/unit/PixelStylesTest.cs`).
 - Iconos: PNG con alfa de 16×16 px de arte escalado a 32×32, relleno blanco y
   contorno tinta de 1 px. Se generan con `tools/generate_icons.py`
   (star, wand, magnifier, refresh, lock, pause, menu, restart, back, check).
@@ -222,4 +222,4 @@ no se importan ni se empaquetan en la exportación.
 | `PressStart2P.ttf` | Google Fonts (27/10/2026) | SIL OFL 1.1 (`assets/fonts/OFL-PressStart2P.txt`) | Letras del tablero |
 | `AtkinsonHyperlegible-*.ttf` | Google Fonts (27/10/2026) | SIL OFL 1.1 (`assets/fonts/OFL-AtkinsonHyperlegible.txt`) | Interfaz |
 | Iconos `assets/icons/*.png` | Generados con `tools/generate_icons.py` | Proyecto (arte original) | 16×16 → 32×32 nearest |
-| Componentes `StyleBoxFlat` | `core/ui/PixelStyles.gd` y `core/AccessibleTheme.tres` | Proyecto | Verificados por test |
+| Componentes `StyleBoxFlat` | `core/ui/PixelStyles.cs` y `core/AccessibleTheme.tres` | Proyecto | Verificados por test |

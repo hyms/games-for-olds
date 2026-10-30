@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.cs" id="1_bank"]
 
 [resource]
 script = ExtResource("1_bank")
-category_id = "instrumentos"
-theme_name = "Instrumentos Musicales"
-description = "Instrumentos de orquesta, folk y percusión"
-words = Array[String](["PIANO", "GUITARRA", "VIOLIN", "VIOLONCHELO", "VIOLA", "CONTRABAJO", "ARPA", "LAUD", "BANDURRIA", "CHARANGO", "VIHUELA", "MANDOLINA", "BANJO", "UKULELE", "SALTERIO", "CUERDA", "FLAUTA", "FLAUTIN", "TROMPETA", "TROMBON", "TROMPA", "TUBA", "EUFONIO", "SAXOFON", "CLARINETE", "OBOE", "FAGOT", "ARMONICA", "SILBATO", "ORGANO", "CLAVECIN", "ACORDEON", "BANDONEON", "MELODICA", "PIANOLA", "ORGANILLO", "ZANFONA", "DULZAINA", "GAITA", "REBEC", "CHIRIMIA", "KALIMBA", "MARIMBA", "XILOFONO", "VIBRAFONO", "BONGO", "CONGA", "TIMBAL", "TAMBOR", "TAMBORIL", "PANDERO", "PANDERETA", "MARACAS", "CASTANUELAS", "CLAVES", "GUIRO", "TRIANGULO", "PLATILLOS", "BOMBO", "CAJA", "REDOBLANTE", "TAROLA", "GONG", "CAMPANAS", "CAMPANILLA", "CASCABELES", "ATABAL", "ZAMBOMBA", "BATERIA"])
+CategoryId = "instrumentos"
+ThemeName = "Instrumentos Musicales"
+Description = "Instrumentos de orquesta, folk y percusión"
+Words = Array[String](["PIANO", "GUITARRA", "VIOLIN", "VIOLONCHELO", "VIOLA", "CONTRABAJO", "ARPA", "LAUD", "BANDURRIA", "CHARANGO", "VIHUELA", "MANDOLINA", "BANJO", "UKULELE", "SALTERIO", "CUERDA", "FLAUTA", "FLAUTIN", "TROMPETA", "TROMBON", "TROMPA", "TUBA", "EUFONIO", "SAXOFON", "CLARINETE", "OBOE", "FAGOT", "ARMONICA", "SILBATO", "ORGANO", "CLAVECIN", "ACORDEON", "BANDONEON", "MELODICA", "PIANOLA", "ORGANILLO", "ZANFONA", "DULZAINA", "GAITA", "REBEC", "CHIRIMIA", "KALIMBA", "MARIMBA", "XILOFONO", "VIBRAFONO", "BONGO", "CONGA", "TIMBAL", "TAMBOR", "TAMBORIL", "PANDERO", "PANDERETA", "MARACAS", "CASTANUELAS", "CLAVES", "GUIRO", "TRIANGULO", "PLATILLOS", "BOMBO", "CAJA", "REDOBLANTE", "TAROLA", "GONG", "CAMPANAS", "CAMPANILLA", "CASCABELES", "ATABAL", "ZAMBOMBA", "BATERIA"])

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://d2v8xgk5q1m0h"]
 
 [ext_resource type="Theme" uid="uid://bq7knk8x6g1mh" path="res://core/AccessibleTheme.tres" id="1_theme"]
-[ext_resource type="Script" path="res://ui/components/BigButton.gd" id="2_script"]
+[ext_resource type="Script" path="res://ui/components/BigButton.cs" id="2_script"]
 
 [node name="BigButton" type="Button"]
 custom_minimum_size = Vector2(56, 56)

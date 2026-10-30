@@ -5,38 +5,50 @@
 
 ---
 
-## 1. Estrategia de Testing (GdUnit4 / GUT)
+## 1. Estrategia de Testing (GdUnit4Net)
 
-Siguiendo el enfoque TDD, el desarrollo del generador de tableros, selección de palabras y validación de categorías se realiza mediante pruebas unitarias automatizadas ejecutadas sin la interfaz gráfica.
+Siguiendo el enfoque TDD, el desarrollo del generador de tableros, selección de palabras y validación de categorías se realiza mediante pruebas unitarias automatizadas ejecutadas sin la interfaz gráfica. Los tests son clases `[TestSuite]` de **GdUnit4Net** en `tests/unit/`.
 
 ---
 
 ## 2. Pruebas Unitarias Algorítmicas (Core Logic)
 
-### 2.1 Generador de Tableros (`WordSearchGeneratorTest.gd`)
+### 2.1 Generador de Tableros (`WordSearchGeneratorTest.cs`)
 
-```gdscript
-# Ejemplo de estructura de prueba GdUnit4 para el generador
-extends GdUnitTestSuite
+```csharp
+// Ejemplo de estructura de prueba GdUnit4Net para el generador
+using GdUnit4;
+using Godot;
+using static GdUnit4.Assertions;
 
-var generator: WordSearchGenerator
+[TestSuite]
+[RequireGodotRuntime]
+public class WordSearchGeneratorTest
+{
+    private WordSearchGenerator _generator;
 
-func before_test():
-    generator = WordSearchGenerator.new()
+    [BeforeTest]
+    public void BeforeTest() => _generator = new WordSearchGenerator();
 
-func test_easy_difficulty_dimensions_and_directions():
-    var config = DifficultyConfig.new(Difficulty.EASY) # 8x8, 5 palabras, solo Horiz/Vert
-    var result = generator.generate_board(config, ["PERRO", "GATO", "MESA", "SILLA", "LIMA"])
-    
-    assert_int(result.grid.size()).is_equal(8)
-    assert_int(result.grid[0].size()).is_equal(8)
-    assert_bool(result.placed_words.size() >= 4).is_true() # Cumple tolerancia min 80%
+    [TestCase]
+    public void EasyDifficultyDimensionsAndDirections()
+    {
+        var config = DifficultyConfig.Easy(); // 8×8, 5 palabras, solo horiz./vert.
+        GenerationResult result = _generator.Generate(config, new[] { "PERRO", "GATO", "MESA", "SILLA", "LIMA" });
 
-func test_overlap_validity():
-    # Verifica que al solapar palabras compartan exactamente la misma letra
-    var grid = generator.create_empty_grid(10, 10)
-    var success = generator.try_place_word("CASA", Vector2i(0,0), Vector2i(1,0), grid)
-    assert_bool(success).is_true()
+        AssertInt(result.Grid.GetLength(0)).IsEqual(8);
+        AssertInt(result.Grid.GetLength(1)).IsEqual(8);
+        AssertInt(result.PlacedCount).IsGreaterEqual(4); // tolerancia del 80 %
+    }
+
+    [TestCase]
+    public void OverlapSharesTheSameLetter()
+    {
+        // Al solapar, las palabras deben compartir exactamente la misma letra.
+        var grid = _generator.CreateEmptyGrid(10, 10);
+        AssertBool(_generator.TryPlaceWord("CASA", new Vector2I(0, 0), new Vector2I(1, 0), grid)).IsTrue();
+    }
+}
 ```
 
 ### 2.2 Lista de Chequeo de Pruebas Unitarias

@@ -10,7 +10,7 @@
 #   - *.uid (referencias estables de recursos en Godot 4.4+; incluidos los de
 #     addons/gdUnit4, para que las referencias no cambien entre máquinas)
 #   - *.import (metadatos de importación: acompañan a ttf/png y deben ir en el repo)
-#   - *.tscn, *.tres, *.gd, *.md, *.cfg, *.py propios
+#   - *.tscn, *.tres, *.cs, *.csproj, *.md, *.cfg, *.py propios
 #   - addons/ (dependencias del editor, incluido GdUnit4)
 #
 # La carpeta docs/ lleva su propio .gdignore: Godot no importa ni exporta
@@ -54,12 +54,17 @@ export/
 /android/
 
 # ---------------------------------------------------------------------------
-# Mono / C# (previsión futura; el proyecto usa GDScript)
+# .NET / C# (Godot 4.7 .NET)
 # ---------------------------------------------------------------------------
+# .godot/ (arriba) ya cubre .godot/mono/temp con los binarios de compilación.
 .mono/
 data_*/
 mono_crash.*.json
 ~*.dll
+bin/
+obj/
+TestResults/
+*.trx
 
 # ---------------------------------------------------------------------------
 # Pruebas (GdUnit4)
@@ -112,3 +117,6 @@ desktop.ini
 *.suo
 *.user
 *.userprefs
+
+# Generado por gdUnit4.test.adapter en cada ejecución
+gdunit4_testadapter_*/

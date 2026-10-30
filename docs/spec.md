@@ -191,8 +191,9 @@ Cada cambio se guarda de inmediato.
   fondos oscuros con elementos claros.
 - **Funcionamiento offline:** todos los contenidos incluidos en la app.
 - **Persistencia:** preferencias, progreso y estadísticas en local.
-- **Motor:** Godot 4.7 (GDScript con tipado estático).
-- **Pruebas:** GdUnit4, con ejecución headless para CI.
+- **Motor:** Godot 4.7 **.NET** con **C# 12** (`net8.0`; `net9.0` al exportar a
+  Android).
+- **Pruebas:** **GdUnit4Net** (`dotnet test`), con ejecución headless para CI.
 - **Rendimiento:** 60 fps; arranque < 3 s; memoria < 150 MB; carga de nivel
   < 0,5 s.
 
@@ -206,21 +207,22 @@ estructura de carpetas sigue la recomendación del skill del proyecto
 
 ```text
 res://
+├── ClasicosMenteActiva2D.csproj  # Proyecto C# (Godot.NET.Sdk 4.7.2)
 ├── autoloads/
-│   └── SceneManager.gd          # ÚNICO autoload: navegación y servicios
+│   └── SceneManager.cs          # ÚNICO autoload: navegación y servicios
 ├── core/
-│   ├── save_manager.gd          # Persistencia JSON
-│   ├── theme_manager.gd         # Temas y tamaño de texto
-│   ├── audio_manager.gd         # Buses BGM/SFX
-│   ├── ad_manager.gd            # Banners (no-op hasta Fase 8)
-│   ├── base_minigame.gd         # Base común de minijuegos
-│   ├── Constants.gd
-│   ├── Utils.gd
+│   ├── save_manager.cs          # Persistencia JSON
+│   ├── theme_manager.cs         # Temas y tamaño de texto
+│   ├── audio_manager.cs         # Buses BGM/SFX
+│   ├── ad_manager.cs            # Banners (no-op hasta Fase 8)
+│   ├── base_minigame.cs         # Base común de minijuegos
+│   ├── Constants.cs
+│   ├── Utils.cs
 │   └── AccessibleTheme.tres
 ├── ui/
 │   ├── main_menu/
 │   ├── components/
-│   ├── theme_selector/
+│   ├── coming_soon/             # Provisional hasta Fase 2 (selector de dificultad)
 │   ├── settings/
 │   └── stats/
 ├── minigames/
@@ -229,7 +231,7 @@ res://
 │   └── themes/                  # Temáticas y datos editables
 ├── assets/
 │   └── fonts/
-├── tests/                       # Pruebas GdUnit4
+├── tests/                       # Pruebas GdUnit4Net
 └── docs/                        # Documentación SDD (globales y por juego)
 ```
 

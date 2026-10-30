@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c3m7laxv4w2yf"]
 
 [ext_resource type="Theme" uid="uid://bq7knk8x6g1mh" path="res://core/AccessibleTheme.tres" id="1_theme"]
-[ext_resource type="Script" uid="uid://cmqtg5qoqsame" path="res://ui/main_menu/MainMenu.gd" id="2_script"]
+[ext_resource type="Script" path="res://ui/main_menu/MainMenu.cs" id="2_script"]
 [ext_resource type="PackedScene" uid="uid://d2v8xgk5q1m0h" path="res://ui/components/BigButton.tscn" id="3_bigbtn"]
 
 [node name="MainMenu" type="Control" unique_id=1235611808]

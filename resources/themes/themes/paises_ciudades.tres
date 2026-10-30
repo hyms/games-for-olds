@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3 uid="uid://b8qkm3xp4w7th"]
 
-[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.cs" id="1_bank"]
 
 [resource]
 script = ExtResource("1_bank")
-category_id = "paises_ciudades"
-theme_name = "Países y Geografía"
-description = "Países, capitales y lugares del mundo"
-words = Array[String](["MEXICO", "ARGENTINA", "CHILE", "PERU", "COLOMBIA", "VENEZUELA", "ECUADOR", "BOLIVIA", "PARAGUAY", "URUGUAY", "GUATEMALA", "HONDURAS", "SALVADOR", "NICARAGUA", "PANAMA", "CUBA", "JAMAICA", "HAITI", "DOMINICANA", "ESPANA", "BRAZIL", "CANADA", "ALEMANIA", "FRANCIA", "ITALIA", "INGLATERRA", "PORTUGAL", "BELGICA", "HOLANDA", "SUIZA", "RUSIA", "POLONIA", "GRECIA", "TURQUIA", "CHINA", "JAPON", "COREA", "INDIA", "EGIPTO", "MARRUECOS", "LIMA", "BARCELONA", "MADRID", "SEVILLA", "VALENCIA", "BILBAO", "MONTEVIDEO", "MEDELLIN", "BOGOTA", "QUITO", "SANTIAGO", "CARACAS", "HABANA", "LISBOA", "LONDRES", "PARIS", "ROMA", "BERLIN", "MOSCU", "VIENA", "ATENAS", "OTTAWA", "OCEANO", "COSTA", "VALLE", "LLANURA", "CASCADA", "GLACIAR", "LAGUNA"])
+CategoryId = "paises_ciudades"
+ThemeName = "Países y Geografía"
+Description = "Países, capitales y lugares del mundo"
+Words = Array[String](["MEXICO", "ARGENTINA", "CHILE", "PERU", "COLOMBIA", "VENEZUELA", "ECUADOR", "BOLIVIA", "PARAGUAY", "URUGUAY", "GUATEMALA", "HONDURAS", "SALVADOR", "NICARAGUA", "PANAMA", "CUBA", "JAMAICA", "HAITI", "DOMINICANA", "ESPANA", "BRAZIL", "CANADA", "ALEMANIA", "FRANCIA", "ITALIA", "INGLATERRA", "PORTUGAL", "BELGICA", "HOLANDA", "SUIZA", "RUSIA", "POLONIA", "GRECIA", "TURQUIA", "CHINA", "JAPON", "COREA", "INDIA", "EGIPTO", "MARRUECOS", "LIMA", "BARCELONA", "MADRID", "SEVILLA", "VALENCIA", "BILBAO", "MONTEVIDEO", "MEDELLIN", "BOGOTA", "QUITO", "SANTIAGO", "CARACAS", "HABANA", "LISBOA", "LONDRES", "PARIS", "ROMA", "BERLIN", "MOSCU", "VIENA", "ATENAS", "OTTAWA", "OCEANO", "COSTA", "VALLE", "LLANURA", "CASCADA", "GLACIAR", "LAGUNA"])

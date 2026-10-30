@@ -28,7 +28,8 @@
 | D4 | Modo accesible | **Solo cambia el tamaño del texto:** Normal 20 px, Grande 24 px, Muy grande 28 px. No cambia el viewport ni reduce los objetivos táctiles. |
 | D5 | Publicidad | **Entra al final (Fase 8).** Solo banners en la parte superior del menú principal y de estadísticas. Nunca en partidas. Sin Rewarded Ads en el MVP. |
 | D6 | Dificultad | **Cada juego define sus dificultades.** La Sopa define cuatro: Fácil (8×8/5), Medio (10×10/8), Difícil (12×12/12) y Maestro (15×15/20). |
-| D7 | Framework de pruebas | **GdUnit4**, con ejecución headless. |
+| D7 | Framework de pruebas | **GdUnit4Net** (C#), con ejecución headless (`dotnet test`). |
+| D8 | Lenguaje | **C# 12 sobre .NET 8** con Godot 4.7 .NET (mono). El prototipo GDScript de las fases 0–1 se migró el 29/10/2026; el proyecto ya no contiene `.gd`. |
 
 ### 1.1 Replan de la Sopa (27/10/2026) — C1–C8
 
@@ -57,7 +58,7 @@ Fase 1  Sopa: base funcional (hecha con salvedades)
    │
 Fase 2  Alineación SDD y decisiones (hecha)
    │
-Fase 3  Servicios core + GdUnit4 (en curso)
+Fase 3  Servicios core + GdUnit4Net (en curso)
    │
 Fase 4  BaseMinigame + ajustes + estadísticas + texto accesible
    │
@@ -118,7 +119,7 @@ mínimas.
 
 - [x] Resolver D1–D7 (ver tabla de decisiones).
 - [x] Reescribir `docs/spec.md` con estructura actual, estadísticas, texto accesible y publicidad al final.
-- [x] Reescribir `docs/test.md` con GdUnit4, servicios, estadísticas y banners.
+- [x] Reescribir `docs/test.md` con GdUnit4Net, servicios, estadísticas y banners.
 - [x] Reescribir este plan con el orden definitivo.
 - [x] Actualizar `docs/word_search/spec.md` con niveles, 3 pistas y puntaje.
 - [x] Actualizar `docs/word_search/plan.md` con estados reales.
@@ -135,10 +136,10 @@ mínimas.
 
 ### 3.1 Infraestructura
 
-- [x] Instalar GdUnit4 y documentar la ejecución headless (`tests/README.md`).
+- [x] Instalar GdUnit4Net y documentar la ejecución headless (`tests/README.md`).
 - [x] Crear `tests/unit` y `tests/integration` con convención de nombres.
 - [ ] Primeros tests puros: `WordGenerator`, `WordSearchTheme` y serialización JSON.
-      (`WordSearchTheme` hecho en `tests/unit/WordSearchThemeTest.gd`.)
+      (`WordSearchTheme` hecho en `tests/unit/WordSearchThemeTest.cs`.)
 - [ ] Comando de tests reproducible en CI.
 
 ### 3.2 SaveManager
@@ -234,11 +235,11 @@ Fuente: [`docs/art_direction.md`](art_direction.md) · Plantilla aprobada
 - [x] Fuentes elegidas e instaladas: Press Start 2P (letras del tablero, OFL) y
       Atkinson Hyperlegible (interfaz, OFL) en `assets/fonts/`.
 - [x] Iconos generados: `tools/generate_icons.py` → `assets/icons/*.png` (10 iconos).
-- [x] `StyleBox` de celda, placa, botón y píldora en `core/ui/PixelStyles.gd`
+- [x] `StyleBox` de celda, placa, botón y píldora en `core/ui/PixelStyles.cs`
       y `core/AccessibleTheme.tres` con la paleta del template.
 - [x] Contrastes verificados: texto negro sobre turquesa, cian y azul; borde
       oscuro `#535456`; variantes de borde `#04544d` y `#8a4600` (≥ 3:1).
-      Automatizado en `tests/unit/PixelStylesTest.gd`.
+      Automatizado en `tests/unit/PixelStylesTest.cs`.
 - [x] Botones de navegación de 56×56 px lógicos (mayores que en el template).
 - [x] Estados de celda nunca solo por color (borde, ✔ o pulso).
 - [ ] Comparar en editor con la plantilla a resolución nativa (usuario).
@@ -403,7 +404,7 @@ Fuente: [`docs/art_direction.md`](art_direction.md) · Plantilla aprobada
 
 ### Paso 2 — Infraestructura de pruebas
 
-- [x] Instalar GdUnit4.
+- [x] Instalar GdUnit4Net.
 - [x] Ejecución headless documentada.
 - [ ] Primeros tests puros. (`WordSearchTheme` hecho.)
 
@@ -450,7 +451,7 @@ Fuente: [`docs/art_direction.md`](art_direction.md) · Plantilla aprobada
 1. `docs: decisiones D1-D7 y spec v0.3`
 2. `docs: pruebas v0.3 y plan v0.3`
 3. `docs: Sopa con niveles, 3 pistas y puntaje`
-4. `test: instalar GdUnit4`
+4. `test: instalar GdUnit4Net`
 5. `feat: SaveManager`, `feat: ThemeManager`, `feat: AudioManager`, `feat: AdManager`
 6. `feat: BaseMinigame, ajustes y estadísticas`
 7. `fix(word_search): selección, tablero y pistas`
@@ -504,7 +505,7 @@ Un juego se considera terminado cuando:
 | JSON corrupto | Pérdida de datos | Escritura atómica, respaldo y migración |
 | Dificultades mal calibradas | Frustración | Cada juego las define y las prueba en su spec |
 | Fondo animado en gama baja | Caída de FPS | Presupuesto y movimiento reducido |
-| Tipado estricto de GDScript | Retrasos | Skill del proyecto y catálogo de errores |
+| Tipado estricto en C# | Retrasos | Skill del proyecto y catálogo de errores |
 
 ---
 

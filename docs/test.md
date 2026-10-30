@@ -14,7 +14,7 @@
 
 ### 1.1 Framework
 
-- **GdUnit4** como único framework de pruebas.
+- **GdUnit4Net** como único framework de pruebas (C#, `dotnet test`).
 - Pruebas unitarias de lógica pura y servicios, sin cargar escenas visuales.
 - Pruebas de integración para señales, navegación y persistencia.
 - Pruebas manuales para accesibilidad, publicidad real y usabilidad.
@@ -26,7 +26,7 @@
 | Nivel | Cuándo | Dónde |
 |-------|--------|-------|
 | Humo | Tras cada cambio | Editor de Godot |
-| Unitario | Al cerrar cada servicio | GdUnit4 headless |
+| Unitario | Al cerrar cada servicio | GdUnit4Net (`dotnet test`) |
 | Integración | Al cerrar cada fase | Editor + Android |
 | Accesibilidad | Al cerrar cada pantalla | Android real |
 | Usabilidad | Antes de publicar | Con usuario 40+ |

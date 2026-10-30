@@ -68,7 +68,7 @@ en `docs/` al cerrar la Fase 9.
 | C6 | Desbloqueo | **20 partidas por nivel** para desbloquear el siguiente. | Fácil abierto; Medio tras 20 de Fácil; Difícil tras 20 de Medio; Maestro tras 20 de Difícil. |
 | C7 | Puntaje | **Fórmula nueva** definida en la Fase 8. | Se mantiene `best_score` en estadísticas. |
 | C8 | Zoom | Pinch de 2 dedos **más botones + / − y Centrar**. | El zoom nunca es la única forma de ampliar. |
-| C9 | Banco de palabras (Fase 1) | Recursos **`.tres`** en `resources/themes/themes/` (offline, editables en el editor). El modelo es una **evolución de `WordSearchTheme`** (nuevo `category_id`, sin clase nueva), con `validate()` y `normalize_word()`. `category_id` = nombre del archivo; palabras normalizadas A–Z, únicas también **entre** categorías (evita palabras ambiguas al combinar 2 o 4 grupos). | `WordBank` carga las 10 rutas en orden de spec §5.1; el Shuffle Bag (`minigames/word_search/ShuffleBagSystem.gd`) trabaja con ids. |
+| C9 | Banco de palabras (Fase 1) | Recursos **`.tres`** en `resources/themes/themes/` (offline, editables en el editor). El modelo es una **evolución de `WordSearchTheme`** (nuevo `category_id`, sin clase nueva), con `validate()` y `normalize_word()`. `category_id` = nombre del archivo; palabras normalizadas A–Z, únicas también **entre** categorías (evita palabras ambiguas al combinar 2 o 4 grupos). | `WordBank` carga las 10 rutas en orden de spec §5.1; el Shuffle Bag (`minigames/word_search/ShuffleBagSystem.cs`) trabaja con ids. |
 
 **Regla:** ninguna decisión de la spec se implementa si contradice esta tabla.
 Si cambia una decisión, se actualiza primero aquí y luego el código.
@@ -79,7 +79,7 @@ Si cambia una decisión, se actualiza primero aquí y luego el código.
 
 ```text
 Fase 0    Base técnica (hecha)
-Fase 0.5  GdUnit4 + primer test puro
+Fase 0.5  GdUnit4Net + primer test
 Fase 0.6  Dirección de arte y componentes visuales
 Fase 1    Banco de palabras y 10 categorías
 Fase 2    DifficultyConfig + WordSearchGenerator (Strategy)
@@ -111,19 +111,18 @@ dimensiones ni tolerancia.
 
 ## Fase 0.5 — Infraestructura de pruebas (P1)
 
-- [x] Instalar GdUnit4 v6.2.2 en `addons/gdUnit4` y activar el plugin.
-- [x] Documentar la ejecución headless:
-      `./addons/gdUnit4/runtest.sh --godot_binary <ruta_a_godot> -a res://tests`
-      o, sin el script, `godot --headless -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests`
-      (ver `tests/README.md`).
-- [x] Crear `tests/unit/` y `tests/integration/` con convención `*Test.gd`.
-- [x] Primer test puro de `WordSearchTheme` (`tests/unit/WordSearchThemeTest.gd`):
+- [x] **Migración a C# (29/10/2026):** el framework es **GdUnit4Net**
+      (`gdUnit4.api` 5.1.0-rc6 + `gdUnit4.test.adapter` 3.2.0) referenciado en
+      `ClasicosMenteActiva2D.csproj`; el addon `addons/gdUnit4` solo aporta la
+      integración con el editor. Versión GDScript anterior: GdUnit4 v6.2.2.
+- [x] Documentar la ejecución desde terminal (ver `tests/README.md`):
+      `GODOT_BIN=<godot-mono> dotnet test`.
+- [x] Crear `tests/unit/` y `tests/integration/` con convención `*Test.cs`.
+- [x] Primer test de `WordSearchTheme` (`tests/unit/WordSearchThemeTest.cs`):
       mayúsculas, tildes/dieresis/Ñ y filtros por longitud; se añadió
-      `ACCENT_REPLACEMENTS` en `WordSearchTheme.gd` para normalizar a A–Z.
-- [ ] Ejecutar la suite en el editor y verificar que un test fallido devuelve
-      código distinto de cero (GdUnit4 lo garantiza; falta la comprobación en
-      este entorno porque no hay binario de Godot en la terminal).
-- [ ] Excluir `addons/gdUnit4/*` de las exportaciones (pendiente de
+      `ACCENT_REPLACEMENTS` en `WordSearchTheme.cs` para normalizar a A–Z.
+- [x] Ejecutar la suite desde terminal: 29/29 en verde (29/10/2026).
+- [ ] Excluir `addons/gdUnit4/*` y `tests/` de las exportaciones (pendiente de
       `export_presets.cfg`).
 
 ---
@@ -143,7 +142,7 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
       pausa, menú, reiniciar, volver, ✔) con `tools/generate_icons.py`
       → `assets/icons/*.png` (16×16 → 32×32 nearest, contorno tinta).
 - [x] Implementar `StyleBox` de celda, placa y botón con la paleta del template
-      (`core/ui/PixelStyles.gd`) y recolorear `core/AccessibleTheme.tres`.
+      (`core/ui/PixelStyles.cs`) y recolorear `core/AccessibleTheme.tres`.
 - [x] Definir los estados de celda: reposo, seleccionada (azul `#6095fb`),
       encontrada (borde `#04544d` + ✔) y pista (borde `#8a4600` con pulso);
       se aplican al tablero real en la Fase 3.
@@ -151,7 +150,7 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
       borde oscuro `#535456` en placas y celdas; fondo de pantalla a arena
       `#b5ad96` (clear color + `MainMenu`).
 - [x] Botones de navegación a **56×56 px lógicos** (mayores que en el template),
-      verificado por `tests/unit/PixelStylesTest.gd`.
+      verificado por `tests/unit/PixelStylesTest.cs`.
 - [ ] Comparar en editor con la plantilla a resolución nativa (usuario).
 
 > La validación final de estilo se cierra en la Fase 9; aquí solo se construyen
@@ -170,7 +169,7 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
       normalizadas; se añaden `normalize_word()` y `validate()`.
 - [x] Formato del banco: **recursos `.tres`** en `resources/themes/themes/`
       (C9; offline, editables en el editor, sin escritura en `user://`).
-      Catálogo `resources/themes/WordBank.gd` con las 10 rutas en orden de spec.
+      Catálogo `resources/themes/WordBank.cs` con las 10 rutas en orden de spec.
 - [x] Normalizar a A–Z sin tildes, diéresis ni Ñ (ESPAÑA → ESPANA).
 - [x] Validar duplicados, longitud 4–15 y normalización en `WordSearchTheme.validate()`.
 - [x] Validar que ninguna categoría quede vacía tras el filtro (y ≥60 palabras,
@@ -196,15 +195,15 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ### 1.3 Shuffle Bag (P1)
 
-- [x] `ShuffleBagSystem` (`minigames/word_search/ShuffleBagSystem.gd`): bolsa de
+- [x] `ShuffleBagSystem` (`minigames/word_search/ShuffleBagSystem.cs`): bolsa de
       10 grupos × 2 copias = 20 sacadas sin repetir por vuelta.
 - [x] Cada grupo aparece 2 veces en cada bolsa de 20 partidas (spec §4.3).
 - [x] La bolsa solo se rebaraja al agotarla (`refill_count` lo comprueba).
 - [x] Estado serializable para `SaveManager` (`to_dict()`/`from_dict()`, con
       versión); el guardado real llega con `SaveManager` (Fase 3 global).
-- [x] Test `UT-WS-06` (`tests/unit/ShuffleBagSystemTest.gd`, 5 casos).
-- [x] Tests del banco `UT-WS-07` (`tests/unit/WordBankTest.gd`) y de
-      `validate()` en `tests/unit/WordSearchThemeTest.gd`.
+- [x] Test `UT-WS-06` (`tests/unit/ShuffleBagSystemTest.cs`, 5 casos).
+- [x] Tests del banco `UT-WS-07` (`tests/unit/WordBankTest.cs`) y de
+      `validate()` en `tests/unit/WordSearchThemeTest.cs`.
 - [ ] Ejecutar la suite en el editor: 15 + 14 tests (usuario).
 
 ---
@@ -229,7 +228,7 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ### 2.2 `WordSearchGenerator` (Strategy)
 
-- [ ] Renombrar `WordGenerator` → `WordSearchGenerator.gd` y actualizar referencias.
+- [ ] Renombrar `WordGenerator` → `WordSearchGenerator.cs` y actualizar referencias.
 - [ ] API `generate(config, words) -> GenerationResult` con `grid`, `placements`,
       `placed_count` y `meets_minimum`.
 - [ ] Respetar el vector de direcciones de la configuración.
@@ -251,7 +250,7 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
       categorías (`WordBank.load_all()`) y la `ShuffleBagSystem` reparte los
       grupos según `category_count` de la dificultad (1/1/2/4 · C3 y §5).
 - [ ] Provisional (hasta la Fase 7): todos los niveles entran sin candado.
-- [ ] Dar de baja `ui/theme_selector/` (`ThemeSelector.gd/.tscn`) y sus
+- [ ] Dar de baja `ui/theme_selector/` (`ThemeSelector.cs/.tscn`) y sus
       referencias, dejando el flujo spec → selector de dificultad → tablero.
 
 ---
@@ -260,7 +259,7 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ### 3.1 `WordGridContainer` y celdas
 
-- [ ] Renombrar `WordGrid` → `WordGridContainer.gd` y `WordSearch` → `WordSearchMain.gd`.
+- [ ] Renombrar `WordGrid` → `WordGridContainer.cs` y `WordSearch` → `WordSearchMain.cs`.
 - [ ] `WordSearchMain` hereda de `BaseMinigame` cuando exista (Fase 9).
 - [ ] `WordCell` expone posición, letra, estado y estilo de pertenencia.
 - [ ] Celda con el estilo de la plantilla: crema `#fbf3da`, borde `#535456`,
@@ -417,7 +416,7 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ### 9.4 Pruebas y entrega
 
-- [ ] Ejecutar `UT-WS-01` a `UT-WS-07` en GdUnit4 headless.
+- [ ] Ejecutar `UT-WS-01` a `UT-WS-07` con GdUnit4Net (`dotnet test`).
 - [ ] Ejecutar `IT-WS-01` a `IT-WS-04` con SceneRunner.
 - [ ] Ejecutar `ST-WS-01`, `ST-WS-02`, `ST-WS-04` y `ST-WS-05` en editor y Android
       (`ST-WS-03` retirado por C2).

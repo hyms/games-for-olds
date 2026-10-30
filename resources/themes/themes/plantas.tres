@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.cs" id="1_bank"]
 
 [resource]
 script = ExtResource("1_bank")
-category_id = "plantas"
-theme_name = "Plantas y Flores"
-description = "Flores, árboles, hierbas aromáticas y jardines"
-words = Array[String](["ROSA", "GIRASOL", "ORQUIDEA", "TULIPAN", "CLAVEL", "VIOLETA", "LIRIO", "AZUCENA", "JAZMIN", "DAHLIA", "PETUNIA", "BEGONIA", "MARGARITA", "ANEMONA", "VERBENA", "LAVANDA", "PINO", "CACTUS", "EUCALIPTO", "OLIVO", "CIPRES", "PALMERA", "ABETO", "ACEBO", "ARBUSTO", "LAUREL", "HELECHO", "MUSGO", "LIQUEN", "CEREZO", "MANZANO", "PERAL", "LIMONERO", "NARANJERO", "CEDRO", "HIGUERA", "SAUCO", "SABINA", "TEJO", "ALAMO", "SAUCE", "TILLO", "ROMERO", "TOMILLO", "ORIGANO", "ALBAHACA", "MENTA", "PEREJIL", "SALVIA", "FLOR", "FLORES", "PLANTA", "HOJA", "HOJAS", "RAIZ", "TALLO", "BULBO", "PETALO", "POLLEN", "NECTAR", "ARBOL", "ARBOLEDA", "RAMA", "TRONCO", "SEMILLA", "PASTO"])
+CategoryId = "plantas"
+ThemeName = "Plantas y Flores"
+Description = "Flores, árboles, hierbas aromáticas y jardines"
+Words = Array[String](["ROSA", "GIRASOL", "ORQUIDEA", "TULIPAN", "CLAVEL", "VIOLETA", "LIRIO", "AZUCENA", "JAZMIN", "DAHLIA", "PETUNIA", "BEGONIA", "MARGARITA", "ANEMONA", "VERBENA", "LAVANDA", "PINO", "CACTUS", "EUCALIPTO", "OLIVO", "CIPRES", "PALMERA", "ABETO", "ACEBO", "ARBUSTO", "LAUREL", "HELECHO", "MUSGO", "LIQUEN", "CEREZO", "MANZANO", "PERAL", "LIMONERO", "NARANJERO", "CEDRO", "HIGUERA", "SAUCO", "SABINA", "TEJO", "ALAMO", "SAUCE", "TILLO", "ROMERO", "TOMILLO", "ORIGANO", "ALBAHACA", "MENTA", "PEREJIL", "SALVIA", "FLOR", "FLORES", "PLANTA", "HOJA", "HOJAS", "RAIZ", "TALLO", "BULBO", "PETALO", "POLLEN", "NECTAR", "ARBOL", "ARBOLEDA", "RAMA", "TRONCO", "SEMILLA", "PASTO"])

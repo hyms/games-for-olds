@@ -46,7 +46,7 @@ Ofrecer una experiencia de búsqueda de palabras relajante, altamente accesible 
   2. Contador de palabras restantes (ej. "Palabras: 4/5").
   3. Tiempo transcurrido (medidor no punitivo).
 - **Menú Modal de Pausa:**
-  1. Botón "Ayuda / Pista" con contador de usos disponibles (configurable desde `SaveManager.gd`).
+  1. Botón "Ayuda / Pista" con contador de usos disponibles (configurable desde `SaveManager.cs`).
   2. Botón "Reiniciar Partida".
   3. Botón "Salir al Menú Principal".
 
@@ -110,6 +110,6 @@ Para asegurar la sensación de variedad infinita sin depender de internet:
 
 El minijuego aplica los patrones del núcleo general:
 
-1. **Strategy Pattern (`WordSearchGenerator.gd`):** Recibe la `DifficultyConfig` y genera la matriz sin acoplar la UI.
-2. **Composite Pattern (`WordGridContainer.gd`):** Administra la jerarquía de celdas (`WordCell.gd`), permitiendo zoom y escalado fluido.
-3. **Template Method (`WordSearchMain.gd`):** Hereda de `BaseMinigame.gd` para reutilizar pausado, registro de estadísticas y ciclo de vida (sin interfaz de anuncios: la Sopa no muestra publicidad, C2).
+1. **Strategy Pattern (`WordSearchGenerator.cs`):** Recibe la `DifficultyConfig` y genera la matriz sin acoplar la UI.
+2. **Composite Pattern (`WordGridContainer.cs`):** Administra la jerarquía de celdas (`WordCell.cs`), permitiendo zoom y escalado fluido.
+3. **Template Method (`WordSearchMain.cs`):** Hereda de `BaseMinigame.cs` para reutilizar pausado, registro de estadísticas y ciclo de vida (sin interfaz de anuncios: la Sopa no muestra publicidad, C2).

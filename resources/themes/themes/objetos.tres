@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3 uid="uid://xjv4p8k5m3qh"]
 
-[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.cs" id="1_bank"]
 
 [resource]
 script = ExtResource("1_bank")
-category_id = "objetos"
-theme_name = "Cosas del Hogar"
-description = "Muebles, utensilios y enseres de casa"
-words = Array[String](["MESA", "SILLA", "MUEBLE", "SILLON", "BUTACA", "ARMARIO", "ESTANTE", "CAJON", "DESPENSA", "VITRINA", "CABECERO", "CAMA", "CUCHARA", "CUCHARON", "CUCHILLO", "TENEDOR", "PLATO", "VASO", "TAZA", "OLLA", "SARTEN", "JARRA", "BANDEJA", "TAPADERA", "ESPUMADERA", "SERVILLETA", "MANTEL", "CEPILLO", "TOALLA", "ESCOBA", "TRAPEADOR", "BANERA", "DUCHA", "GRIFO", "LAVADORA", "JABONERA", "REJILLA", "TENDEDERO", "SABANA", "COBERTOR", "ALMOHADA", "ALMOHADON", "MANTA", "COLCHA", "FUNDA", "ESPEJO", "ALFOMBRA", "CORTINA", "PERSIANA", "TAPETE", "LAMPARA", "RELOJ", "CANDADO", "CERRADURA", "LLAVE", "LINTERNA", "VELA", "CENICERO", "PAPELERA", "REFRIGERADOR", "TELEVISION", "MICROONDAS", "HORNO", "ESTUFA", "PLANCHA", "SECADOR", "CESTA", "CANASTO", "TABLA", "FLORERO", "JARRON", "ALARMA", "PEINE"])
+CategoryId = "objetos"
+ThemeName = "Cosas del Hogar"
+Description = "Muebles, utensilios y enseres de casa"
+Words = Array[String](["MESA", "SILLA", "MUEBLE", "SILLON", "BUTACA", "ARMARIO", "ESTANTE", "CAJON", "DESPENSA", "VITRINA", "CABECERO", "CAMA", "CUCHARA", "CUCHARON", "CUCHILLO", "TENEDOR", "PLATO", "VASO", "TAZA", "OLLA", "SARTEN", "JARRA", "BANDEJA", "TAPADERA", "ESPUMADERA", "SERVILLETA", "MANTEL", "CEPILLO", "TOALLA", "ESCOBA", "TRAPEADOR", "BANERA", "DUCHA", "GRIFO", "LAVADORA", "JABONERA", "REJILLA", "TENDEDERO", "SABANA", "COBERTOR", "ALMOHADA", "ALMOHADON", "MANTA", "COLCHA", "FUNDA", "ESPEJO", "ALFOMBRA", "CORTINA", "PERSIANA", "TAPETE", "LAMPARA", "RELOJ", "CANDADO", "CERRADURA", "LLAVE", "LINTERNA", "VELA", "CENICERO", "PAPELERA", "REFRIGERADOR", "TELEVISION", "MICROONDAS", "HORNO", "ESTUFA", "PLANCHA", "SECADOR", "CESTA", "CANASTO", "TABLA", "FLORERO", "JARRON", "ALARMA", "PEINE"])

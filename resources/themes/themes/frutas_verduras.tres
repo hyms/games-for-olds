@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3 uid="uid://c7ypmxn2kq8vh"]
 
-[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.cs" id="1_bank"]
 
 [resource]
 script = ExtResource("1_bank")
-category_id = "frutas_verduras"
-theme_name = "Frutas y Verduras"
-description = "Frutas de temporada y verduras de la huerta"
-words = Array[String](["MANZANA", "PLATANO", "MANGO", "PERA", "CEREZA", "FRESA", "NARANJA", "LIMON", "BANANA", "SANDIA", "MELON", "PINA", "KIWI", "PAPAYA", "GUAYABA", "GRANADA", "MELOCOTON", "CIRUELA", "DAMASCO", "DATIL", "COCO", "ARANDANO", "FRAMBUESA", "MORA", "MARACUYA", "ACEITUNA", "ALBARICOQUE", "NISPERO", "CAQUI", "CHIRIMOYA", "POMELO", "ZANAHORIA", "TOMATE", "PEPINO", "CALABAZA", "CEBOLLA", "PATATA", "BROCOLI", "ESPINACA", "LECHUGA", "REPOLLO", "PIMENTON", "CHAMPINON", "JUDIA", "GUISANTE", "HABA", "ARVEJA", "CALABACIN", "ALCACHOFA", "BERENJENA", "ESPARRAGO", "EJOTE", "ELOTE", "YUCA", "CAMOTE", "BATATA", "NABO", "RABANO", "ACEDERA", "ESCAROLA", "APIO", "PUERRO", "COLIFLOR", "CACAHUATE", "CHAYOTE"])
+CategoryId = "frutas_verduras"
+ThemeName = "Frutas y Verduras"
+Description = "Frutas de temporada y verduras de la huerta"
+Words = Array[String](["MANZANA", "PLATANO", "MANGO", "PERA", "CEREZA", "FRESA", "NARANJA", "LIMON", "BANANA", "SANDIA", "MELON", "PINA", "KIWI", "PAPAYA", "GUAYABA", "GRANADA", "MELOCOTON", "CIRUELA", "DAMASCO", "DATIL", "COCO", "ARANDANO", "FRAMBUESA", "MORA", "MARACUYA", "ACEITUNA", "ALBARICOQUE", "NISPERO", "CAQUI", "CHIRIMOYA", "POMELO", "ZANAHORIA", "TOMATE", "PEPINO", "CALABAZA", "CEBOLLA", "PATATA", "BROCOLI", "ESPINACA", "LECHUGA", "REPOLLO", "PIMENTON", "CHAMPINON", "JUDIA", "GUISANTE", "HABA", "ARVEJA", "CALABACIN", "ALCACHOFA", "BERENJENA", "ESPARRAGO", "EJOTE", "ELOTE", "YUCA", "CAMOTE", "BATATA", "NABO", "RABANO", "ACEDERA", "ESCAROLA", "APIO", "PUERRO", "COLIFLOR", "CACAHUATE", "CHAYOTE"])

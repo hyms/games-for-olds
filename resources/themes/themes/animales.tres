@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="WordSearchTheme" load_steps=2 format=3 uid="uid://d2xvkwm1yq5bp"]
 
-[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.gd" id="1_bank"]
+[ext_resource type="Script" path="res://resources/themes/WordSearchTheme.cs" id="1_bank"]
 
 [resource]
 script = ExtResource("1_bank")
-category_id = "animales"
-theme_name = "Animales y Naturaleza"
-description = "Animales domésticos y salvajes, bosques, mares y montañas"
-words = Array[String](["PERRO", "GATO", "VACA", "CABALLO", "OVEJA", "CERDO", "PATO", "GALLINA", "CONEJO", "TORTUGA", "POLLITO", "BURRO", "ELEFANTE", "DELFIN", "TIGRE", "LEON", "MONO", "ARDILLA", "LOBO", "ZORRO", "RATA", "RATON", "CIERVO", "JIRAFA", "CEBRA", "HIENA", "COYOTE", "PAVO", "PALOMA", "GORRION", "CUERVO", "AGUILA", "HALCON", "PINGUINO", "SERPIENTE", "LAGARTO", "RANA", "SAPO", "IGUANA", "CAMALEON", "ARANA", "ABEJA", "MOSCA", "PULPO", "CALAMAR", "MEDUSA", "CABRA", "BALLENA", "ORCA", "TIBURON", "FOCO", "PAJARO", "MARIPOSA", "BOSQUE", "SELVA", "LAGO", "PLAYA", "DESIERTO", "MONTANA", "VOLCAN", "ISLA", "CUEVA", "NUBES", "ORILLA", "DUNA", "CORRIENTE"])
+CategoryId = "animales"
+ThemeName = "Animales y Naturaleza"
+Description = "Animales domésticos y salvajes, bosques, mares y montañas"
+Words = Array[String](["PERRO", "GATO", "VACA", "CABALLO", "OVEJA", "CERDO", "PATO", "GALLINA", "CONEJO", "TORTUGA", "POLLITO", "BURRO", "ELEFANTE", "DELFIN", "TIGRE", "LEON", "MONO", "ARDILLA", "LOBO", "ZORRO", "RATA", "RATON", "CIERVO", "JIRAFA", "CEBRA", "HIENA", "COYOTE", "PAVO", "PALOMA", "GORRION", "CUERVO", "AGUILA", "HALCON", "PINGUINO", "SERPIENTE", "LAGARTO", "RANA", "SAPO", "IGUANA", "CAMALEON", "ARANA", "ABEJA", "MOSCA", "PULPO", "CALAMAR", "MEDUSA", "CABRA", "BALLENA", "ORCA", "TIBURON", "FOCO", "PAJARO", "MARIPOSA", "BOSQUE", "SELVA", "LAGO", "PLAYA", "DESIERTO", "MONTANA", "VOLCAN", "ISLA", "CUEVA", "NUBES", "ORILLA", "DUNA", "CORRIENTE"])
