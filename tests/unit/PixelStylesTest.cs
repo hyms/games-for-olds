@@ -106,7 +106,18 @@ public class PixelStylesTest
         AssertInt(normal.CornerRadiusTopLeft).IsEqual(PixelStyles.Radius);
         AssertInt(normal.BorderWidthLeft).IsEqual(2);
         AssertBool(normal.BgColor.IsEqualApprox(PixelStyles.Celda)).IsTrue();
-        AssertInt(PixelStyles.CellFound().BorderWidthLeft).IsEqual(3);
+
+        StyleBoxFlat found = PixelStyles.CellFound();
+        AssertInt(found.BorderWidthLeft).IsEqual(3);
+        AssertBool(found.BgColor.IsEqualApprox(PixelStyles.EncontradaBorde)).IsTrue();
+        AssertBool(found.BgColor.IsEqualApprox(normal.BgColor)).IsFalse();
+        AssertBool(Ratio(PixelStyles.Celda, found.BgColor) >= 4.5f)
+            .OverrideFailureMessage($"letras crema sobre encontrada: {Ratio(PixelStyles.Celda, found.BgColor):0.00}:1")
+            .IsTrue();
+        AssertBool(Ratio(found.BgColor, PixelStyles.Arena) >= 3.0f)
+            .OverrideFailureMessage($"celda encontrada vs fondo: {Ratio(found.BgColor, PixelStyles.Arena):0.00}:1")
+            .IsTrue();
+
         AssertInt(PixelStyles.CellHint().BorderWidthLeft).IsEqual(3);
     }
 

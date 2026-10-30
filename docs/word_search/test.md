@@ -89,7 +89,8 @@ public class WordSearchGeneratorTest
 > (`WordSearchMain.tscn`) con `ISceneRunner`: el arrastre se simula con el ratón
 > emulado sobre los centros de celda calculados por el tablero, y el caso
 > inválido espera 800 ms para comprobar que la celda vuelve a reposo con
-> transparencia restaurada.
+> transparencia restaurada. `IT-WS-01` comprueba además que la celda encontrada
+> cambia de **relleno** (turquesa `#04544d`), no solo el borde.
 
 ### 3.2 Zoom y Desplazamiento
 - **IT-WS-04 (Pinch-To-Zoom):** Enviar evento multitáctil simulando 2 dedos alejándose. El contenedor `WordGridContainer` debe escalar manteniendo legibilidad de celdas.

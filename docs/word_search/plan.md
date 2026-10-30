@@ -142,8 +142,8 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 - [x] Implementar `StyleBox` de celda, placa y botón con la paleta del template
       (`core/ui/PixelStyles.cs`) y recolorear `core/AccessibleTheme.tres`.
 - [x] Definir los estados de celda: reposo, seleccionada (azul `#6095fb`),
-      encontrada (borde `#04544d` + ✔) y pista (borde `#8a4600` con pulso);
-      se aplican al tablero real en la Fase 3.
+      encontrada (relleno turquesa `#04544d` con letras crema en negrita) y
+      pista (borde `#8a4600` con pulso); se aplican al tablero real en la Fase 3.
 - [x] Corregir los contrastes señalados: texto negro sobre turquesa, cian y azul;
       borde oscuro `#535456` en placas y celdas; fondo de pantalla a arena
       `#b5ad96` (clear color + `MainMenu`).

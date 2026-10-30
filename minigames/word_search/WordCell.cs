@@ -17,6 +17,11 @@ public enum WordCellState
 /// </summary>
 public partial class WordCell : Panel
 {
+    /// <summary>Fuente en negrita para las letras ya encontradas (Assets/fonts).</summary>
+    private const string BoldFontPath = "res://assets/fonts/AtkinsonHyperlegible-Bold.ttf";
+
+    private static Font _boldFont;
+
     public Vector2I Coords { get; private set; }
 
     public char Letter { get; private set; } = ' ';
@@ -31,6 +36,20 @@ public partial class WordCell : Panel
     public string FoundBy { get; private set; } = string.Empty;
 
     private Label _label;
+
+    /// <summary>Negrita del tema, cargada una sola vez (todas las celdas la comparten).</summary>
+    private static Font BoldFont
+    {
+        get
+        {
+            if (_boldFont == null && ResourceLoader.Exists(BoldFontPath))
+            {
+                _boldFont = GD.Load<Font>(BoldFontPath);
+            }
+
+            return _boldFont;
+        }
+    }
 
     /// <summary>Configura la celda; debe llamarse antes de añadirla a la escena.</summary>
     public void Setup(Vector2I coords, char letter, int fontSize)
@@ -100,5 +119,23 @@ public partial class WordCell : Panel
             _ => PixelStyles.CellNormal(),
         };
         AddThemeStyleboxOverride("panel", style);
+
+        if (_label == null)
+        {
+            return;
+        }
+
+        // La celda encontrada invierte el contraste (letras crema sobre turquesa
+        // oscuro) y engorda la letra: no se distingue solo por el color.
+        bool found = State == WordCellState.Found;
+        _label.AddThemeColorOverride("font_color", found ? PixelStyles.Celda : PixelStyles.Tinta);
+        if (found && BoldFont != null)
+        {
+            _label.AddThemeFontOverride("font", BoldFont);
+        }
+        else
+        {
+            _label.RemoveThemeFontOverride("font");
+        }
     }
 }

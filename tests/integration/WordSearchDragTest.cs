@@ -53,6 +53,13 @@ public class WordSearchDragTest
         AssertCoord(emittedEnd.Value, target.End);
         AssertInt(_scene.WordsFound).IsEqual(1);
         AssertThat(_scene.FoundWords).Contains(target.Word);
+
+        // La celda debe cambiar de relleno, no solo el borde (observación del usuario).
+        StyleBoxFlat foundStyle = _scene.Board.GetCell(target.Start).GetThemeStylebox("panel") as StyleBoxFlat;
+        AssertObject(foundStyle).IsNotNull();
+        AssertBool(foundStyle.BgColor.IsEqualApprox(PixelStyles.EncontradaBorde))
+            .OverrideFailureMessage($"la celda encontrada conserva el relleno {foundStyle.BgColor}")
+            .IsTrue();
     }
 
     [TestCase]

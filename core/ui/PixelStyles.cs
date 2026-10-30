@@ -56,8 +56,8 @@ public static class PixelStyles
     /// <summary>Celda seleccionada (trazo en curso).</summary>
     public static StyleBoxFlat CellSelected() => MakeBox(CeldaSeleccion, Borde, 2, Radius);
 
-    /// <summary>Celda encontrada: borde turquesa oscuro grueso.</summary>
-    public static StyleBoxFlat CellFound() => MakeBox(Celda, EncontradaBorde, 3, Radius, false);
+    /// <summary>Celda encontrada: relleno turquesa oscuro con letras crema en negrita.</summary>
+    public static StyleBoxFlat CellFound() => MakeBox(EncontradaBorde, Celda, 3, Radius, false);
 
     /// <summary>Celda resaltada por pista: borde naranja oscuro con pulso.</summary>
     public static StyleBoxFlat CellHint() => MakeBox(Celda, PistaBorde, 3, Radius, false);

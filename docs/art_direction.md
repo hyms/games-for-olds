@@ -125,7 +125,7 @@
 |--------|--------------|--------------------------|
 | Reposo | Crema con borde `#535456` | — |
 | Seleccionada (trazo en curso) | Relleno azul `#6095fb` | Trazo continuo `#2b56b8` de 4 px sobre la celda |
-| Encontrada | Relleno crema + borde `#04544d` de 3 px | Marca “✔” y subrayado permanente |
+| Encontrada | Relleno turquesa `#04544d` con marco crema de 3 px y letras crema | Letra en **negrita** (contraste invertido) y palabra tachada en la lista |
 | Pista | Borde `#8a4600` de 3 px con pulso de grosor 3 s | Animación de pulso |
 | Selección inválida | Parpadeo breve y desvanecido (0,5 s) | Sin color rojo y sin penalización |
 
