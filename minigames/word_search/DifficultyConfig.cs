@@ -17,6 +17,9 @@ public partial class DifficultyConfig : Resource
     /// <summary>Tablero máximo permitido (nivel Maestro, decisión C3).</summary>
     public const int MaxGridSize = 15;
 
+    /// <summary>Proporción mínima aceptable del objetivo (spec §4.2).</summary>
+    public const float MinimumRatio = 0.8f;
+
     /// <summary>Identificador estable del nivel (= nombre del archivo .tres).</summary>
     [Export]
     public string Id { get; set; } = string.Empty;
@@ -58,7 +61,7 @@ public partial class DifficultyConfig : Resource
     public string PreviousLevelId { get; set; } = string.Empty;
 
     /// <summary>Mínimo efectivo: nunca pide más palabras de las solicitadas.</summary>
-    public int EffectiveMinimum => Mathf.Clamp(MinimumWords, 1, Mathf.Max(1, TargetWords));
+    public int EffectiveMinimum => MinimumFor(TargetWords, MinimumWords);
 
     /// <summary>Etiqueta corta del tablero («8 × 8») para el selector.</summary>
     public string BoardLabel => $"{GridSize} × {GridSize}";
@@ -66,8 +69,23 @@ public partial class DifficultyConfig : Resource
     /// <summary>Etiqueta completa del nivel («Fácil · 8 × 8 · 5 palabras»).</summary>
     public string SummaryLabel => $"{DisplayName} · {BoardLabel} · {TargetWords} palabras";
 
+    /// <summary>Etiqueta del botón del selector (nombre en una línea y datos en otra).</summary>
+    public string MenuLabel => $"{DisplayName}\n{BoardLabel} · {TargetWords} palabras";
+
     /// <summary>¿La configuración permite colocar palabras en esta dirección?</summary>
     public bool AllowsDirection(Vector2I direction) => Directions.Contains(direction);
+
+    /// <summary>Mínimo del 80 % redondeado hacia arriba (nunca menos de 1).</summary>
+    public static int EightyPercent(int targetWords) =>
+        Mathf.CeilToInt(Mathf.Max(1, targetWords) * MinimumRatio);
+
+    /// <summary>
+    /// Mínimo aceptable para un objetivo: el 80 % redondeado hacia arriba,
+    /// acotado por el mínimo declarado en la configuración. Fuente única de la
+    /// regla (la usan la validación, el generador y las pruebas).
+    /// </summary>
+    public static int MinimumFor(int targetWords, int declaredMinimum) =>
+        Mathf.Clamp(declaredMinimum, EightyPercent(targetWords), Mathf.Max(1, targetWords));
 
     /// <summary>
     /// Comprueba la coherencia de los datos (spec §4.2). Devuelve la lista de
@@ -96,7 +114,7 @@ public partial class DifficultyConfig : Resource
             errors.Add($"objetivo {TargetWords} imposible en {GridSize}×{GridSize}");
         }
 
-        int minimumRequired = Mathf.CeilToInt(TargetWords * 0.8f);
+        int minimumRequired = EightyPercent(TargetWords);
         if (MinimumWords < minimumRequired || MinimumWords > TargetWords)
         {
             errors.Add($"mínimo {MinimumWords} fuera de {minimumRequired}–{TargetWords} (80 %)");

@@ -116,3 +116,25 @@ El minijuego aplica los patrones del núcleo general:
 4. **Datos de dificultad (`DifficultyConfig`):** un recurso `.tres` por nivel en `resources/difficulties/`, cargados por `DifficultyCatalog`. El generador y el HUD leen de ahí; no hay condicionales por número de nivel.
 5. **Selección de palabras (`WordSelection` + `WordSearchSession`):** la Shuffle Bag reparte los grupos según `category_count` y de ellos salen las palabras de la partida; la sesión guarda el nivel elegido entre el selector y el tablero (en memoria hasta que `SaveManager` persista en la Fase 7).
 6. **Selección por arrastre (`DragSelection`):** lógica pura (inicio, bloqueo de dirección, ajuste a la línea dominante, límites) separada del contenedor, que solo traduce entrada y pinta el trazo (`WordTraceOverlay`).
+7. **Separación estado / presentación (`WordSearchGame`, `WordSearchHud`, `WordSearchVisuals`):** `WordSearchMain` solo orquesta. El estado de partida y la validación viven en `WordSearchGame` (puro, sin escenas); el footer y el formato del HUD en `WordSearchHud`; y las constantes de presentación (separación, tamaños de celda, duraciones) en `WordSearchVisuals`.
+
+### 6.1 Principios de diseño aplicados
+
+- **DRY (fuente única):**
+  - Mínimo del 80 %: calculado una sola vez en `DifficultyConfig.EightyPercent()` / `MinimumFor()`, usado por la validación del recurso, el generador y las pruebas.
+  - Barajado Fisher–Yates: método único en `Utils.Shuffle()`, compartido por el generador, la selección de grupos y la bolsa.
+  - Normalización de palabras: `WordSearchTheme.NormalizeWord()`, sin duplicados en el generador ni en los temas.
+  - Fondo arena: configurado solo en `default_clear_color` (`project.godot`), sin duplicar `ColorRect` en cada pantalla.
+  - Etiquetas del menú: compuestas en `DifficultyConfig.MenuLabel`, no repetidas en el selector.
+- **SRP (responsabilidad única):**
+  - `WordSearchTheme`: solo describe un grupo del banco; se retiraron los restos de dificultad (`GridSize`, `GetFilteredWords()`).
+  - `WordSearchMain`: orquestación de nodos y ciclo de vida; no calcula reglas ni cadenas BBCode.
+  - `WordSearchGame`: pureza de estado (palabras pendientes, encontradas, fallos y validación).
+  - `WordSearchHud`: maquetación de etiquetas y formateo del footer.
+  - `WordGridContainer`: maquetación de celdas y traducción de eventos a coordenadas; el modelo de selección vive en `DragSelection`.
+- **OCP y Strategy:**
+  - `WordSearchGenerator` opera sobre cualquier `DifficultyConfig` sin condicionales (`if nivel == 3`); un modo nuevo es solo otro `.tres`.
+  - `WordSearchGame.Select()` devuelve `SelectionResult` con un enum de resultado (`Found`, `Repeated`, `Invalid`): la respuesta visual o sonora se extiende sin cambiar las reglas.
+- **KISS y bajo acoplamiento:**
+  - Clases puras (`WordSearchGame`, `DragSelection`, `WordPath`, `WordSearchHud.BuildWordList`) probadas al 100 % sin levantar escenas.
+  - Estado de sesión en `WordSearchSession` (provisional hasta `SaveManager`, documentado) sin introducir un contenedor de inyección innecesario.

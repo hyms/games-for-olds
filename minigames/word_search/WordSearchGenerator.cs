@@ -137,9 +137,6 @@ public sealed class WordSearchGenerator
     /// <summary>Reintentos completos antes de aceptar el 80 % (plan Fase 2).</summary>
     public const int MaxAttempts = 30;
 
-    /// <summary>Proporción mínima aceptable del objetivo (spec §4.2).</summary>
-    public const float Tolerance = 0.8f;
-
     /// <summary>Rondas de colocación por intento (la segunda recoloca los fallos).</summary>
     private const int PlacementPasses = 2;
 
@@ -160,21 +157,14 @@ public sealed class WordSearchGenerator
         int minimum = Mathf.Min(target, config.EffectiveMinimum);
         List<Vector2I> directions = UsableDirections(config.Directions);
 
-        var rng = new RandomNumberGenerator();
-        if (seed >= 0)
-        {
-            rng.Seed = (ulong)seed;
-        }
-        else
-        {
-            rng.Randomize();
-        }
+        RandomNumberGenerator rng = Utils.CreateRng(seed);
 
         GenerationResult best = null;
         for (int attempt = 1; attempt <= MaxAttempts; attempt++)
         {
             LastAttempts = attempt;
-            List<string> shuffled = Shuffle(pool, rng);
+            List<string> shuffled = new(pool);
+            Utils.Shuffle(shuffled, rng);
             if (shuffled.Count > target)
             {
                 shuffled.RemoveRange(target, shuffled.Count - target);
@@ -193,16 +183,6 @@ public sealed class WordSearchGenerator
         }
 
         return best ?? Build(size, new List<string>(), directions, minimum, 1, rng);
-    }
-
-    /// <summary>
-    /// Mínimo aceptable para un objetivo: el 80 % redondeado hacia arriba,
-    /// acotado por el mínimo declarado en la configuración.
-    /// </summary>
-    public static int MinimumFor(int targetWords, int declaredMinimum)
-    {
-        int eightyPercent = Mathf.CeilToInt(Mathf.Max(1, targetWords) * Tolerance);
-        return Mathf.Clamp(declaredMinimum, eightyPercent, Mathf.Max(1, targetWords));
     }
 
     /// <summary>Crea una matriz vacía (celdas <c>'\0'</c>).</summary>
@@ -428,15 +408,4 @@ public sealed class WordSearchGenerator
         return directions;
     }
 
-    private static List<string> Shuffle(List<string> source, RandomNumberGenerator rng)
-    {
-        var shuffled = new List<string>(source);
-        for (int i = shuffled.Count - 1; i > 0; i--)
-        {
-            int j = rng.RandiRange(0, i);
-            (shuffled[i], shuffled[j]) = (shuffled[j], shuffled[i]);
-        }
-
-        return shuffled;
-    }
 }

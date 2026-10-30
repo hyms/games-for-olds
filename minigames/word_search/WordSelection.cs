@@ -102,21 +102,7 @@ public static class WordSelection
             }
         }
 
-        var rng = new RandomNumberGenerator();
-        if (seed >= 0)
-        {
-            rng.Seed = (ulong)seed;
-        }
-        else
-        {
-            rng.Randomize();
-        }
-
-        for (int i = pool.Count - 1; i > 0; i--)
-        {
-            int j = rng.RandiRange(0, i);
-            (pool[i], pool[j]) = (pool[j], pool[i]);
-        }
+        Utils.Shuffle(pool, Utils.CreateRng(seed));
 
         int take = Mathf.Min(Mathf.Max(1, config.TargetWords), pool.Count);
         List<string> words = pool.GetRange(0, take);

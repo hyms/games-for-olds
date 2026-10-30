@@ -46,12 +46,12 @@ public partial class WordTraceOverlay : Control
         }
 
         Color line = PixelStyles.Trazo;
-        line.A = 0.7f;
-        DrawLine(_from, _to, line, 6.0f, false);
+        line.A = WordSearchVisuals.TraceAlpha;
+        DrawLine(_from, _to, line, WordSearchVisuals.TraceWidth, false);
 
         Color dot = PixelStyles.Trazo;
-        dot.A = 0.9f;
-        DrawCircle(_from, 5.0f, dot);
-        DrawCircle(_to, 5.0f, dot);
+        dot.A = WordSearchVisuals.TraceDotAlpha;
+        DrawCircle(_from, WordSearchVisuals.TraceDotRadius, dot);
+        DrawCircle(_to, WordSearchVisuals.TraceDotRadius, dot);
     }
 }

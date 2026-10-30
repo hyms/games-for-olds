@@ -3,9 +3,9 @@ using Godot;
 using static GdUnit4.Assertions;
 
 /// <summary>
-/// Primer test puro (Fase 0.5): normalización y filtros de <see cref="WordSearchTheme"/>.
-/// No usa escenas: solo la lógica del modelo de categoría.
-/// Equivalente C# de <c>tests/unit/WordSearchThemeTest.gd</c>.
+/// Modelo del banco de palabras: normalización y <c>Validate()</c> (spec §5).
+/// El filtrado por longitud y la dificultad viven en <c>DifficultyConfig</c> y
+/// <c>WordSearchGenerator.PrepareWords</c>; aquí solo se prueba el banco.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -13,58 +13,36 @@ public class WordSearchThemeTest
 {
     private const string Letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    private static WordSearchTheme MakeTheme(string[] words, int gridSize = 8, int minWordLength = 4)
-    {
-        var theme = new WordSearchTheme
-        {
-            GridSize = gridSize,
-            MinWordLength = minWordLength,
-        };
-        theme.Words.AddRange(words);
-        return theme;
-    }
-
     [TestCase]
     public void NormalizaAMayusculasYQuitaEspacios()
     {
-        WordSearchTheme theme = MakeTheme(new[] { "casa", "  mesa  ", "LUNA" });
-        AssertThat(theme.GetFilteredWords()).ContainsExactly("CASA", "MESA", "LUNA");
+        AssertString(WordSearchTheme.NormalizeWord("casa")).IsEqual("CASA");
+        AssertString(WordSearchTheme.NormalizeWord("  mesa  ")).IsEqual("MESA");
+        AssertString(WordSearchTheme.NormalizeWord("LUNA")).IsEqual("LUNA");
     }
 
     [TestCase]
     public void QuitaTildesDieresisYEnye()
     {
-        WordSearchTheme theme = MakeTheme(new[] { "ESPAÑA", "pingüino", "jardín" });
-        AssertThat(theme.GetFilteredWords()).ContainsExactly("ESPANA", "PINGUINO", "JARDIN");
+        AssertString(WordSearchTheme.NormalizeWord("ESPAÑA")).IsEqual("ESPANA");
+        AssertString(WordSearchTheme.NormalizeWord("pingüino")).IsEqual("PINGUINO");
+        AssertString(WordSearchTheme.NormalizeWord("jardín")).IsEqual("JARDIN");
     }
 
     [TestCase]
-    public void DescartaPalabrasMasCortasQueElMinimo()
+    public void DescartaCaracteresQueNoSonLetras()
     {
-        WordSearchTheme theme = MakeTheme(new[] { "sol", "luna", "mar", "mesa" });
-        AssertThat(theme.GetFilteredWords()).ContainsExactly("LUNA", "MESA");
+        AssertString(WordSearchTheme.NormalizeWord("1234")).IsEqual(string.Empty);
+        AssertString(WordSearchTheme.NormalizeWord("m3s4")).IsEqual("MS");
     }
 
     [TestCase]
-    public void DescartaPalabrasMasLargasQueElTablero()
+    public void LaNormalizacionNoModificaLaListaOriginal()
     {
-        WordSearchTheme theme = MakeTheme(new[] { "mesa", "refrigerador" }, 8);
-        AssertThat(theme.GetFilteredWords()).ContainsExactly("MESA");
-    }
-
-    [TestCase]
-    public void DescartaPalabrasSinLetrasValidas()
-    {
-        WordSearchTheme theme = MakeTheme(new[] { "1234", "m3s4", "casa" });
-        AssertThat(theme.GetFilteredWords()).ContainsExactly("CASA");
-    }
-
-    [TestCase]
-    public void ElFiltroNoModificaLaListaOriginal()
-    {
-        WordSearchTheme theme = MakeTheme(new[] { "sol", "mesa" });
-        _ = theme.GetFilteredWords();
-        AssertThat(theme.Words).ContainsExactly("sol", "mesa");
+        var category = new WordSearchTheme();
+        category.Words.AddRange(new[] { "sol", "mesa" });
+        AssertString(WordSearchTheme.NormalizeWord(category.Words[0])).IsEqual("SOL");
+        AssertThat(category.Words).ContainsExactly("sol", "mesa");
     }
 
     // --- Fase 1: Validate() del banco (spec §5) ------------------------------
@@ -72,9 +50,12 @@ public class WordSearchThemeTest
     /// <summary>Categoría de prueba válida: identificador, nombre y palabras únicas.</summary>
     private static WordSearchTheme MakeCategory(string[] words)
     {
-        WordSearchTheme category = MakeTheme(words, 15, 4);
-        category.CategoryId = "prueba";
-        category.ThemeName = "Prueba";
+        var category = new WordSearchTheme
+        {
+            CategoryId = "prueba",
+            ThemeName = "Prueba",
+        };
+        category.Words.AddRange(words);
         return category;
     }
 

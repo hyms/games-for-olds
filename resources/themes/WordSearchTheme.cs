@@ -4,9 +4,9 @@ using Godot;
 /// <summary>
 /// Categoría del banco de palabras de la Sopa de Letras (spec §5 y §5.1).
 /// Un archivo <c>.tres</c> por grupo temático, cargado por <see cref="WordBank"/>.
-/// Evolución del modelo original de "tema" (decisión C9): se le añade
-/// <c>category_id</c> y la validación del banco; el resto de propiedades de
-/// dificultad (<c>grid_size</c>, etc.) se migran a <c>DifficultyConfig</c> en la Fase 2.
+/// Evolución del modelo original de "tema" (decisión C9): solo describe el
+/// grupo temático y su banco de palabras. La dificultad (tablero, objetivo,
+/// direcciones) vive en <see cref="DifficultyConfig"/>: una sola fuente.
 /// Equivalente C# de <c>resources/themes/WordSearchTheme.gd</c>.
 /// </summary>
 [GlobalClass]
@@ -36,23 +36,6 @@ public partial class WordSearchTheme : Resource
     /// <summary>Longitud máxima admitida (tablero 15×15, decisión C3).</summary>
     public const int MaxWordLength = 15;
 
-    // --- Propiedades de dificultad (temporales: las absorbe DifficultyConfig) ----
-
-    [Export(PropertyHint.Range, "5,15")]
-    public int GridSize { get; set; } = 8;
-
-    [Export(PropertyHint.Range, "3,20")]
-    public int MaxWords { get; set; } = 8;
-
-    [Export(PropertyHint.Range, "3,8")]
-    public int MinWordLength { get; set; } = 4;
-
-    [Export]
-    public bool AllowDiagonal { get; set; } = true;
-
-    [Export]
-    public bool AllowBackwards { get; set; } = true;
-
     private static readonly Dictionary<char, char> AccentReplacements = new()
     {
         ['Á'] = 'A', ['É'] = 'E', ['Í'] = 'I', ['Ó'] = 'O', ['Ú'] = 'U',
@@ -77,24 +60,6 @@ public partial class WordSearchTheme : Resource
         }
 
         return cleaned.ToString();
-    }
-
-    /// <summary>Filtra palabras por longitud al generar (sin tocar la lista original).</summary>
-    public List<string> GetFilteredWords()
-    {
-        var filtered = new List<string>();
-        foreach (string word in Words)
-        {
-            string clean = NormalizeWord(word);
-            if (clean.Length < MinWordLength || clean.Length > GridSize)
-            {
-                continue;
-            }
-
-            filtered.Add(clean);
-        }
-
-        return filtered;
     }
 
     /// <summary>

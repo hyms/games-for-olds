@@ -79,12 +79,24 @@ public class DifficultyConfigTest
     [TestCase]
     public void MinimumForAplicaLosOchentaPorCiento()
     {
-        AssertInt(WordSearchGenerator.MinimumFor(5, 4)).IsEqual(4);
-        AssertInt(WordSearchGenerator.MinimumFor(8, 7)).IsEqual(7);
-        AssertInt(WordSearchGenerator.MinimumFor(12, 10)).IsEqual(10);
-        AssertInt(WordSearchGenerator.MinimumFor(20, 16)).IsEqual(16);
-        AssertInt(WordSearchGenerator.MinimumFor(20, 15)).IsEqual(16); // nunca por debajo del 80 %
-        AssertInt(WordSearchGenerator.MinimumFor(20, 30)).IsEqual(20); // nunca por encima del objetivo
+        AssertInt(DifficultyConfig.MinimumFor(5, 4)).IsEqual(4);
+        AssertInt(DifficultyConfig.MinimumFor(8, 7)).IsEqual(7);
+        AssertInt(DifficultyConfig.MinimumFor(12, 10)).IsEqual(10);
+        AssertInt(DifficultyConfig.MinimumFor(20, 16)).IsEqual(16);
+        AssertInt(DifficultyConfig.MinimumFor(20, 15)).IsEqual(16); // nunca por debajo del 80 %
+        AssertInt(DifficultyConfig.MinimumFor(20, 30)).IsEqual(20); // nunca por encima del objetivo
+        AssertInt(DifficultyConfig.EightyPercent(20)).IsEqual(16);
+    }
+
+    [TestCase]
+    public void EffectiveMinimumCoincideConLaReglaDelOchentaPorCiento()
+    {
+        foreach (DifficultyConfig level in DifficultyCatalog.LoadAll())
+        {
+            AssertInt(level.EffectiveMinimum)
+                .OverrideFailureMessage(level.Id)
+                .IsEqual(DifficultyConfig.MinimumFor(level.TargetWords, level.MinimumWords));
+        }
     }
 
     [TestCase]

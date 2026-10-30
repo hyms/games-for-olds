@@ -45,9 +45,9 @@ public partial class DifficultySelector : Control
         {
             BigButton button = buttonScene.Instantiate<BigButton>();
             button.Name = $"Level_{level.Id}";
-            button.Text = $"{level.DisplayName}\n{level.BoardLabel} · {level.TargetWords} palabras";
-            button.CustomMinimumSize = new Vector2(0, 76);
-            button.AddThemeFontSizeOverride("font_size", 20);
+            button.Text = level.MenuLabel;
+            button.CustomMinimumSize = new Vector2(0, WordSearchVisuals.LevelButtonMinHeight);
+            button.AddThemeFontSizeOverride("font_size", WordSearchVisuals.LevelButtonFontSize);
             button.Pressed += () => OnLevelPressed(level);
             _levels.AddChild(button);
             LevelButtons.Add(button);

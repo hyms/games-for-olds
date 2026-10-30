@@ -36,14 +36,7 @@ public partial class ShuffleBagSystem : RefCounted
     public ShuffleBagSystem(IEnumerable<string> groupIds, long seedValue = -1)
     {
         _groupIds.AddRange(groupIds);
-        if (seedValue >= 0)
-        {
-            _rng.Seed = (ulong)seedValue;
-        }
-        else
-        {
-            _rng.Randomize();
-        }
+        Utils.Seed(_rng, seedValue);
 
         Refill();
     }

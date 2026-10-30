@@ -61,7 +61,7 @@ public partial class WordCell : Panel
 
         _label ??= CreateLabel();
         _label.Text = letter.ToString();
-        _label.AddThemeFontSizeOverride("font_size", Mathf.Max(10, fontSize));
+        _label.AddThemeFontSizeOverride("font_size", Mathf.Max(WordSearchVisuals.MinCellFontSize, fontSize));
         _label.AddThemeColorOverride("font_color", PixelStyles.Tinta);
 
         RestoreBaseState();
@@ -86,7 +86,7 @@ public partial class WordCell : Panel
     /// <summary>Ajusta el tamaño de la letra al tamaño de la celda.</summary>
     public void SetFontSize(int size)
     {
-        _label?.AddThemeFontSizeOverride("font_size", Mathf.Max(10, size));
+        _label?.AddThemeFontSizeOverride("font_size", Mathf.Max(WordSearchVisuals.MinCellFontSize, size));
     }
 
     /// <summary>Vuelve al estado permanente: encontrada si pertenece a una palabra, si no reposo.</summary>

@@ -10,12 +10,6 @@ using Godot;
 /// </summary>
 public partial class WordGridContainer : Control
 {
-    /// <summary>Separación entre celdas (docs/art_direction.md §3).</summary>
-    public const float Gap = 6.0f;
-
-    /// <summary>Tamaño mínimo de celda antes del zoom de la Fase 4.</summary>
-    public const int MinCellSize = 10;
-
     /// <summary>Se emite al soltar una selección recta de 2 o más celdas.</summary>
     [Signal]
     public delegate void WordSelectedEventHandler(Vector2I start, Vector2I end);
@@ -83,7 +77,7 @@ public partial class WordGridContainer : Control
             for (int x = 0; x < Columns; x++)
             {
                 var cell = new WordCell();
-                cell.Setup(new Vector2I(x, y), grid[y, x], 20);
+                cell.Setup(new Vector2I(x, y), grid[y, x], WordSearchVisuals.DefaultCellFontSize);
                 AddChild(cell);
                 _cells[y, x] = cell;
             }
@@ -110,14 +104,14 @@ public partial class WordGridContainer : Control
     /// <summary>Centro de una celda en coordenadas locales del contenedor.</summary>
     public Vector2 GetCellCenter(Vector2I coord)
     {
-        float step = _cellSize + Gap;
+        float step = _cellSize + WordSearchVisuals.CellGap;
         return _origin + new Vector2((coord.X * step) + (_cellSize / 2.0f), (coord.Y * step) + (_cellSize / 2.0f));
     }
 
     /// <summary>Rectángulo de una celda en coordenadas locales.</summary>
     public Rect2 GetCellRect(Vector2I coord)
     {
-        float step = _cellSize + Gap;
+        float step = _cellSize + WordSearchVisuals.CellGap;
         return new Rect2(_origin + new Vector2(coord.X * step, coord.Y * step), new Vector2(_cellSize, _cellSize));
     }
 
@@ -136,7 +130,7 @@ public partial class WordGridContainer : Control
             return false;
         }
 
-        float step = _cellSize + Gap;
+        float step = _cellSize + WordSearchVisuals.CellGap;
         int column = Mathf.FloorToInt(point.X / step);
         int row = Mathf.FloorToInt(point.Y / step);
         if (column < 0 || row < 0 || column >= Columns || row >= Rows)
@@ -243,7 +237,7 @@ public partial class WordGridContainer : Control
     }
 
     /// <summary>Desvanece una selección inválida durante <paramref name="seconds"/> sin penalizar.</summary>
-    public void FlashInvalid(IReadOnlyList<Vector2I> cells, float seconds = 0.5f)
+    public void FlashInvalid(IReadOnlyList<Vector2I> cells, float seconds = WordSearchVisuals.InvalidFadeSeconds)
     {
         if (cells == null || cells.Count == 0)
         {
@@ -273,7 +267,7 @@ public partial class WordGridContainer : Control
         _invalidTween.SetParallel(true);
         foreach (Vector2I coord in _invalidCells)
         {
-            _invalidTween.TweenProperty(GetCell(coord), "modulate:a", 0.25f, seconds);
+            _invalidTween.TweenProperty(GetCell(coord), "modulate:a", WordSearchVisuals.InvalidFadeAlpha, seconds);
         }
 
         _invalidTween.Chain().TweenCallback(Callable.From(RestoreInvalid));
@@ -358,18 +352,21 @@ public partial class WordGridContainer : Control
             return;
         }
 
-        float stepX = (Size.X - (Gap * (Columns - 1))) / Columns;
-        float stepY = (Size.Y - (Gap * (Rows - 1))) / Rows;
-        _cellSize = Mathf.Max(MinCellSize, Mathf.Floor(Mathf.Min(stepX, stepY)));
+        float stepX = (Size.X - (WordSearchVisuals.CellGap * (Columns - 1))) / Columns;
+        float stepY = (Size.Y - (WordSearchVisuals.CellGap * (Rows - 1))) / Rows;
+        _cellSize = Mathf.Max(WordSearchVisuals.MinCellSize, Mathf.Floor(Mathf.Min(stepX, stepY)));
 
-        float totalWidth = (_cellSize * Columns) + (Gap * (Columns - 1));
-        float totalHeight = (_cellSize * Rows) + (Gap * (Rows - 1));
+        float totalWidth = (_cellSize * Columns) + (WordSearchVisuals.CellGap * (Columns - 1));
+        float totalHeight = (_cellSize * Rows) + (WordSearchVisuals.CellGap * (Rows - 1));
         _origin = new Vector2(
             Mathf.Floor((Size.X - totalWidth) / 2.0f),
             Mathf.Floor((Size.Y - totalHeight) / 2.0f));
 
-        int fontSize = Mathf.Clamp(Mathf.RoundToInt(_cellSize * 0.52f), 10, 24);
-        float step = _cellSize + Gap;
+        int fontSize = Mathf.Clamp(
+            Mathf.RoundToInt(_cellSize * WordSearchVisuals.CellFontRatio),
+            WordSearchVisuals.MinCellFontSize,
+            WordSearchVisuals.MaxCellFontSize);
+        float step = _cellSize + WordSearchVisuals.CellGap;
         for (int y = 0; y < Rows; y++)
         {
             for (int x = 0; x < Columns; x++)
