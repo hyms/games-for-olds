@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DifficultyConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://minigames/word_search/DifficultyConfig.cs" id="1_level"]
+
+[resource]
+script = ExtResource("1_level")
+Id = "maestro"
+DisplayName = "Maestro"
+GridSize = 15
+TargetWords = 20
+MinimumWords = 16
+Directions = Array[Vector2i]([Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(-1, 1), Vector2i(-1, 0), Vector2i(0, -1), Vector2i(-1, -1), Vector2i(1, -1)])
+CategoryCount = 4
+ParSeconds = 720
+PreviousLevelId = "dificil"

@@ -113,3 +113,6 @@ El minijuego aplica los patrones del núcleo general:
 1. **Strategy Pattern (`WordSearchGenerator.cs`):** Recibe la `DifficultyConfig` y genera la matriz sin acoplar la UI.
 2. **Composite Pattern (`WordGridContainer.cs`):** Administra la jerarquía de celdas (`WordCell.cs`), permitiendo zoom y escalado fluido.
 3. **Template Method (`WordSearchMain.cs`):** Hereda de `BaseMinigame.cs` para reutilizar pausado, registro de estadísticas y ciclo de vida (sin interfaz de anuncios: la Sopa no muestra publicidad, C2).
+4. **Datos de dificultad (`DifficultyConfig`):** un recurso `.tres` por nivel en `resources/difficulties/`, cargados por `DifficultyCatalog`. El generador y el HUD leen de ahí; no hay condicionales por número de nivel.
+5. **Selección de palabras (`WordSelection` + `WordSearchSession`):** la Shuffle Bag reparte los grupos según `category_count` y de ellos salen las palabras de la partida; la sesión guarda el nivel elegido entre el selector y el tablero (en memoria hasta que `SaveManager` persista en la Fase 7).
+6. **Selección por arrastre (`DragSelection`):** lógica pura (inicio, bloqueo de dirección, ajuste a la línea dominante, límites) separada del contenedor, que solo traduce entrada y pinta el trazo (`WordTraceOverlay`).

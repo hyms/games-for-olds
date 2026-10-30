@@ -4,7 +4,7 @@
 > Checklist de construcción alineado con la nueva [spec](spec.md) y el nuevo
 > [plan de pruebas](test.md).
 >
-> **Versión:** 0.5 · **Fecha:** 28/10/2026 · **Estado:** Fase 1 completada (banco y Shuffle Bag, a la espera de verificación en editor)
+> **Versión:** 0.6 · **Fecha:** 29/10/2026 · **Estado:** Fases 2 y 3 completadas (dificultades, generador, selector, tablero y arrastre; pendiente de revisión visual en editor)
 > **Documentación relacionada:** [Spec global](../spec.md) ·
 > [Plan global](../plan.md) · [Pruebas globales](../test.md) ·
 > [Spec del juego](spec.md) · [Pruebas del juego](test.md) ·
@@ -29,26 +29,24 @@
 | Área | Hoy en el repositorio | Objetivo de la nueva spec | Acción |
 |------|-----------------------|---------------------------|--------|
 | Categorías | 10 categorías (693 palabras, Fase 1) | 10 categorías, 50–100 palabras cada una (≥ 600) | Hecho (C9) |
-| Dificultades | 3 niveles (8/10/10) | 4 niveles (8/10/12/15) con reglas propias | Rediseñar como datos |
-| Generador | `WordGenerator` con `WordSearchTheme` | `WordSearchGenerator` + `DifficultyConfig` (Strategy) | Renombrar y separar |
-| Tablero | `WordGrid` con celdas fijas de 48 px | `WordGridContainer` con encaje y zoom | Renombrar y rehacer layout |
-| Selección | Toque inicial + final (rota) | Arrastre único con trazo en tiempo real | Reimplementar |
-| Pistas | 3 por partida, sin anuncios | 3 por nivel, sin anuncios (C2) | Reimplementar |
-| Progresión | Sin desbloqueo | Submenú con candados y 20 partidas por nivel | Implementar |
-| Victoria | Sin modal | Modal con confeti pixel art y acciones | Implementar |
-| HUD | Encabezado simple | Pausa, contador y tiempo no punitivo | Implementar |
-| Lista de palabras | No visible | Footer aleatorio que reordena al encontrar | Implementar |
-| Puntaje | Fórmula definida (spec anterior) | Fórmula nueva definida en este plan (C7) | Implementar |
-| Selector | Pantalla de temáticas (5 botones de `ThemeSelector`) | **Submenú de dificultad** (spec §4.1); el grupo de palabras lo sortea la Shuffle Bag | Reemplazar `ThemeSelector` en la Fase 2 (entrada provisional) y darle candados/progreso en la Fase 7 |
+| Dificultades | 4 niveles como datos: `DifficultyConfig` + `resources/difficulties/*.tres` | 4 niveles (8/10/12/15) con reglas propias | Hecho (Fase 2) |
+| Generador | `WordSearchGenerator` (Strategy) sobre `DifficultyConfig` | `WordSearchGenerator` + `DifficultyConfig` (Strategy) | Hecho (Fase 2) |
+| Tablero | `WordGridContainer` con celdas proporcionales al área | `WordGridContainer` con encaje y zoom | Encaje y zoom en la Fase 4 |
+| Selección | Arrastre con bloqueo de dirección y tolerancia | Arrastre único con trazo en tiempo real | Hecho (Fase 3) |
+| Pistas | Sin pistas todavía | 3 por nivel, sin anuncios (C2) | Fase 6 |
+| Progresión | Sin desbloqueo | Submenú con candados y 20 partidas por nivel | Fase 7 |
+| Victoria | Etiqueta provisional al completar | Modal con confeti pixel art y acciones | Fase 8 |
+| HUD | Encabezado simple (contador y dificultad) | Pausa, contador y tiempo no punitivo | Fase 5 |
+| Lista de palabras | Lista básica con tachado | Footer aleatorio que reordena al encontrar | Fase 5 |
+| Puntaje | Fórmula definida (spec anterior) | Fórmula nueva definida en este plan (C7) | Fase 8 |
+| Selector | `DifficultySelector`: 4 botones sin candados | **Submenú de dificultad** (spec §4.1) con candados y progreso | Hecho como provisional (Fase 2); candados en la Fase 7 |
 
-> **Selección actual:** el código vigente usa toque inicial/final y además está
-> roto (`_end_selection()` ignora la última celda). La nueva spec pide arrastre,
-> así que ese código se reemplaza, no se repara.
-
-> **Pantalla actual:** `ui/theme_selector/` deja elegir *grupo de palabras*, lo
-> cual contradice la spec: el jugador **solo elige dificultad** (§4.1) y los
-> grupos se reparten automáticamente con la Shuffle Bag según `category_count`
-> (1/1/2/4 · C3 y §5). Ver Fase 2 §2.3 y Fase 7.
+> **Estado tras la migración a C#:** el prototipo GDScript se borró en el commit
+> `2f66c5e`; las pantallas de temáticas (`ui/theme_selector/`) y el marcador de
+> “próximamente” (`ui/coming_soon/`) ya no existen. El flujo vigente es menú
+> principal → selector de dificultad → tablero. El jugador **solo elige
+> dificultad** (§4.1): los grupos se reparten con la Shuffle Bag según
+> `category_count` (1/1/2/4 · C3 y §5).
 
 ---
 
@@ -212,10 +210,10 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ### 2.1 Datos de dificultad
 
-- [ ] Recurso `DifficultyConfig` con: `id`, nombre, `grid_size`, `target_words`,
+- [x] Recurso `DifficultyConfig` con: `id`, nombre, `grid_size`, `target_words`,
       `min_words` (80 %), direcciones permitidas, `category_count`, `par_seconds`
       (para el puntaje) y nivel previo.
-- [ ] Cuatro recursos `.tres`:
+- [x] Cuatro recursos `.tres`:
 
 | Nivel | Tablero | Objetivo | Mínimo | Categorías | Direcciones | Par |
 |-------|---------|----------|--------|------------|-------------|-----|
@@ -224,34 +222,38 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 | Difícil | 12×12 | 12 | 10 | 2 | + direcciones inversas | 600 s |
 | Maestro | 15×15 | 20 | 16 | 4 | 8 direcciones | 720 s |
 
-- [ ] Separar las dificultades de la lógica: nada de `if nivel == 3` en el generador.
+- [x] Separar las dificultades de la lógica: nada de `if nivel == 3` en el generador.
+- [x] `DifficultyConfig.Validate()` con las reglas de la spec (tablero 5–15,
+      objetivo viable, mínimo del 80 %, direcciones unitarias, par positivo).
+- [x] `DifficultyCatalog` (carga los cuatro `.tres` por id y tolera ausencias).
 
 ### 2.2 `WordSearchGenerator` (Strategy)
 
-- [ ] Renombrar `WordGenerator` → `WordSearchGenerator.cs` y actualizar referencias.
-- [ ] API `generate(config, words) -> GenerationResult` con `grid`, `placements`,
+- [x] Renombrar `WordGenerator` → `WordSearchGenerator.cs` y actualizar referencias.
+- [x] API `generate(config, words) -> GenerationResult` con `grid`, `placements`,
       `placed_count` y `meets_minimum`.
-- [ ] Respetar el vector de direcciones de la configuración.
-- [ ] Solapar solo con letra coincidente.
-- [ ] Rellenar huecos con letras aleatorias (sin dejar celdas vacías).
-- [ ] Barajar y mezclar categorías según `category_count`.
-- [ ] Reintentar hasta N veces (definir N, p. ej. 30) para alcanzar el objetivo.
-- [ ] Aceptar el 80 % (`min_words`) si tras N intentos no se llega al 100 %.
-- [ ] Devolver fallo controlado si no se alcanza el mínimo, sin tablero vacío.
-- [ ] Medir tiempo de generación en 15×15 (< 0,5 s).
-- [ ] Tests `UT-WS-01` a `UT-WS-05`.
+- [x] Respetar el vector de direcciones de la configuración.
+- [x] Solapar solo con letra coincidente.
+- [x] Rellenar huecos con letras aleatorias (sin dejar celdas vacías).
+- [x] Barajar y mezclar categorías según `category_count`.
+- [x] Reintentar hasta N veces (definir N, p. ej. 30) para alcanzar el objetivo.
+- [x] Aceptar el 80 % (`min_words`) si tras N intentos no se llega al 100 %.
+- [x] Devolver fallo controlado si no se alcanza el mínimo, sin tablero vacío.
+- [x] Medir tiempo de generación en 15×15 (< 0,5 s).
+- [x] Tests `UT-WS-01` a `UT-WS-05`.
 
 ### 2.3 Entrada a la partida (selector provisional)
 
-- [ ] Sustituir el selector de temáticas por un **selector de dificultad**:
+- [x] Sustituir el selector de temáticas por un **selector de dificultad**:
       4 botones (Fácil, Medio, Difícil, Maestro) de al menos 56×56 px, con el
       nombre y los datos del nivel (tablero y objetivo) visibles.
-- [ ] El jugador **no elige grupo de palabras**: al entrar se cargan las 10
+- [x] El jugador **no elige grupo de palabras**: al entrar se cargan las 10
       categorías (`WordBank.load_all()`) y la `ShuffleBagSystem` reparte los
       grupos según `category_count` de la dificultad (1/1/2/4 · C3 y §5).
-- [ ] Provisional (hasta la Fase 7): todos los niveles entran sin candado.
-- [ ] Dar de baja `ui/theme_selector/` (`ThemeSelector.cs/.tscn`) y sus
+- [x] Provisional (hasta la Fase 7): todos los niveles entran sin candado.
+- [x] Dar de baja `ui/theme_selector/` (`ThemeSelector.cs/.tscn`) y sus
       referencias, dejando el flujo spec → selector de dificultad → tablero.
+      (No existía tras la migración: el menú ya apunta al selector.)
 
 ---
 
@@ -259,36 +261,39 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ### 3.1 `WordGridContainer` y celdas
 
-- [ ] Renombrar `WordGrid` → `WordGridContainer.cs` y `WordSearch` → `WordSearchMain.cs`.
+- [x] Renombrar `WordGrid` → `WordGridContainer.cs` y `WordSearch` → `WordSearchMain.cs`.
 - [ ] `WordSearchMain` hereda de `BaseMinigame` cuando exista (Fase 9).
-- [ ] `WordCell` expone posición, letra, estado y estilo de pertenencia.
-- [ ] Celda con el estilo de la plantilla: crema `#fbf3da`, borde `#535456`,
+- [x] `WordCell` expone posición, letra, estado y estilo de pertenencia.
+- [x] Celda con el estilo de la plantilla: crema `#fbf3da`, borde `#535456`,
       radio 5 px y sombra dura de 2 px (`docs/art_direction.md` §4.1).
-- [ ] Permitir que una celda pertenezca a varias palabras y que prevalezca el
+- [x] Permitir que una celda pertenezca a varias palabras y que prevalezca el
       estilo de la **última encontrada**.
-- [ ] Emitir `word_selected(start_coords, end_coords)` al soltar.
+- [x] Emitir `word_selected(start_coords, end_coords)` al soltar.
 
 ### 3.2 Entrada táctil
 
-- [ ] Iniciar selección con `InputEventScreenTouch` (o ratón emulado).
-- [ ] Seguir el trazo con `InputEventScreenDrag` y resaltar celdas en tiempo real.
-- [ ] Bloquear la dirección tras un umbral de píxeles para evitar zigzag.
-- [ ] Construir la ruta recta completa al soltar (extremos incluidos).
-- [ ] Validar solo contra palabras pendientes, en el sentido seleccionado.
-- [ ] Rechazar selecciones no alineadas o de una sola celda.
-- [ ] Desvanecer la selección inválida en 0,5 s sin penalizar.
-- [ ] No permitir seleccionar una palabra ya encontrada.
-- [ ] Trazo retro semitransparente con contraste suficiente.
-- [ ] Tests `IT-WS-01`, `IT-WS-02`, `IT-WS-03`.
+- [x] Iniciar selección con `InputEventScreenTouch` (o ratón emulado).
+- [x] Seguir el trazo con `InputEventScreenDrag` y resaltar celdas en tiempo real.
+- [x] Bloquear la dirección tras un umbral de píxeles para evitar zigzag.
+      (Se fija en el primer cambio de celda: equivale a un umbral de una celda.)
+- [x] Construir la ruta recta completa al soltar (extremos incluidos).
+- [x] Validar solo contra palabras pendientes, en el sentido seleccionado.
+- [x] Rechazar selecciones no alineadas o de una sola celda.
+- [x] Desvanecer la selección inválida en 0,5 s sin penalizar.
+- [x] No permitir seleccionar una palabra ya encontrada.
+- [x] Trazo retro semitransparente con contraste suficiente.
+- [x] Tests `IT-WS-01`, `IT-WS-02`, `IT-WS-03`.
 
 ### 3.3 Solo arrastre: usabilidad
 
 - [ ] Tutorial breve de 1 paso la primera vez: “Toca y arrastra para marcar una palabra”.
-- [ ] Tolerancia de dirección: si el dedo se desvía, se ajusta a la línea dominante.
-- [ ] Celdas grandes y trazo visible para que no haga falta precisión.
-- [ ] Cancelar la selección si el dedo sale del tablero.
+- [x] Tolerancia de dirección: si el dedo se desvía, se ajusta a la línea dominante.
+- 🟡 Celdas grandes y trazo visible para que no haga falta precisión (el zoom
+      con pinch y botones llega en la Fase 4).
+- [x] Cancelar la selección si el dedo sale del tablero.
 - [ ] Probar con usuarios 60+ que el arrastre se descubre sin explicación.
-- [ ] Documentar la excepción al principio global “sin gestos finos” (C4).
+- [x] Documentar la excepción al principio global “sin gestos finos” (C4)
+      (`docs/spec.md` §6.8).
 
 ---
 

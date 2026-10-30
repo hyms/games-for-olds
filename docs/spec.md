@@ -221,13 +221,14 @@ res://
 │   └── AccessibleTheme.tres
 ├── ui/
 │   ├── main_menu/
+│   ├── difficulty_selector/      # Selector de dificultad (antes de la partida)
 │   ├── components/
-│   ├── coming_soon/             # Provisional hasta Fase 2 (selector de dificultad)
 │   ├── settings/
 │   └── stats/
 ├── minigames/
 │   └── word_search/             # Un directorio por juego
 ├── resources/
+│   ├── difficulties/            # Los 4 niveles (DifficultyConfig .tres)
 │   └── themes/                  # Temáticas y datos editables
 ├── assets/
 │   └── fonts/

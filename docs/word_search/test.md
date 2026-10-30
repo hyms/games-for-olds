@@ -63,6 +63,18 @@ public class WordSearchGeneratorTest
 | **UT-WS-06** | `ShuffleBagSystem` | Distribución de categorías | En 20 partidas de Fácil, cada uno de los 10 grupos temáticos aparece al menos 2 veces. |
 | **UT-WS-07** | `WordBank` + `WordSearchTheme.validate` | Banco de palabras (spec §5 y §5.1) | Carga 10 categorías con sus ids y nombres; cada una supera `validate()` con ≥60 palabras válidas (4–15 letras A–Z, sin duplicados); ≥600 en total; ninguna palabra repetida entre categorías. |
 
+### 2.3 Cobertura automatizada actual
+
+| Archivo | Cubre |
+|---|---|
+| `tests/unit/DifficultyConfigTest.cs` | `UT-WS-01` y datos de la spec §4.2: los 4 `.tres`, mínimo del 80 %, categorías, par, encadenado de niveles, `validate()` y `MinimumFor`. |
+| `tests/unit/WordSearchGeneratorTest.cs` | `UT-WS-01` a `UT-WS-05`: dimensiones, direcciones por nivel, normalización, tolerancia del 80 %, fallo controlado, solape y tiempo de 15×15 (< 0,5 s). |
+| `tests/unit/WordSelectionTest.cs` | Mezcla de 1/1/2/4 categorías, palabras normalizadas y sin repetir, avance de la Shuffle Bag y respaldo sin bolsa. |
+| `tests/unit/DragSelectionTest.cs` | Lógica de arrastre: bloqueo de dirección, ajuste a la línea dominante, límites del tablero, cancelación y ruta. |
+| `tests/unit/ShuffleBagSystemTest.cs` | `UT-WS-06`: reparto de los 10 grupos en 20 extracciones. |
+| `tests/unit/WordBankTest.cs` | `UT-WS-07`: banco completo. |
+| `tests/integration/WordSearchDragTest.cs` | `IT-WS-01` a `IT-WS-03` con `SceneRunner` y ratón emulado. |
+
 ---
 
 ## 3. Pruebas de Integración y Módulos Visuales
@@ -71,6 +83,13 @@ public class WordSearchGeneratorTest
 - **IT-WS-01 (Selección por Arrastre):** Simular evento de toque `InputEventScreenTouch` en celda $(0,0)$ y arrastre `InputEventScreenDrag` hasta $(0,3)$. Verificar que se emita la señal `word_selected(start_coords, end_coords)`.
 - **IT-WS-02 (Selección Inválida):** Arrastrar formando una línea no recta o que no coincida con una palabra. Confirmar que el resaltado temporal se desvanece sin penalizar ni restar intentos.
 - **IT-WS-03 (Solapamiento Visual):** Seleccionar una palabra que cruce sobre otra ya encontrada. La celda cruzada debe adoptar el estilo visual de la palabra recién completada.
+
+> **Estado:** los tres casos están automatizados en
+> `tests/integration/WordSearchDragTest.cs` sobre la escena real
+> (`WordSearchMain.tscn`) con `ISceneRunner`: el arrastre se simula con el ratón
+> emulado sobre los centros de celda calculados por el tablero, y el caso
+> inválido espera 800 ms para comprobar que la celda vuelve a reposo con
+> transparencia restaurada.
 
 ### 3.2 Zoom y Desplazamiento
 - **IT-WS-04 (Pinch-To-Zoom):** Enviar evento multitáctil simulando 2 dedos alejándose. El contenedor `WordGridContainer` debe escalar manteniendo legibilidad de celdas.

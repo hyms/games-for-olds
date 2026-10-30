@@ -33,8 +33,8 @@ public partial class MainMenu : Control
 
     private void OnWordSearchPressed()
     {
-        // Provisional hasta la Fase 2 §2.3: el submenú real es el selector de dificultad.
-        _sceneManager.GoTo(ComingSoon.ScenePath);
+        // Submenú real: selector de dificultad (spec §4.1 · plan Fase 2 §2.3).
+        _sceneManager.GoTo(DifficultySelector.ScenePath);
     }
 
     private void OnTangramPressed()
