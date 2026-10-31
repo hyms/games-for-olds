@@ -85,12 +85,27 @@ Previo al tablero, el juego cuenta con un submenú dedicado que muestra los nive
 
 ---
 
-## 5. Banco de Palabras Offline y Algoritmo Shuffle Bag
+### 5. Banco de Palabras Offline y Algoritmo Shuffle Bag
 
 Para asegurar la sensación de variedad infinita sin depender de internet:
 - **Banco de Palabras Local (`user://word_bank.json` o Resource):** Contiene 10 categorías temáticas con un mínimo de 50 a 100 palabras por categoría (total $\ge 600$ palabras).
 - **Mecanismo Shuffle Bag:** En modos **Fácil** y **Medio**, se llena una bolsa aleatoria sin repetición con los 10 grupos. Se asegura que cada grupo se juegue al menos 2 veces en 20 partidas antes de reiniciar la bolsa.
-- **Footer Dinámico de Lista de Palabras:** Las palabras a buscar se listan en el footer inferior en orden aleatorio. Conforme son encontradas y tachadas, se desplazan automáticamente al final de la lista.
+
+### 5.1 Formato del Footer de Palabras
+
+- **Flujo continuo con auto-wrapping:** Las palabras se muestran en un flujo horizontal que se ajusta automáticamente (wrap) a lo largo de la línea. Las palabras encontradas se tachan y las encontradas permanecen en el flujo, separadas limpiamente.
+- **Ubicación:** El panel de palabras está justo debajo del HUD superior (título, contador y dificultad), respetando el área segura (Safe Area / Notch / Acordeón).
+- **Tachar las encontradas:** Las palabras ya encontradas se muestran tachadas dentro del flujo.
+- **Mover la palabra encontrada:** La palabra encontrada se mueve al final del flujo para mantener la lista actualizada.
+- **Legibilidad:** Se mantiene la legibilidad con 5, 8, 12 y 20 palabras.
+- **Nunca reducir el tablero por debajo del mínimo acordado.**
+
+### 5.2 Seguridad del Layout (Safe Area / Notch / Acordeón)
+
+- El título principal y el HUD superior se desplazan dinámicamente hacia abajo o se ajustan para evitar que queden ocultos detrás de la cámara frontal o los bordes curvados del dispositivo.
+- Se aplica una política de márgenes de seguridad global (`core/SafeAreaManager.cs`) que respeta el acordeón del sistema operativo y la zona de recorte de la pantalla.
+- El panel de palabras se posiciona a la parte superior de la pantalla, justo debajo del HUD y antes del tablero, con los márgenes de seguridad aplicados.
+
 
 ### 5.1 Las 10 Categorías Temáticas (40+ Friendly)
 1. **Animales y Naturaleza** (PERRO, GATO, DELFIN, ELEFANTE...)
