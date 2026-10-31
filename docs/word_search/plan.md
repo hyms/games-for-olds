@@ -119,9 +119,11 @@ dimensiones ni tolerancia.
 - [x] Primer test de `WordSearchTheme` (`tests/unit/WordSearchThemeTest.cs`):
       mayúsculas, tildes/dieresis/Ñ y filtros por longitud; se añadió
       `ACCENT_REPLACEMENTS` en `WordSearchTheme.cs` para normalizar a A–Z.
-- [x] Ejecutar la suite desde terminal: 29/29 en verde (29/10/2026).
-- [ ] Excluir `addons/gdUnit4/*` y `tests/` de las exportaciones (pendiente de
-      `export_presets.cfg`).
+- [x] Ejecutar la suite desde terminal: 65/65 en verde (30/10/2026).
+- [x] Excluir `addons/gdUnit4/*`, `tests/`, `tools/`, `docs/` y `builds/` de las
+      exportaciones (`exclude_filter` en `export_presets.cfg`, 30/10/2026).
+- [x] Exportación Android con Gradle + JDK 21 y APK firmado con keystore de
+      depuración (`build_apk.sh` genera `builds/ClasicosMenteActiva2D-v0.4.0.apk`).
 
 ---
 
