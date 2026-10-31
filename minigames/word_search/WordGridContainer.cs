@@ -33,6 +33,9 @@ public partial class WordGridContainer : Control
 
     public bool IsSelecting => _selection.IsActive;
 
+    /// <summary>Último resultado de generación (para leer palabras).</summary>
+    public GenerationResult Result { get; private set; }
+
     public override void _Ready()
     {
         MouseFilter = MouseFilterEnum.Stop;
@@ -48,17 +51,22 @@ public partial class WordGridContainer : Control
         }
     }
 
-    /// <summary>Monta el tablero con la matriz generada (la reemplaza si ya había una).</summary>
-    public void Setup(char[,] grid)
+    /// <summary>Monta el tablero con el resultado generado (la reemplaza si ya había una).</summary>
+    public void Setup(GenerationResult result)
     {
-        ArgumentNullException.ThrowIfNull(grid);
+        if (result == null)
+        {
+            return;
+        }
+
         CancelSelection();
         KillInvalidTween();
         EnsureTrace();
 
-        Rows = grid.GetLength(0);
-        Columns = grid.GetLength(1);
-        _letters = grid;
+        Result = result;
+        Rows = result.Rows;
+        Columns = result.Columns;
+        _letters = result.Grid;
 
         foreach (Node child in GetChildren())
         {
@@ -77,7 +85,7 @@ public partial class WordGridContainer : Control
             for (int x = 0; x < Columns; x++)
             {
                 var cell = new WordCell();
-                cell.Setup(new Vector2I(x, y), grid[y, x], WordSearchVisuals.DefaultCellFontSize);
+                cell.Setup(new Vector2I(x, y), result.GetLetter(new Vector2I(x, y)), WordSearchVisuals.DefaultCellFontSize);
                 AddChild(cell);
                 _cells[y, x] = cell;
             }

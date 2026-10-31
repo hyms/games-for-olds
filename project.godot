@@ -15,10 +15,11 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Clásicos Mente Activa 2D"
-config/version="0.1.0"
+config/version="0.4.0"
 run/main_scene="res://ui/main_menu/MainMenu.tscn"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 boot_splash/show_image=false
+config/android/package="com.helier.clasicosmenteactiva2d"
 
 [autoload]
 
@@ -44,4 +45,8 @@ enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
 
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.70980394, 0.6784314, 0.5882353, 1)
+textures/vram_compression/import_etc=true
+textures/vram_compression/import_astc=true
+textures/vram_compression/import_bc=false

@@ -15,9 +15,8 @@ public class WordSearchHudTest
     [TestCase]
     public void ListaLasPendientesYDejaLasEncontradasAlFinalTachadas()
     {
-        List<string> order = new() { "CASA", "MESA", "LUNA" };
         var pending = new HashSet<string> { "MESA", "LUNA" };
-        string[] lines = WordSearchHud.BuildWordList(order, pending, new[] { "CASA" }).Split('\n');
+        string[] lines = WordSearchHud.BuildWordList(pending, new[] { "CASA" }).Split('\n');
 
         AssertInt(lines.Length).IsEqual(3);
         AssertString(lines[0]).IsEqual("MESA");
@@ -31,9 +30,8 @@ public class WordSearchHudTest
     [TestCase]
     public void SinPalabrasEncontradasDevuelveSoloElOrdenDelTablero()
     {
-        List<string> order = new() { "CASA", "MESA" };
         var pending = new HashSet<string> { "CASA", "MESA" };
-        string text = WordSearchHud.BuildWordList(order, pending, new List<string>());
+        string text = WordSearchHud.BuildWordList(pending, new List<string>());
 
         AssertString(text).IsEqual("CASA\nMESA");
     }
@@ -41,10 +39,7 @@ public class WordSearchHudTest
     [TestCase]
     public void SinPalabrasDevuelveTextoVacio()
     {
-        string text = WordSearchHud.BuildWordList(
-            new List<string>(),
-            new HashSet<string>(),
-            new List<string>());
+        string text = WordSearchHud.BuildWordList(new HashSet<string>(), new List<string>());
 
         AssertString(text).IsEmpty();
     }

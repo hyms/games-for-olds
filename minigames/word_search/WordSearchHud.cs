@@ -3,11 +3,9 @@ using System.Text;
 using Godot;
 
 /// <summary>
-/// HUD provisional de la Sopa de Letras (SRP · plan Fase 3): contador,
-/// dificultad, footer de palabras y aviso de victoria. `WordSearchMain` se
-/// limita a llamar a <see cref="Render"/> cuando cambia la partida.
-/// El formato del footer es puro (<see cref="BuildWordList"/>) y se prueba
-/// sin escenas.
+/// HUD de la Sopa de Letras (solo presentación, plan Fase 3/5):
+/// contador, dificultad, footer de palabras y aviso de victoria.
+/// `WordSearchMain` le pasa los datos; no conoce reglas.
 /// </summary>
 public sealed class WordSearchHud
 {
@@ -31,29 +29,23 @@ public sealed class WordSearchHud
     }
 
     /// <summary>Refresca contador, lista y aviso de victoria desde el estado.</summary>
-    public void Render(WordSearchGame game)
+    public void Render(int found, int total, ICollection<string> pending, IReadOnlyList<string> foundOrder, bool complete)
     {
-        _counter.Text = $"{game.FoundCount}/{game.TotalCount}";
-        _wordList.Text = BuildWordList(game.Order, game.PendingWords, game.FoundWords);
-        _victory.Visible = game.IsComplete;
+        _counter.Text = $"{found}/{total}";
+        _wordList.Text = BuildWordList(pending, foundOrder);
+        _victory.Visible = complete;
     }
 
     /// <summary>
     /// Texto del footer: primero las pendientes en el orden del tablero y al
     /// final las encontradas, tachadas y en el color de «encontrada».
     /// </summary>
-    public static string BuildWordList(
-        IReadOnlyList<string> order,
-        IReadOnlySet<string> pending,
-        IReadOnlyList<string> found)
+    public static string BuildWordList(ICollection<string> pending, IReadOnlyList<string> found)
     {
         var text = new StringBuilder();
-        foreach (string word in order)
+        foreach (string word in pending)
         {
-            if (pending.Contains(word))
-            {
-                text.AppendLine(word);
-            }
+            text.AppendLine(word);
         }
 
         string color = PixelStyles.EncontradaBorde.ToHtml(false);
