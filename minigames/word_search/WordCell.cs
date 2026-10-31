@@ -18,7 +18,7 @@ public enum WordCellState
 public partial class WordCell : Panel
 {
     /// <summary>Fuente en negrita para las letras ya encontradas (Assets/fonts).</summary>
-    private const string BoldFontPath = "res://assets/fonts/AtkinsonHyperlegible-Bold.ttf";
+    private const string BoldFontPath = Constants.FontBoldPath;
 
     private static Font _boldFont;
 

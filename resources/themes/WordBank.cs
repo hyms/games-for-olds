@@ -25,12 +25,21 @@ public static class WordBank
         "res://resources/themes/themes/ropa.tres",
     };
 
+    /// <summary>Caché de categorías cargadas (evita recargar .tres en cada llamada).</summary>
+    private static List<WordSearchTheme>? _categoriesCache;
+
     /// <summary>
-    /// Carga las 10 categorías en el orden de la spec. Los recursos ausentes o
-    /// inválidos se saltan con error en consola (no rompen la partida).
+    /// Carga las 10 categorías en el orden de la spec. Se carga una sola vez y
+    /// se reutiliza el caché. Los recursos ausentes o inválidos se saltan con
+    /// error en consola (no rompen la partida).
     /// </summary>
     public static List<WordSearchTheme> LoadAll()
     {
+        if (_categoriesCache != null)
+        {
+            return _categoriesCache;
+        }
+
         var categories = new List<WordSearchTheme>();
         foreach (string path in CategoryPaths)
         {
@@ -50,6 +59,7 @@ public static class WordBank
             categories.Add(category);
         }
 
+        _categoriesCache = categories;
         return categories;
     }
 
@@ -78,4 +88,7 @@ public static class WordBank
 
         return ids;
     }
+
+    /// <summary>Invalida el caché (útil para tests o recargas de recursos).</summary>
+    public static void InvalidateCache() => _categoriesCache = null;
 }

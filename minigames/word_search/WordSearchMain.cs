@@ -5,10 +5,10 @@ using System.Text;
 using Godot;
 
 /// <summary>
-/// Pantalla de la Sopa de Letras (plan Fase 3, regresada a la segunda opción):
-/// `WordSearchMain` mantiene el estado y las reglas de la partida; `WordSearchHud`
-/// solo formatea el footer y maqueta las etiquetas. `WordSearchMain` orquesta
-/// el ciclo de vida y traduce la entrada del tablero en reglas de juego.
+/// Pantalla de la Sopa de Letras (Singleton vía SceneManager autoload, Composite
+/// vía WordGridContainer, Strategy vía WordSearchGenerator).
+/// Mantiene el estado y las reglas de la partida; <see cref="WordSearchHud"/>
+/// solo formatea el footer y maqueta las etiquetas.
 /// Provisional: la pausa y el modal de victoria llegan en las fases 5 y 8.
 /// </summary>
 public partial class WordSearchMain : Control

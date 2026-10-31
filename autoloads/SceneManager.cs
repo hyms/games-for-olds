@@ -1,7 +1,8 @@
 using Godot;
 
 /// <summary>
-/// Autoload: gestiona los cambios de escena con enfoque desacoplado (señales).
+/// Autoload: gestiona los cambios de escena y crea los servicios compartidos
+/// (SaveManager, ThemeManager, AudioManager, AdManager).
 /// Se registra como <c>SceneManager</c> en Project Settings → Globals → Autoloads.
 /// Equivalente C# de <c>autoloads/SceneManager.gd</c>.
 /// </summary>
@@ -18,6 +19,18 @@ public partial class SceneManager : Node
     /// <summary>Ruta de la escena actual (vacía si aún no hay ninguna).</summary>
     public string CurrentScenePath { get; private set; } = string.Empty;
 
+    /// <summary>Servicio de persistencia y estadísticas.</summary>
+    public SaveManager Save { get; private set; }
+
+    /// <summary>Servicio de temas y accesibilidad visual.</summary>
+    public ThemeManager Theme { get; private set; }
+
+    /// <summary>Servicio de audio.</summary>
+    public AudioManager Audio { get; private set; }
+
+    /// <summary>Servicio de publicidad (no-op en MVP).</summary>
+    public AdManager Ads { get; private set; }
+
     public override void _Ready()
     {
         Node current = GetTree().CurrentScene;
@@ -25,6 +38,36 @@ public partial class SceneManager : Node
         {
             CurrentScenePath = current.SceneFilePath;
         }
+
+        CreateServices();
+    }
+
+    /// <summary>Crea los servicios compartidos una sola vez como hijos de SceneManager.</summary>
+    private void CreateServices()
+    {
+        Save = GetNodeOrNull<SaveManager>("SaveManager") ?? new SaveManager { Name = "SaveManager" };
+        Theme = GetNodeOrNull<ThemeManager>("ThemeManager") ?? new ThemeManager { Name = "ThemeManager" };
+        Audio = GetNodeOrNull<AudioManager>("AudioManager") ?? new AudioManager { Name = "AudioManager" };
+        Ads = GetNodeOrNull<AdManager>("AdManager") ?? new AdManager { Name = "AdManager" };
+
+        if (!GodotObject.IsInstanceValid(Save.GetParent()))
+        {
+            AddChild(Save);
+        }
+        if (!GodotObject.IsInstanceValid(Theme.GetParent()))
+        {
+            AddChild(Theme);
+        }
+        if (!GodotObject.IsInstanceValid(Audio.GetParent()))
+        {
+            AddChild(Audio);
+        }
+        if (!GodotObject.IsInstanceValid(Ads.GetParent()))
+        {
+            AddChild(Ads);
+        }
+
+        GD.Print("[SceneManager] servicios core creados: SaveManager, ThemeManager, AudioManager, AdManager");
     }
 
     /// <summary>Cambia a otra escena por ruta <c>res://…</c>.</summary>
@@ -46,7 +89,6 @@ public partial class SceneManager : Node
         EmitSignal(SignalName.SceneChanging, CurrentScenePath, path);
         await ToSignal(tree, SceneTree.SignalName.ProcessFrame); // respiro para los listeners
 
-        // Cambio inmediato por ahora. Más adelante: transiciones (fade/crossfade).
         Error error = tree.ChangeSceneToFile(path);
         if (error != Error.Ok)
         {

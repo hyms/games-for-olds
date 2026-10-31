@@ -9,13 +9,13 @@ using Godot;
 public static class WordSearchVisuals
 {
     // --- Tablero -------------------------------------------------------------
-    /// <summary>Separación entre celdas (docs/art_direction.md §3).</summary>
+    /// <summary>Separación entre celdas (docs/art_direction.md §3, 41:6 escala).</summary>
     public const float CellGap = 6.0f;
 
-    /// <summary>Tamaño mínimo de celda antes del zoom de la Fase 4.</summary>
-    public const int MinCellSize = 10;
+    /// <summary>Tamaño mínimo de celda antes del zoom (≥24 para visibilidad).</summary>
+    public const int MinCellSize = 24;
 
-    /// <summary>Tamaño de letra mientras el contenedor aún no tiene tamaño.</summary>
+    /// <summary>Tamaño de letra mentre el contenedor aún no tiene tamaño.</summary>
     public const int DefaultCellFontSize = 20;
 
     /// <summary>Proporción del lado de celda que ocupa la letra.</summary>
@@ -43,6 +43,22 @@ public static class WordSearchVisuals
     public const float TraceDotRadius = 5.0f;
 
     public const float TraceDotAlpha = 0.9f;
+
+    // --- Zoom (Fase 4) -------------------------------------------------------
+    /// <summary>Factor zoom mínimo sin distorsión.</summary>
+    public const float MinZoom = 1.0f;
+
+    /// <summary>Factor zoom máximo con dos dedos.</summary>
+    public const float MaxZoom = 2.5f;
+
+    /// <summary>Incremento de zoom al pinchar (factor por pincel).</summary>
+    public const float ZoomStep = 1.2f;
+
+    /// <summary>Margen lateral escalado (docs/art_direction.md §3, 19px base).</summary>
+    public const float BoardMargin = 19.0f;
+
+    /// <summary>Factor que escala el margen lateral por nivel dificultad.</summary>
+    public const int MarginScalePerLevel = 1;
 
     // --- Selector de dificultad ---------------------------------------------
     /// <summary>Alto mínimo de cada botón de nivel (objetivo táctil, spec §3).</summary>

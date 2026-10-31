@@ -15,6 +15,7 @@ public partial class WordGridContainer : Control
     public delegate void WordSelectedEventHandler(Vector2I start, Vector2I end);
 
     private readonly DragSelection _selection = new();
+    private readonly BoardInputHandler _input = new();
     private readonly List<Vector2I> _preview = new();
     private readonly List<Vector2I> _invalidCells = new();
 
@@ -38,9 +39,20 @@ public partial class WordGridContainer : Control
 
     public override void _Ready()
     {
+        // MouseFilter.Stop captura todos los eventos táctiles dentro del área del
+        // contenedor. Es necesario en Android para que el arrastre (InputEventScreenTouch
+        // + InputEventScreenDrag) se entregue de forma confiable y no se pierda entre
+        // nodos hijos.
         MouseFilter = MouseFilterEnum.Stop;
         EnsureTrace();
         UpdateLayout();
+
+        // Conectar traductor de input (Composite: el contenedor orquesta, el handler
+        // solo traduce eventos a acciones).
+        _input.SelectionBegan += OnInputBegan;
+        _input.SelectionUpdated += OnInputUpdated;
+        _input.SelectionEnded += OnInputEnded;
+        _input.SelectionCanceled += OnInputCanceled;
     }
 
     public override void _Notification(int what)
@@ -67,6 +79,10 @@ public partial class WordGridContainer : Control
         Rows = result.Rows;
         Columns = result.Columns;
         _letters = result.Grid;
+
+        // Asegurar que el contenedor capture todo el input táctil después de
+        // reconstruir el tablero (Setup se llama dinámicamente por cada partida).
+        MouseFilter = MouseFilterEnum.Stop;
 
         foreach (Node child in GetChildren())
         {
@@ -164,9 +180,16 @@ public partial class WordGridContainer : Control
     /// <summary>Inicia la selección en una celda concreta.</summary>
     public void BeginSelectionAt(Vector2I coord)
     {
-        if (!IsValidCell(coord) || _selection.IsActive)
+        if (!IsValidCell(coord))
         {
             return;
+        }
+
+        // Si una selección previa quedó atrapada (p. ej. se perdió el Touch.Release
+        // en Android), cancelarla antes de iniciar una nueva.
+        if (_selection.IsActive)
+        {
+            CancelSelection();
         }
 
         KillInvalidTween();
@@ -299,44 +322,39 @@ public partial class WordGridContainer : Control
 
     public override void _GuiInput(InputEvent @event)
     {
-        switch (@event)
+        if (_input.Process(@event))
         {
-            case InputEventScreenTouch touch:
-                if (touch.Pressed)
-                {
-                    BeginSelection(ToLocalPosition(touch.Position));
-                }
-                else
-                {
-                    EndSelection(ToLocalPosition(touch.Position));
-                }
-
-                AcceptEvent();
-                break;
-
-            case InputEventScreenDrag drag:
-                UpdateSelection(ToLocalPosition(drag.Position));
-                AcceptEvent();
-                break;
-
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left } button:
-                if (button.Pressed)
-                {
-                    BeginSelection(button.Position);
-                }
-                else
-                {
-                    EndSelection(button.Position);
-                }
-
-                AcceptEvent();
-                break;
-
-            case InputEventMouseMotion motion when _selection.IsActive:
-                UpdateSelection(motion.Position);
-                AcceptEvent();
-                break;
+            AcceptEvent();
         }
+    }
+
+    private void OnInputBegan(Vector2 localPosition)
+    {
+        BeginSelection(localPosition);
+    }
+
+    private void OnInputUpdated(Vector2 localPosition)
+    {
+        UpdateSelection(localPosition);
+    }
+
+    private void OnInputEnded(Vector2 localPosition)
+    {
+        // Touch.Release sin selección activa: limpiar estados visuales
+        // residuales por si el estado quedó atrapado en Android.
+        if (!_selection.IsActive)
+        {
+            ClearPreview();
+        }
+        else
+        {
+            EndSelection(localPosition);
+        }
+    }
+
+    private void OnInputCanceled()
+    {
+        CancelSelection();
     }
 
     // --- Interno -------------------------------------------------------------

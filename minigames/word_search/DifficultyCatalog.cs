@@ -8,7 +8,7 @@ using Godot;
 public static class DifficultyCatalog
 {
 	/// <summary>Nivel abierto por defecto (C6: el Fácil no tiene candado).</summary>
-	public const string DefaultId = "facil";
+	public const string DefaultId = Constants.DefaultDifficultyId;
 
 	/// <summary>Rutas en el orden de la spec §4.2 (id = nombre del archivo).</summary>
 	public static readonly string[] Paths =
@@ -19,12 +19,20 @@ public static class DifficultyCatalog
 		"res://resources/difficulties/maestro.tres",
 	};
 
+	/// <summary>Caché de niveles cargados (evita recargar .tres en cada llamada).</summary>
+	private static List<DifficultyConfig>? _levelsCache;
+
 	/// <summary>
-	/// Carga los cuatro niveles. Un recurso ausente o inválido se salta con
-	/// error en consola para no romper la pantalla de selección.
+	/// Carga los cuatro niveles. Se carga una sola vez y se reutiliza el caché.
+	/// Un recurso ausente o inválido se salta con error en consola.
 	/// </summary>
 	public static List<DifficultyConfig> LoadAll()
 	{
+		if (_levelsCache != null)
+		{
+			return _levelsCache;
+		}
+
 		var levels = new List<DifficultyConfig>();
 		foreach (string path in Paths)
 		{
@@ -44,6 +52,7 @@ public static class DifficultyCatalog
 			levels.Add(level);
 		}
 
+		_levelsCache = levels;
 		return levels;
 	}
 
@@ -72,4 +81,7 @@ public static class DifficultyCatalog
 		List<DifficultyConfig> levels = LoadAll();
 		return levels.Count > 0 ? levels[0] : null;
 	}
+
+	/// <summary>Invalida el caché (útil para tests o recargas de recursos).</summary>
+	public static void InvalidateCache() => _levelsCache = null;
 }

@@ -116,7 +116,7 @@ El minijuego aplica los patrones del núcleo general:
 4. **Datos de dificultad (`DifficultyConfig`):** un recurso `.tres` por nivel en `resources/difficulties/`, cargados por `DifficultyCatalog`. El generador y el HUD leen de ahí; no hay condicionales por número de nivel.
 5. **Selección de palabras (`WordSelection` + `WordSearchSession`):** la Shuffle Bag reparte los grupos según `category_count` y de ellos salen las palabras de la partida; la sesión guarda el nivel elegido entre el selector y el tablero (en memoria hasta que `SaveManager` persista en la Fase 7).
 6. **Selección por arrastre (`DragSelection`):** lógica pura (inicio, bloqueo de dirección, ajuste a la línea dominante, límites) separada del contenedor, que solo traduce entrada y pinta el trazo (`WordTraceOverlay`).
-7. **Separación estado / presentación (`WordSearchGame`, `WordSearchHud`, `WordSearchVisuals`):** `WordSearchMain` solo orquesta. El estado de partida y la validación viven en `WordSearchGame` (puro, sin escenas); el footer y el formato del HUD en `WordSearchHud`; y las constantes de presentación (separación, tamaños de celda, duraciones) en `WordSearchVisuals`.
+7. **Separación estado / presentación (`WordSearchMain`, `WordSearchHud`, `WordSearchVisuals`):** `WordSearchMain` conserva el estado y las reglas de la partida (pendientes, encontradas, orden y fallos) y orquesta el ciclo de vida; el footer y el formato del HUD viven en `WordSearchHud`; y las constantes de presentación (separación, tamaños de celda, duraciones) en `WordSearchVisuals`.
 
 ### 6.1 Principios de diseño aplicados
 

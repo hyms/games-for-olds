@@ -120,6 +120,8 @@ public partial class ShuffleBagSystem : RefCounted
     /// <summary>
     /// Llena la bolsa con <see cref="CopiesPerGroup"/> copias de cada grupo y la
     /// baraja con el RNG propio (una semilla determinista da secuencias repetibles).
+    /// Usa <see cref="Utils.Shuffle{T}(IList{T}, Godot.RandomNumberGenerator)"/>
+    /// como fuente única del algoritmo Fisher–Yates.
     /// </summary>
     private void Refill()
     {
@@ -132,11 +134,7 @@ public partial class ShuffleBagSystem : RefCounted
             }
         }
 
-        for (int i = _bag.Count - 1; i > 0; i--)
-        {
-            int j = _rng.RandiRange(0, i);
-            (_bag[i], _bag[j]) = (_bag[j], _bag[i]);
-        }
+        Utils.Shuffle(_bag, _rng);
 
         RefillCount++;
     }
