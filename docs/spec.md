@@ -195,7 +195,11 @@ Cada cambio se guarda de inmediato.
   Android).
 - **Pruebas:** **GdUnit4Net** (`dotnet test`), con ejecución headless para CI.
 - **Rendimiento:** 60 fps; arranque < 3 s; memoria < 150 MB; carga de nivel
-  < 0,5 s.
+  < 0,5 s. **Nota:** En Android, la app puede mostrar pantalla negra durante el
+  arranque inicial. Se recomienda implementar una pantalla de bienvenida o
+  actividad de carga (splash screen) que se muestre mientras el motor y los
+  recursos se cargan, para no dejar al usuario con la impresión de que la app
+  se ha cerrado. Esto es especialmente importante en dispositivos gama baja.
 
 ---
 
