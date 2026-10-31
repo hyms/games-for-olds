@@ -137,7 +137,6 @@ public partial class WordSearchMain : Control
 
         List<Vector2I> path = WordPath.Build(start, end);
         string word = ResultReader(start, end);
-        GD.Print($"[DEBUG] OnWordSelected: start={start} end={end} pathCount={path.Count} word='{word}' pendingContains={_pending.Contains(word)} ResultGrid={Board.Result?.Grid.GetLength(0)}x{Board.Result?.Grid.GetLength(1)}");
         if (path.Count < 2 || string.IsNullOrEmpty(word))
         {
             InvalidSelections++;
