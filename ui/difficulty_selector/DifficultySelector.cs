@@ -56,7 +56,9 @@ public partial class DifficultySelector : Control
 
             bool locked = level.Id != "facil" && completed < 20;
             button.Disabled = locked;
-            button.Text = locked ? $"{level.MenuLabel} (20/20)" : $"{level.MenuLabel} ({completed}/20)";
+            button.Text = locked
+                ? $"🔒 {level.MenuLabel} (20/20)"
+                : $"🔓 {level.MenuLabel} ({completed}/20)";
 
             if (locked)
             {
