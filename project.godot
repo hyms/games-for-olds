@@ -16,6 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Clásicos Mente Activa 2D"
 config/version="0.4.0"
+config/icon="res://assets/icon.png"
 run/main_scene="res://ui/main_menu/MainMenu.tscn"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 boot_splash/show_image=false
