@@ -226,7 +226,7 @@ public partial class WordSearchMain : Control
             {
                 winModal.Visible = true;
                 var title = winModal.GetNodeOrNull<Label>("WinTitle");
-                if (title != null) title.Text = $"¡Victoria!\nPuntaje: {score}";
+                if (title != null) title.Text = "¡Victoria!";
             }
         }
     }
