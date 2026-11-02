@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GdUnit4;
 using Godot;
@@ -52,7 +53,7 @@ public class WordSearchDragTest
         AssertCoord(emittedStart.Value, target.Start);
         AssertCoord(emittedEnd.Value, target.End);
         AssertInt(_scene.WordsFound).IsEqual(1);
-        AssertThat(_scene.FoundWords).Contains(target.Word);
+        AssertBool(_scene.FoundWords.Contains(target.Word)).IsTrue();
 
         // La celda debe cambiar de relleno, no solo el borde (observación del usuario).
         StyleBoxFlat foundStyle = _scene.Board.GetCell(target.Start).GetThemeStylebox("panel") as StyleBoxFlat;

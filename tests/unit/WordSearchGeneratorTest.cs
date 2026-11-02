@@ -103,7 +103,12 @@ public class WordSearchGeneratorTest
             new[] { "ESPAÑA", "ZANAHORIA", "ÁRBOL", "niño", "CASA", "CASA", "A", "EXTRAORDINARIAMENTE" },
             15);
 
-        AssertThat(prepared).ContainsExactly("ESPANA", "ZANAHORIA", "ARBOL", "NINO", "CASA");
+        AssertInt(prepared.Count).IsEqual(5);
+        AssertString(prepared[0]).IsEqual("ESPANA");
+        AssertString(prepared[1]).IsEqual("ZANAHORIA");
+        AssertString(prepared[2]).IsEqual("ARBOL");
+        AssertString(prepared[3]).IsEqual("NINO");
+        AssertString(prepared[4]).IsEqual("CASA");
         AssertString(WordSearchTheme.NormalizeWord("ESPAÑA")).IsEqual("ESPANA");
         AssertString(WordSearchTheme.NormalizeWord("ZANAHORIA")).IsEqual("ZANAHORIA");
     }

@@ -93,9 +93,10 @@ public class WordSelectionTest
         DifficultyConfig config = DifficultyCatalog.LoadById("dificil");
         WordSelectionResult selection = WordSelection.Pick(config, WordBank.LoadAll(), null, seed: 5);
 
-        AssertThat(selection.CategoryIds).ContainsExactly(
-            WordBank.LoadAll()[0].CategoryId,
-            WordBank.LoadAll()[1].CategoryId);
+        var allCategories = WordBank.LoadAll();
+        AssertInt(selection.CategoryIds.Count).IsEqual(2);
+        AssertString(selection.CategoryIds[0]).IsEqual(allCategories[0].CategoryId);
+        AssertString(selection.CategoryIds[1]).IsEqual(allCategories[1].CategoryId);
     }
 
     private static int PickCount(string id, long seed)

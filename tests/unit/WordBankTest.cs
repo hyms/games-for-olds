@@ -42,8 +42,12 @@ public class WordBankTest
             names.Add(category.ThemeName);
         }
 
-        AssertThat(ids).ContainsExactly(ExpectedIds);
-        AssertThat(names).ContainsExactly(ExpectedNames);
+        AssertInt(ids.Count).IsEqual(ExpectedIds.Length);
+        for (int i = 0; i < ExpectedIds.Length; i++)
+            AssertString(ids[i]).IsEqual(ExpectedIds[i]);
+        AssertInt(names.Count).IsEqual(ExpectedNames.Length);
+        for (int i = 0; i < ExpectedNames.Length; i++)
+            AssertString(names[i]).IsEqual(ExpectedNames[i]);
     }
 
     [TestCase]
