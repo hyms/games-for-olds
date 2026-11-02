@@ -36,7 +36,6 @@ tooltip_text = "Volver al selector de dificultad"
 icon = ExtResource("4_back")
 expand_icon = true
 text = ""
-</node>
 
 [node name="Title" type="Label" parent="TopBar">
 layout_mode = 2
@@ -45,7 +44,6 @@ text = "SOPA DE LETRAS"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
-</node>
 
 [node name="DifficultyLabel" type="Label" parent="TopBar">
 layout_mode = 2
@@ -53,8 +51,6 @@ text = "Fácil"
 horizontal_alignment = 2
 vertical_alignment = 1
 autowrap_mode = 3
-</node>
-</node>
 
 [node name="StatusBar" type="HBoxContainer" parent="VBoxContainer">
 theme_override_constants/separation = 24
@@ -67,7 +63,6 @@ layout_mode = 2
 text = "0/5 Palabras"
 horizontal_alignment = 2
 vertical_alignment = 1
-</node>
 
 [node name="TimerLabel" type="Label" parent="StatusBar">
 custom_minimum_size = Vector2(80, 0)
@@ -75,8 +70,6 @@ layout_mode = 2
 text = "00:00"
 horizontal_alignment = 2
 vertical_alignment = 1
-</node>
-</node>
 
 [node name="WordList" type="RichTextLabel" parent="VBoxContainer">
 custom_minimum_size = Vector2(0, 120)
@@ -85,12 +78,10 @@ horizontal_scroll_mode = 0
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
-</node>
 
 [node name="BoardArea" type="Control" parent="VBoxContainer">
 layout_mode = 2
 size_flags_vertical = 3
-</node>
 
 [node name="%VictoryLabel" type="Label" parent="VBoxContainer">
 visible = false
@@ -98,7 +89,3 @@ layout_mode = 2
 text = "¡Sopa completada!"
 horizontal_alignment = 1
 vertical_alignment = 1
-</node>
-</node>
-</node>
-</node>
