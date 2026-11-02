@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Godot;
 
 namespace ClasicosMenteActiva.core;
@@ -23,12 +22,6 @@ public partial class SaveManager : Node
     /// <summary>Id del nivel inicial por defecto (Fácil).</summary>
     public const string DefaultLevelId = Constants.DefaultDifficultyId;
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    };
-
     private string _savePath;
     private string _backupPath;
     private SaveData _data = new() { Version = SaveVersion };
@@ -46,12 +39,9 @@ public partial class SaveManager : Node
     public void SaveProgress(string levelId, int completedGames)
     {
         string path = ProjectSettings.GlobalizePath("user://wordsearch_progress.json");
-        var data = new Godot.Collections.Dictionary
-        {
-            ["level"] = levelId,
-            ["completed"] = completedGames
-        };
-        File.WriteAllText(path, System.Text.Json.JsonSerializer.Serialize(data));
+        var progress = new WordSearchProgressData { LevelId = levelId, Completed = completedGames };
+        string json = JsonSerializer.Serialize(progress, AppJsonContext.Default.WordSearchProgressData);
+        File.WriteAllText(path, json);
     }
 
     public int LoadProgress(string levelId)
@@ -61,14 +51,9 @@ public partial class SaveManager : Node
         try
         {
             string json = File.ReadAllText(path);
-            var dict = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(json);
-            // Para simplificar, usamos un diccionario básico
-            var data = System.Text.Json.JsonSerializer.Deserialize<Godot.Collections.Dictionary>(json);
-            if (data != null && data.ContainsKey("completed") && data.ContainsKey("level"))
-            {
-                if (data["level"].AsString() == levelId)
-                    return (int)data["completed"];
-            }
+            var progress = JsonSerializer.Deserialize<WordSearchProgressData>(json, AppJsonContext.Default.WordSearchProgressData);
+            if (progress != null && progress.LevelId == levelId)
+                return progress.Completed;
         }
         catch { }
         return 0;
@@ -88,7 +73,7 @@ public partial class SaveManager : Node
         try
         {
             string json = File.ReadAllText(_savePath);
-            var loaded = JsonSerializer.Deserialize<SaveData>(json, JsonOptions);
+            var loaded = JsonSerializer.Deserialize(json, AppJsonContext.Default.SaveData) as SaveData;
             if (loaded != null)
             {
                 _data = loaded;
@@ -116,7 +101,7 @@ public partial class SaveManager : Node
         }
 
         string tmpPath = _savePath + ".tmp";
-        string json = JsonSerializer.Serialize(_data, JsonOptions);
+        string json = JsonSerializer.Serialize(_data, AppJsonContext.Default.SaveData);
 
         try
         {
@@ -198,7 +183,7 @@ public partial class SaveManager : Node
             try
             {
                 string json = File.ReadAllText(_backupPath);
-                var restored = JsonSerializer.Deserialize<SaveData>(json, JsonOptions);
+                var restored = JsonSerializer.Deserialize(json, AppJsonContext.Default.SaveData) as SaveData;
                 if (restored != null)
                 {
                     _data = restored;

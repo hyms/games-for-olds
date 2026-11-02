@@ -5,6 +5,8 @@
     <LangVersion>12.0</LangVersion>
     <RootNamespace>ClasicosMenteActiva</RootNamespace>
     <AssemblyName>ClasicosMenteActiva2D</AssemblyName>
+    <!-- dotnet-aot-compat: Habilitar análisis de Native AOT y trimming para optimizar APK Android -->
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
   <!-- gdUnit4Net: mismo framework que la versión GDScript (decisión D7). -->
@@ -16,5 +18,11 @@
       <PrivateAssets>none</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <!-- Excluir archivos de skills (no son parte del juego) -->
+  <ItemGroup>
+    <Compile Remove=".agents/skills/**/*.cs" />
+    <Compile Remove="skills/**/*.cs" />
   </ItemGroup>
 </Project>
