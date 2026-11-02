@@ -301,18 +301,18 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ## Fase 4 — Encaje, zoom y layout (P1)
 
-- [ ] Calcular el tamaño de celda a partir del área disponible (sin 48 px fijos).
-- [ ] Respetar las proporciones del template: celda 41 px, separación 6 px y
+- [x] Calcular el tamaño de celda a partir del área disponible (sin 48 px fijos).
+- [x] Respetar las proporciones del template: celda 41 px, separación 6 px y
       margen lateral 19 px, escalados a cada nivel (`docs/art_direction.md` §3).
-- [ ] Tablero completo al 100 % al iniciar, sin scroll.
-- [ ] Zoom con pinch de 2 dedos (`1×` a `2,5×`).
-- [ ] Botones **+ / −** y **Centrar** como alternativa accesible (C8).
-- [ ] Desplazamiento con límites para no perder el tablero.
-- [ ] Restablecer zoom al iniciar o reiniciar partida.
-- [ ] Evitar conflicto entre arrastre de selección y arrastre de zoom.
-- [ ] Verificar 8×8, 10×10, 12×12 y 15×15 en 360×640, 20:9 y tablet.
-- [ ] Verificar que las celdas no bajen de 24 px visibles en 15×15 sin zoom.
-- [ ] Test `IT-WS-04` y pruebas manuales de encaje.
+- [x] Tablero completo al 100 % al iniciar, sin scroll.
+- [x] Zoom con pinch de 2 dedos (`1×` a `2,5×`).
+- [x] Botones **+ / −** y **Centrar** como alternativa accesible (C8).
+- [x] Desplazamiento con límites para no perder el tablero.
+- [x] Restablecer zoom al iniciar o reiniciar partida.
+- [x] Evitar conflicto entre arrastre de selección y arrastre de zoom.
+- [x] Verificar 8×8, 10×10, 12×12 y 15×15 en 360×640, 20:9 y tablet.
+- [x] Verificar que las celdas no bajen de 24 px visibles en 15×15 sin zoom.
+- [x] Test `IT-WS-04` y pruebas manuales de encaje.
 
 ---
 
@@ -339,11 +339,13 @@ Fuente: [`art_direction.md`](../art_direction.md) y plantilla
 
 ### 5.3 Footer de palabras
 
-- [ ] Listar las palabras en orden aleatorio.
-- [ ] Tachar las encontradas.
-- [ ] Mover la palabra encontrada al final de la lista.
-- [ ] Mantener legibilidad con 5, 8, 12 y 20 palabras.
-- [ ] No reducir el tablero por debajo del mínimo acordado.
+- [x] Listar las palabras en orden aleatorio.
+- [x] Márgenes de seguridad globales: el panel de palabras está justo debajo del HUD superior (título + contador + dificultad), respetando el área segura (Safe Area / Notch / Acordeón). Ver `core/SafeAreaManager.cs` y `docs/spec.md §8.4`.
+- [x] Formato en flujo continuo con auto-wrapping: las palabras en pantalla aparecen en línea, separadas limpiamente, en lugar de lista de una sola columna.
+- [x] Tachar las encontradas.
+- [x] Mover la palabra encontrada al final de la lista (o al final del flujo).
+- [x] Mantener legibilidad con 5, 8, 12 y 20 palabras.
+- [x] No reducir el tablero por debajo del mínimo acordado.
 - [ ] Test `ST-WS-01`.
 
 ---

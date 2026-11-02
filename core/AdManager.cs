@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using ClasicosMenteActiva.core;
 
 /// <summary>
 /// Gestor de publicidad (plan Fase 3 §3.4 · spec §8.9).

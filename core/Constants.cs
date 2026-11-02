@@ -1,5 +1,7 @@
 using Godot;
 
+namespace ClasicosMenteActiva.core;
+
 /// <summary>
 /// Rutas, grupos y medidas compartidas del proyecto.
 /// Equivalente C# de <c>core/Constants.gd</c>.

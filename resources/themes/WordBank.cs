@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Godot;
 
+#pragma warning disable CS8632
+
 /// <summary>
 /// Catálogo de las 10 categorías del banco de palabras (spec §5.1).
 /// Recursos <c>.tres</c> incluidos en la app (decisión C9): funcionan sin

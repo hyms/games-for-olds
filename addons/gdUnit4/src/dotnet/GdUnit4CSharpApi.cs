@@ -1,6 +1,8 @@
 // Copyright (c) 2025 Mike Schulze
 // MIT License - See LICENSE file in the repository root for full license text
 #pragma warning disable IDE1006
+#pragma warning disable CS8632
+
 namespace gdUnit4.addons.gdUnit4.src.dotnet;
 #pragma warning restore IDE1006
 

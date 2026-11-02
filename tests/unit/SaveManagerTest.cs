@@ -16,18 +16,18 @@ public class SaveManagerTest
     private const string TestSavePath = "user://test_save_data.json";
     private const string TestBackupPath = "user://test_save_data.json.bak";
 
-    private SaveManager _save;
+    private ClasicosMenteActiva.core.SaveManager _save;
 
     [BeforeTest]
     public void BeforeTest()
     {
-        _save = new SaveManager();
+        _save = new ClasicosMenteActiva.core.SaveManager();
         // Forzar ruta de prueba para no tocar el save real.
-        var pathField = typeof(SaveManager).GetField("_savePath",
+        var pathField = typeof(ClasicosMenteActiva.core.SaveManager).GetField("_savePath",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         pathField?.SetValue(_save, ProjectSettings.GlobalizePath(TestSavePath));
 
-        var backupField = typeof(SaveManager).GetField("_backupPath",
+        var backupField = typeof(ClasicosMenteActiva.core.SaveManager).GetField("_backupPath",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         backupField?.SetValue(_save, ProjectSettings.GlobalizePath(TestBackupPath));
 
@@ -53,7 +53,7 @@ public class SaveManagerTest
         _save.LoadData();
 
         AssertObject(_save.Data).IsNotNull();
-        AssertInt(_save.Data.Version).IsEqual(SaveManager.SaveVersion);
+        AssertInt(_save.Data.Version).IsEqual(ClasicosMenteActiva.core.SaveManager.SaveVersion);
         AssertInt(_save.Data.Stats.Count).IsEqual(3);
         AssertBool(File.Exists(ProjectSettings.GlobalizePath(TestSavePath))).IsTrue();
     }
@@ -132,7 +132,7 @@ public class SaveManagerTest
 
         _save.LoadData();
 
-        AssertInt(_save.Data.Version).IsEqual(SaveManager.SaveVersion);
+        AssertInt(_save.Data.Version).IsEqual(ClasicosMenteActiva.core.SaveManager.SaveVersion);
     }
 
     [TestCase]

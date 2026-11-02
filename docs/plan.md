@@ -47,6 +47,9 @@ ocho decisiones que ajustan D3 y D6 sin romperlos. Detalle completo en
 | C6 | 20 partidas ganadas para desbloquear cada nivel siguiente. |
 | C7 | Fórmula de puntaje nueva, definida en la Fase 8 de la Sopa. |
 | C8 | Zoom por pinch **más** botones + / − y Centrar. |
+| C9 | Safe Area / Notch / Acordeón: la UI respeta márgenes de seguridad globales para que el título, HUD y panel de palabras no se oculten detrás de la cámara frontal ni los bordes curvados del dispositivo. Contemplada en `core/SafeAreaManager.cs` y `docs/spec.md §8.4`. |
+| C10 | Rediseño del footer de palabras: flujo continuo con auto-wrapping en línea, separado limpiamente, en lugar de lista de una sola columna. |
+| C11 | Paleta de colores centralizada en `core/AccessibleTheme.tres` (tema global) y `WordSearchTheme.tres` (tema de la partida): `#b0c2cc`, `#efefee`, `#fffcfb`, `#4e6077` aplicados mediante `Theme` y `StyleBox` de Godot, sin hardcodeo en las escenas. |
 
 ---
 

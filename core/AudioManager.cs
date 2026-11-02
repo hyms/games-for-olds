@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using ClasicosMenteActiva.core;
 
 /// <summary>
 /// Gestor de audio (plan Fase 3 §3.3 · spec §8.3).

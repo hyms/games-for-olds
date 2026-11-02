@@ -25,15 +25,18 @@ public sealed class WordSearchHud
     /// <summary>Fija la etiqueta de dificultad de la partida actual.</summary>
     public void Bind(DifficultyConfig config)
     {
-        _difficulty.Text = config != null ? config.SummaryLabel : string.Empty;
+        if (_difficulty != null)
+        {
+            _difficulty.Text = config != null ? config.SummaryLabel : string.Empty;
+        }
     }
 
     /// <summary>Refresca contador, lista y aviso de victoria desde el estado.</summary>
     public void Render(int found, int total, ICollection<string> pending, IReadOnlyList<string> foundOrder, bool complete)
     {
-        _counter.Text = $"{found}/{total}";
-        _wordList.Text = BuildWordList(pending, foundOrder);
-        _victory.Visible = complete;
+        if (_counter != null) _counter.Text = found + "/" + total;
+        if (_wordList != null) _wordList.Text = BuildWordList(pending, foundOrder);
+        if (_victory != null) _victory.Visible = complete;
     }
 
     /// <summary>
@@ -45,13 +48,18 @@ public sealed class WordSearchHud
         var text = new StringBuilder();
         foreach (string word in pending)
         {
-            text.AppendLine(word);
+            text.Append(word);
+            text.Append("   ");
         }
 
         string color = PixelStyles.EncontradaBorde.ToHtml(false);
         foreach (string word in found)
         {
-            text.AppendLine($"[color=#{color}][s]{word}[/s][/color]");
+            text.Append(" [color=#");
+            text.Append(color);
+            text.Append("][s]");
+            text.Append(word);
+            text.Append("[/s][/color] ");
         }
 
         return text.ToString().TrimEnd();

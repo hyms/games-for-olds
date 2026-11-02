@@ -1,5 +1,7 @@
 using Godot;
 
+namespace ClasicosMenteActiva.minigames.word_search;
+
 /// <summary>
 /// Traduce eventos de entrada (tacto y ratón) en acciones de selección sobre una
 /// cuadrícula. Clase pura: no conoce <see cref="WordCell"/> ni

@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Godot;
 
+namespace ClasicosMenteActiva.core;
+
 public partial class SaveManager : Node
 {
     public const int SaveVersion = 1;
@@ -29,7 +31,7 @@ public partial class SaveManager : Node
 
     private string _savePath;
     private string _backupPath;
-    private SaveData _data;
+    private SaveData _data = new() { Version = SaveVersion };
 
     public SaveData Data => _data;
 
@@ -39,6 +41,37 @@ public partial class SaveManager : Node
         _backupPath = ProjectSettings.GlobalizePath("user://" + BackupFileName);
         Directory.CreateDirectory(Path.GetDirectoryName(_savePath));
         LoadData();
+    }
+
+    public void SaveProgress(string levelId, int completedGames)
+    {
+        string path = ProjectSettings.GlobalizePath("user://wordsearch_progress.json");
+        var data = new Godot.Collections.Dictionary
+        {
+            ["level"] = levelId,
+            ["completed"] = completedGames
+        };
+        File.WriteAllText(path, System.Text.Json.JsonSerializer.Serialize(data));
+    }
+
+    public int LoadProgress(string levelId)
+    {
+        string path = ProjectSettings.GlobalizePath("user://wordsearch_progress.json");
+        if (!File.Exists(path)) return 0;
+        try
+        {
+            string json = File.ReadAllText(path);
+            var dict = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(json);
+            // Para simplificar, usamos un diccionario básico
+            var data = System.Text.Json.JsonSerializer.Deserialize<Godot.Collections.Dictionary>(json);
+            if (data != null && data.ContainsKey("completed") && data.ContainsKey("level"))
+            {
+                if (data["level"].AsString() == levelId)
+                    return (int)data["completed"];
+            }
+        }
+        catch { }
+        return 0;
     }
 
     public void LoadData()
@@ -131,17 +164,9 @@ public partial class SaveManager : Node
                 stats.BestScore = score;
             }
 
-            if (string.Equals(stats.CurrentLevelId, levelId, StringComparison.OrdinalIgnoreCase))
+            if (won)
             {
-                string next = NextLevelId(levelId);
-                if (!string.IsNullOrEmpty(next))
-                {
-                    stats.CurrentLevelId = next;
-                }
-            }
-            else if (string.IsNullOrEmpty(stats.CurrentLevelId))
-            {
-                stats.CurrentLevelId = levelId;
+                stats.CurrentLevelId = NextLevelId(levelId) ?? stats.CurrentLevelId ?? levelId;
             }
         }
 

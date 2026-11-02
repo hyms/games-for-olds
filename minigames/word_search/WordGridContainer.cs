@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using ClasicosMenteActiva.minigames.word_search;
 using Godot;
 
 /// <summary>
@@ -315,6 +317,34 @@ public partial class WordGridContainer : Control
         foreach (Vector2I coord in cells)
         {
             GetCell(coord)?.MarkFound(word);
+        }
+    }
+
+    /// <summary>Resalta temporalmente la palabra indicada (pista, 3 s).</summary>
+    public void FlashHint(string word)
+    {
+        var placement = Result?.Placements.FirstOrDefault(p => p.Word.Equals(word, StringComparison.OrdinalIgnoreCase));
+        if (placement == null) return;
+        foreach (var c in placement.Cells)
+        {
+            var cell = GetCell(c);
+            if (cell != null) cell.ApplyState(WordCellState.Hint);
+        }
+        // Restaurar tras 3 s
+        var timer = new System.Threading.Timer(_ =>
+        {
+            CallDeferred(nameof(RestoreHint), word);
+        }, null, 3000, System.Threading.Timeout.Infinite);
+    }
+
+    private void RestoreHint(string word)
+    {
+        var placement = Result?.Placements.FirstOrDefault(p => p.Word.Equals(word, StringComparison.OrdinalIgnoreCase));
+        if (placement == null) return;
+        foreach (var c in placement.Cells)
+        {
+            var cell = GetCell(c);
+            if (cell != null) cell.RestoreBaseState();
         }
     }
 

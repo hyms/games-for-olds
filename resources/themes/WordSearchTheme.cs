@@ -38,8 +38,13 @@ public partial class WordSearchTheme : Resource
 
     private static readonly Dictionary<char, char> AccentReplacements = new()
     {
-        ['Á'] = 'A', ['É'] = 'E', ['Í'] = 'I', ['Ó'] = 'O', ['Ú'] = 'U',
-        ['Ü'] = 'U', ['Ñ'] = 'N',
+        ['Á'] = 'A',
+        ['É'] = 'E',
+        ['Í'] = 'I',
+        ['Ó'] = 'O',
+        ['Ú'] = 'U',
+        ['Ü'] = 'U',
+        ['Ñ'] = 'N',
     };
 
     /// <summary>

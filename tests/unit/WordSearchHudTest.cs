@@ -4,9 +4,9 @@ using Godot;
 using static GdUnit4.Assertions;
 
 /// <summary>
-/// Fase 3 — Formato del footer de palabras (HUD sin escenas): pendientes en el
-/// orden del tablero y encontradas al final, tachadas y en el color de
-/// «encontrada».
+/// Fase 3 — Formato del header de palabras (HUD sin escenas): flujo continuo
+/// con auto-wrapping, pendientes en el orden del tablero y encontradas al
+/// final, tachadas y en el color de «encontrada».
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -15,25 +15,37 @@ public class WordSearchHudTest
     [TestCase]
     public void ListaLasPendientesYDejaLasEncontradasAlFinalTachadas()
     {
-        var pending = new HashSet<string> { "MESA", "LUNA" };
-        string[] lines = WordSearchHud.BuildWordList(pending, new[] { "CASA" }).Split('\n');
+        var pending = new List<string> { "MESA", "LUNA" };
+        string text = WordSearchHud.BuildWordList(pending, new[] { "CASA" });
 
-        AssertInt(lines.Length).IsEqual(3);
-        AssertString(lines[0]).IsEqual("MESA");
-        AssertString(lines[1]).IsEqual("LUNA");
-        AssertString(lines[2]).Contains("[s]CASA[/s]");
-        AssertBool(lines[2].Contains(PixelStyles.EncontradaBorde.ToHtml(false)))
-            .OverrideFailureMessage($"falta el color de encontrada en «{lines[2]}»")
+        // Flujo continuo: una sola línea que el RichTextLabel ajusta solo.
+        AssertBool(text.Contains('\n'))
+            .OverrideFailureMessage($"el header no debe usar saltos de línea: «{text}»")
+            .IsFalse();
+
+        int mesa = text.IndexOf("MESA");
+        int luna = text.IndexOf("LUNA");
+        int casa = text.IndexOf("[s]CASA[/s]");
+        AssertInt(mesa).IsEqual(0);
+        AssertBool(luna > mesa)
+            .OverrideFailureMessage($"«LUNA» debe seguir a «MESA» en «{text}»")
+            .IsTrue();
+        AssertBool(casa > luna)
+            .OverrideFailureMessage($"la encontrada debe ir al final del flujo en «{text}»")
+            .IsTrue();
+        AssertBool(text.Contains(PixelStyles.EncontradaBorde.ToHtml(false)))
+            .OverrideFailureMessage($"falta el color de encontrada en «{text}»")
             .IsTrue();
     }
 
     [TestCase]
     public void SinPalabrasEncontradasDevuelveSoloElOrdenDelTablero()
     {
-        var pending = new HashSet<string> { "CASA", "MESA" };
+        var pending = new List<string> { "CASA", "MESA" };
         string text = WordSearchHud.BuildWordList(pending, new List<string>());
 
-        AssertString(text).IsEqual("CASA\nMESA");
+        AssertString(text).IsEqual("CASA   MESA");
+        AssertBool(text.Contains('\n')).IsFalse();
     }
 
     [TestCase]

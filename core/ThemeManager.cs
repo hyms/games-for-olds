@@ -1,5 +1,7 @@
 using Godot;
 
+namespace ClasicosMenteActiva.core;
+
 /// <summary>
 /// Gestor de temas y accesibilidad visual (plan Fase 3 §3.2 · spec §8.2).
 /// Controla tamaño de texto (normal/grande/muy grande) y tema de color.
@@ -35,7 +37,7 @@ public partial class ThemeManager : Node
 
     public override void _Ready()
     {
-        var save = GetNodeOrNull<SaveManager>("/root/SaveManager");
+        var save = GetNodeOrNull<ClasicosMenteActiva.core.SaveManager>("/root/SaveManager");
         if (save != null)
         {
             _currentTheme = save.Settings.Theme;
@@ -51,14 +53,14 @@ public partial class ThemeManager : Node
         }
 
         _currentTheme = themeId;
-        var save = GetNodeOrNull<SaveManager>("/root/SaveManager");
+        var save = GetNodeOrNull<ClasicosMenteActiva.core.SaveManager>("/root/SaveManager");
         if (save != null)
         {
             save.Settings.Theme = themeId;
             save.SaveSettings();
         }
 
-        EmitSignal(SignalName.ThemeChanged, _currentTheme);
+        EmitSignal(global::ClasicosMenteActiva.core.ThemeManager.SignalName.ThemeChanged, _currentTheme);
     }
 
     public void SetTextSize(string sizeId)
@@ -69,13 +71,13 @@ public partial class ThemeManager : Node
         }
 
         _currentTextSize = sizeId;
-        var save = GetNodeOrNull<SaveManager>("/root/SaveManager");
+        var save = GetNodeOrNull<ClasicosMenteActiva.core.SaveManager>("/root/SaveManager");
         if (save != null)
         {
             save.Settings.TextSize = sizeId;
             save.SaveSettings();
         }
 
-        EmitSignal(SignalName.TextSizeChanged, _currentTextSize);
+        EmitSignal(global::ClasicosMenteActiva.core.ThemeManager.SignalName.TextSizeChanged, _currentTextSize);
     }
 }

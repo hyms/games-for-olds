@@ -1,3 +1,4 @@
+using ClasicosMenteActiva.core;
 using Godot;
 
 /// <summary>Estados visuales de una celda del tablero (plan Fase 3 §3.1).</summary>
@@ -73,14 +74,14 @@ public partial class WordCell : Panel
         IsFound = true;
         FoundBy = word ?? string.Empty;
         State = WordCellState.Found;
-        ApplyState();
+        ApplyState(State);
     }
 
     /// <summary>Cambia solo el estado visual (selección, pista o reposo).</summary>
     public void SetState(WordCellState state)
     {
         State = state;
-        ApplyState();
+        ApplyState(State);
     }
 
     /// <summary>Ajusta el tamaño de la letra al tamaño de la celda.</summary>
@@ -93,7 +94,7 @@ public partial class WordCell : Panel
     public void RestoreBaseState()
     {
         State = IsFound ? WordCellState.Found : WordCellState.Normal;
-        ApplyState();
+        ApplyState(State);
     }
 
     private Label CreateLabel()
@@ -109,8 +110,9 @@ public partial class WordCell : Panel
         return label;
     }
 
-    private void ApplyState()
+    public void ApplyState(WordCellState state)
     {
+        State = state;
         StyleBoxFlat style = State switch
         {
             WordCellState.Selected => PixelStyles.CellSelected(),
@@ -128,7 +130,8 @@ public partial class WordCell : Panel
         // La celda encontrada invierte el contraste (letras crema sobre turquesa
         // oscuro) y engorda la letra: no se distingue solo por el color.
         bool found = State == WordCellState.Found;
-        _label.AddThemeColorOverride("font_color", found ? PixelStyles.Celda : PixelStyles.Tinta);
+        Color textColor = found ? PixelStyles.Celda : (State == WordCellState.Selected ? Colors.White : PixelStyles.TextDark);
+        _label.AddThemeColorOverride("font_color", textColor);
         if (found && BoldFont != null)
         {
             _label.AddThemeFontOverride("font", BoldFont);

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Godot;
 
+namespace ClasicosMenteActiva.core;
+
 /// <summary>
 /// Utilidades de geometría y texto compartidas.
 /// Equivalente C# de <c>core/Utils.gd</c>.

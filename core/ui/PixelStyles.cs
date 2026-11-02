@@ -10,16 +10,16 @@ using Godot;
 public static class PixelStyles
 {
     // --- Paleta base ---------------------------------------------------------
-    public static readonly Color Arena = new("#b5ad96"); // Fondo general de pantallas
-    public static readonly Color Celda = new("#fbf3da"); // Relleno de celdas del tablero
-    public static readonly Color Placa = new("#ead9bb"); // Interior de placas y modales
-    public static readonly Color Tinta = new("#101010"); // Letras y texto sobre claros
-    public static readonly Color Borde = new("#535456"); // Borde visible de placas, celdas y botones
-    public static readonly Color Sombra = new("#8f8874"); // Sombra dura decorativa (no delimita)
+    public static readonly Color Arena = new("#b0c2cc");     // Fondo general de pantallas
+    public static readonly Color Celda = new("#fffcfb");    // Relleno de celdas del tablero
+    public static readonly Color Placa = new("#efefee");   // Interior de placas y modales
+    public static readonly Color PlacaHeader = new("#ead9bb"); // Interior del header de palabras (template §3)
+    public static readonly Color Tinta = new("#4e6077");    // Letras y texto sobre claros
+    public static readonly Color Borde = new("#4e6077");   // Borde visible de placas, celdas y botones
+    public static readonly Color Sombra = new("#8a9aaa");  // Sombra dura decorativa
+    public static readonly Color TextDark = new("#101010"); // Tinta de texto oscuro sobre claros
 
     // --- Acentos -------------------------------------------------------------
-    public static readonly Color Purpura = new("#9944c6");
-    public static readonly Color PurpuraPresionado = new("#8a3cb4");
     public static readonly Color Amarillo = new("#fdc109");
     public static readonly Color Turquesa = new("#099c92");
     public static readonly Color Cian = new("#08d0df");
@@ -42,22 +42,39 @@ public static class PixelStyles
         return (light + 0.05f) / (dark + 0.05f);
     }
 
-    /// <summary>Color de texto legible sobre un relleno: blanco o tinta.</summary>
+    /// <summary>Color de texto legible sobre un relleno: blanco, tinta o tinta oscura.</summary>
     public static Color TextColor(Color fill)
     {
-        return ContrastRatio(Colors.White, fill) >= ContrastRatio(Tinta, fill)
-            ? Colors.White
-            : Tinta;
+        Color best = Colors.White;
+        float bestRatio = ContrastRatio(best, fill);
+
+        foreach (Color candidate in new[] { Tinta, TextDark })
+        {
+            float ratio = ContrastRatio(candidate, fill);
+            if (ratio > bestRatio)
+            {
+                best = candidate;
+                bestRatio = ratio;
+            }
+        }
+
+        return best;
+    }
+
+    /// <summary>Borde legible sobre un relleno: tinta si alcanza 3:1, si no tinta oscura.</summary>
+    public static Color BorderColor(Color fill)
+    {
+        return ContrastRatio(Tinta, fill) >= 3.0f ? Tinta : TextDark;
     }
 
     /// <summary>Celda en reposo: crema con borde oscuro y sombra dura.</summary>
-    public static StyleBoxFlat CellNormal() => MakeBox(Celda, Borde, 2, Radius);
+    public static StyleBoxFlat CellNormal() => MakeBox(Arena, Tinta, 2, Radius);
 
     /// <summary>Celda seleccionada (trazo en curso).</summary>
-    public static StyleBoxFlat CellSelected() => MakeBox(CeldaSeleccion, Borde, 2, Radius);
+    public static StyleBoxFlat CellSelected() => MakeBox(Tinta, Tinta, 2, Radius);
 
-    /// <summary>Celda encontrada: relleno turquesa oscuro con letras crema en negrita.</summary>
-    public static StyleBoxFlat CellFound() => MakeBox(EncontradaBorde, Celda, 3, Radius, false);
+    /// <summary>Celda encontrada: relleno turquesa acento con letras crema en negrita.</summary>
+    public static StyleBoxFlat CellFound() => MakeBox(EncontradaBorde, Tinta, 3, Radius, false);
 
     /// <summary>Celda resaltada por pista: borde naranja oscuro con pulso.</summary>
     public static StyleBoxFlat CellHint() => MakeBox(Celda, PistaBorde, 3, Radius, false);
@@ -66,12 +83,13 @@ public static class PixelStyles
     public static StyleBoxFlat Plate() => MakeBox(Placa, Borde, 2, Radius);
 
     /// <summary>Píldora de categoría.</summary>
-    public static StyleBoxFlat Pill() => MakeBox(Purpura, Tinta, 2, 999, false);
+    public static StyleBoxFlat Pill() => MakeBox(Arena, BorderColor(Arena), 2, 999, false);
 
     /// <summary>Botón de 56×56 con el color de familia indicado.</summary>
     public static StyleBoxFlat Button(Color? fill = null)
     {
-        StyleBoxFlat box = MakeBox(fill ?? Purpura, Tinta, 2, Radius);
+        Color background = fill ?? Arena;
+        StyleBoxFlat box = MakeBox(background, BorderColor(background), 2, Radius);
         box.ContentMarginLeft = 16.0f;
         box.ContentMarginRight = 16.0f;
         box.ContentMarginTop = 12.0f;

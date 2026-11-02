@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using ClasicosMenteActiva.core;
 using Godot;
+
+#pragma warning disable CS8632
 
 /// <summary>
 /// Catálogo de los cuatro niveles de dificultad (plan Fase 2 §2.1).
