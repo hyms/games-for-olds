@@ -1,0 +1,52 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Theme" uid="uid://bq7knk8x6g1mh" path="res://core/AccessibleTheme.tres" id="1_theme"]
+
+[node name="StatsScreen" type="Control">
+layout_mode = 5
+size_flags_horizontal = 1
+size_flags_vertical = 1
+theme = ExtResource("1_theme")
+
+[node name="MarginContainer" type="MarginContainer" parent=".">
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer">
+theme_override_constants/separation = 12
+size_flags_horizontal = 3
+size_flags_vertical = 1
+
+[node name="Title" type="Label" parent="VBoxContainer">
+text = "Estadísticas"
+horizontal_alignment = 1
+vertical_alignment = 1
+custom_minimum_size = Vector2(0, 40)
+
+[node name="StatsList" type="VBoxContainer" parent="VBoxContainer">
+theme_override_constants/separation = 8
+size_flags_horizontal = 3
+size_flags_vertical = 1
+
+[node name="EmptyLabel" type="Label" parent="StatsList">
+visible = false
+text = "No hay estadísticas disponibles."
+horizontal_alignment = 1
+
+[node name="BtnBox" type="HBoxContainer" parent="VBoxContainer">
+theme_override_constants/separation = 12
+size_flags_horizontal = 3
+size_flags_vertical = 0
+alignment = 2
+
+[node name="%BtnReset" type="Button" parent="BtnBox">
+text = "Reiniciar estadísticas"
+size_flags_horizontal = 1
+
+[node name="%BtnBack" type="Button" parent="BtnBox">
+text = "Volver al menú"
+size_flags_horizontal = 1
+
+[node name="DialogContainer" type="Node" parent=".">

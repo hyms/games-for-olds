@@ -11,6 +11,12 @@ public static class Constants
     /// <summary>Escena del menú principal.</summary>
     public const string SceneMainMenu = "res://ui/main_menu/MainMenu.tscn";
 
+    /// <summary>Escena de estadísticas.</summary>
+    public const string SceneStatistics = "res://ui/stats/StatsScreen.tscn";
+
+    /// <summary>Escena de ajustes.</summary>
+    public const string SceneSettings = "res://ui/settings/SettingsScreen.tscn";
+
     /// <summary>Grupo de controles con área táctil ampliada.</summary>
     public const string GroupTouchable = "touchable";
 

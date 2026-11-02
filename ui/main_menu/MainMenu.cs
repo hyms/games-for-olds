@@ -12,6 +12,8 @@ public partial class MainMenu : Control
     private BigButton _btnWordSearch;
     private BigButton _btnTangram;
     private BigButton _btnBlocks;
+    private BigButton _btnStats;
+    private BigButton _btnSettings;
     private BigButton _btnQuit;
 
     public override void _Ready()
@@ -21,11 +23,15 @@ public partial class MainMenu : Control
         _btnWordSearch = GetNode<BigButton>("%BtnWordSearch");
         _btnTangram = GetNode<BigButton>("%BtnTangram");
         _btnBlocks = GetNode<BigButton>("%BtnBlocks");
+        _btnStats = GetNode<BigButton>("%BtnStats");
+        _btnSettings = GetNode<BigButton>("%BtnSettings");
         _btnQuit = GetNode<BigButton>("%BtnQuit");
 
         _btnWordSearch.Pressed += OnWordSearchPressed;
         _btnTangram.Pressed += OnTangramPressed;
         _btnBlocks.Pressed += OnBlocksPressed;
+        _btnStats.Pressed += OnStatsPressed;
+        _btnSettings.Pressed += OnSettingsPressed;
         _btnQuit.Pressed += OnQuitPressed;
 
         // Enfoque inicial accesible (teclado/mando).
@@ -46,6 +52,16 @@ public partial class MainMenu : Control
     private void OnBlocksPressed()
     {
         GD.Print("[MainMenu] Lógica de Bloques (estilo Dr. Mario) aún no implementado.");
+    }
+
+    private void OnStatsPressed()
+    {
+        _sceneManager.GoTo(Constants.SceneStatistics);
+    }
+
+    private void OnSettingsPressed()
+    {
+        _sceneManager.GoTo(Constants.SceneSettings);
     }
 
     private void OnQuitPressed()
