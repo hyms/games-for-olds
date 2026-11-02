@@ -139,6 +139,9 @@ public partial class SaveManager : Node
         {
             stats.Wins++;
 
+            // Desbloquear siguiente nivel si se alcanzan 20 victorias (Fase 7)
+            UnlockNextLevelIfNeeded(gameId, levelId);
+
             if (stats.BestTimeSeconds == null || timeSeconds < stats.BestTimeSeconds.Value)
             {
                 stats.BestTimeSeconds = timeSeconds;
@@ -149,13 +152,15 @@ public partial class SaveManager : Node
                 stats.BestScore = score;
             }
 
-            if (won)
+            stats.CurrentLevelId = NextLevelId(levelId) ?? stats.CurrentLevelId ?? levelId;
+        }
+        else
+        {
+            if (score > stats.BestScore)
             {
-                stats.CurrentLevelId = NextLevelId(levelId) ?? stats.CurrentLevelId ?? levelId;
+                stats.BestScore = score;
             }
         }
-
-        SaveToFile();
     }
 
     public void ResetStats()
@@ -223,6 +228,28 @@ public partial class SaveManager : Node
             "dificil" => "maestro",
             _ => null,
         };
+    }
+
+    private void UnlockNextLevelIfNeeded(string gameId, string levelId)
+    {
+        if (_data.Stats.TryGetValue(gameId, out var stats))
+        {
+            return;
+        }
+
+        // Si ya tiene 20 o más victorias, desbloquear el siguiente nivel
+        if (stats.Wins >= 20)
+        {
+            var nextLevelId = NextLevelId(levelId);
+            if (!string.IsNullOrEmpty(nextLevelId))
+            {
+                stats.CurrentLevelId = nextLevelId;
+                // Reset wins count when unlocking a new level, 
+                // or keep accumulating - let's keep accumulating for total tracking
+                // but mark the level as unlocked
+                GD.Print($"[SaveLevelUnlock] Nivel {levelId} completado con 20+ victorias, desbloqueando {nextLevelId}");
+            }
+        }
     }
 }
 
