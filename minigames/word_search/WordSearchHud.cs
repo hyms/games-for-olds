@@ -25,16 +25,25 @@ public sealed class WordSearchHud
     /// <summary>Fija la etiqueta de dificultad de la partida actual.</summary>
     public void Bind(DifficultyConfig config)
     {
-        if (_difficulty != null)
+        if (_difficulty == null)
         {
-            _difficulty.Text = config != null ? config.SummaryLabel : string.Empty;
+            return;
         }
+
+        if (config == null)
+        {
+            _difficulty.Text = string.Empty;
+            return;
+        }
+
+        int level = DifficultyCatalog.LevelNumberFor(config.Id);
+        _difficulty.Text = $"{config.DisplayName.ToUpperInvariant()} - NIVEL {level}";
     }
 
     /// <summary>Refresca contador, lista y aviso de victoria desde el estado.</summary>
     public void Render(int found, int total, ICollection<string> pending, IReadOnlyList<string> foundOrder, bool complete)
     {
-        if (_counter != null) _counter.Text = found + "/" + total;
+        if (_counter != null) _counter.Text = $"{found}/{total} Palabras";
         if (_wordList != null) _wordList.Text = BuildWordList(pending, foundOrder);
         if (_victory != null) _victory.Visible = complete;
     }
@@ -42,26 +51,36 @@ public sealed class WordSearchHud
     /// <summary>
     /// Texto del footer: primero las pendientes en el orden del tablero y al
     /// final las encontradas, tachadas y en el color de «encontrada».
+    /// Flujo continuo separado por barras, sin saltos de línea.
     /// </summary>
     public static string BuildWordList(ICollection<string> pending, IReadOnlyList<string> found)
     {
         var text = new StringBuilder();
         foreach (string word in pending)
         {
+            AppendSeparator(text);
             text.Append(word);
-            text.Append("   ");
         }
 
         string color = PixelStyles.EncontradaBorde.ToHtml(false);
         foreach (string word in found)
         {
-            text.Append(" [color=#");
+            AppendSeparator(text);
+            text.Append("[color=#");
             text.Append(color);
             text.Append("][s]");
             text.Append(word);
-            text.Append("[/s][/color] ");
+            text.Append("[/s][/color]");
         }
 
-        return text.ToString().TrimEnd();
+        return text.ToString();
+    }
+
+    private static void AppendSeparator(StringBuilder text)
+    {
+        if (text.Length > 0)
+        {
+            text.Append(" | ");
+        }
     }
 }

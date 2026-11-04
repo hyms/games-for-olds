@@ -44,7 +44,7 @@ public class WordSearchHudTest
         var pending = new List<string> { "CASA", "MESA" };
         string text = WordSearchHud.BuildWordList(pending, new List<string>());
 
-        AssertString(text).IsEqual("CASA   MESA");
+        AssertString(text).IsEqual("CASA | MESA");
         AssertBool(text.Contains('\n')).IsFalse();
     }
 

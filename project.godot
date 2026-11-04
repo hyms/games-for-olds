@@ -24,6 +24,10 @@ config/android/package="com.helier.clasicosmenteactiva2d"
 
 [autoload]
 
+SaveManager="*res://core/SaveManager.cs"
+ThemeManager="*res://core/ThemeManager.cs"
+AudioManager="*res://core/AudioManager.cs"
+AdManager="*res://core/AdManager.cs"
 SceneManager="*res://autoloads/SceneManager.cs"
 
 [display]
@@ -47,7 +51,7 @@ enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
-environment/defaults/default_clear_color=Color(0.70980394, 0.6784314, 0.5882353, 1)
+environment/defaults/default_clear_color=Color(1, 1, 1, 1)
 textures/vram_compression/import_etc=true
 textures/vram_compression/import_astc=true
 textures/vram_compression/import_bc=false

@@ -25,6 +25,8 @@ public partial class WordGridContainer : Control
     private char[,] _letters;
     private WordTraceOverlay _trace;
     private Tween _invalidTween;
+    private Timer _hintTimer;
+    private string _hintWord = string.Empty;
     private float _cellSize;
     private Vector2 _origin;
 
@@ -47,6 +49,7 @@ public partial class WordGridContainer : Control
         // nodos hijos.
         MouseFilter = MouseFilterEnum.Stop;
         EnsureTrace();
+        EnsureHintTimer();
         UpdateLayout();
 
         // Conectar traductor de input (Composite: el contenedor orquesta, el handler
@@ -88,7 +91,8 @@ public partial class WordGridContainer : Control
 
         foreach (Node child in GetChildren())
         {
-            if (child == _trace)
+            // El trazo y el temporizador de pistas sobreviven a cada partida.
+            if (child == _trace || child == _hintTimer)
             {
                 continue;
             }
@@ -323,29 +327,59 @@ public partial class WordGridContainer : Control
     /// <summary>Resalta temporalmente la palabra indicada (pista, 3 s).</summary>
     public void FlashHint(string word)
     {
-        var placement = Result?.Placements.FirstOrDefault(p => p.Word.Equals(word, StringComparison.OrdinalIgnoreCase));
-        if (placement == null) return;
-        foreach (var c in placement.Cells)
+        WordPlacement placement = FindPlacement(word);
+        if (placement == null)
         {
-            var cell = GetCell(c);
-            if (cell != null) cell.ApplyState(WordCellState.Hint);
+            return;
         }
-        // Restaurar tras 3 s
-        var timer = new System.Threading.Timer(_ =>
+
+        EnsureHintTimer();
+        _hintWord = placement.Word;
+        foreach (Vector2I coord in placement.Cells)
         {
-            CallDeferred(nameof(RestoreHint), word);
-        }, null, 3000, System.Threading.Timeout.Infinite);
+            GetCell(coord)?.ApplyState(WordCellState.Hint);
+        }
+
+        _hintTimer.Stop();
+        _hintTimer.Start();
     }
 
-    private void RestoreHint(string word)
+    private void EnsureHintTimer()
     {
-        var placement = Result?.Placements.FirstOrDefault(p => p.Word.Equals(word, StringComparison.OrdinalIgnoreCase));
-        if (placement == null) return;
-        foreach (var c in placement.Cells)
+        if (_hintTimer != null && GodotObject.IsInstanceValid(_hintTimer))
         {
-            var cell = GetCell(c);
-            if (cell != null) cell.RestoreBaseState();
+            return;
         }
+
+        _hintTimer = new Timer { Name = "HintTimer", OneShot = true, WaitTime = 3.0 };
+        _hintTimer.Timeout += RestoreHint;
+        AddChild(_hintTimer);
+    }
+
+    private void RestoreHint()
+    {
+        if (string.IsNullOrEmpty(_hintWord))
+        {
+            return;
+        }
+
+        WordPlacement placement = FindPlacement(_hintWord);
+        _hintWord = string.Empty;
+        if (placement == null)
+        {
+            return;
+        }
+
+        foreach (Vector2I coord in placement.Cells)
+        {
+            GetCell(coord)?.RestoreBaseState();
+        }
+    }
+
+    private WordPlacement FindPlacement(string word)
+    {
+        return Result?.Placements.FirstOrDefault(
+            p => p.Word.Equals(word, StringComparison.OrdinalIgnoreCase));
     }
 
     // --- Entrada -------------------------------------------------------------
@@ -511,10 +545,5 @@ public partial class WordGridContainer : Control
         {
             RestoreInvalid();
         }
-    }
-
-    private Vector2 ToLocalPosition(Vector2 viewportPosition)
-    {
-        return GetGlobalTransformWithCanvas().AffineInverse() * viewportPosition;
     }
 }

@@ -27,7 +27,12 @@ public class DifficultySelectorTest
         {
             BigButton button = scene.LevelButtons[i];
             AssertString(button.Name.ToString()).IsEqual($"Level_{levels[i].Id}");
-            AssertString(button.Text).IsEqual(levels[i].MenuLabel);
+            AssertBool(button.Text.Contains(levels[i].MenuLabel, System.StringComparison.Ordinal))
+                .OverrideFailureMessage($"«{button.Text}» debe contener «{levels[i].MenuLabel}»")
+                .IsTrue();
+            AssertBool(button.Text.Contains("/20", System.StringComparison.Ordinal))
+                .OverrideFailureMessage($"«{button.Text}» debe mostrar el progreso X/20")
+                .IsTrue();
             AssertBool(button.CustomMinimumSize.Y >= 56.0f)
                 .OverrideFailureMessage($"{button.Name}: alto {button.CustomMinimumSize.Y} px")
                 .IsTrue();

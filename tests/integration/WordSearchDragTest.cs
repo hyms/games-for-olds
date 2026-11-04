@@ -55,10 +55,10 @@ public class WordSearchDragTest
         AssertInt(_scene.WordsFound).IsEqual(1);
         AssertBool(_scene.FoundWords.Contains(target.Word)).IsTrue();
 
-        // La celda debe cambiar de relleno, no solo el borde (observación del usuario).
+        // La celda debe cambiar de relleno al acento turquesa, no solo el borde.
         StyleBoxFlat foundStyle = _scene.Board.GetCell(target.Start).GetThemeStylebox("panel") as StyleBoxFlat;
         AssertObject(foundStyle).IsNotNull();
-        AssertBool(foundStyle.BgColor.IsEqualApprox(PixelStyles.EncontradaBorde))
+        AssertBool(foundStyle.BgColor.IsEqualApprox(PixelStyles.Turquesa))
             .OverrideFailureMessage($"la celda encontrada conserva el relleno {foundStyle.BgColor}")
             .IsTrue();
     }

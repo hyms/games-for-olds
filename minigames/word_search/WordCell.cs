@@ -18,10 +18,7 @@ public enum WordCellState
 /// </summary>
 public partial class WordCell : Panel
 {
-    /// <summary>Fuente en negrita para las letras ya encontradas (Assets/fonts).</summary>
-    private const string BoldFontPath = Constants.FontBoldPath;
-
-    private static Font _boldFont;
+    private static Font _pixelFont;
 
     public Vector2I Coords { get; private set; }
 
@@ -38,17 +35,17 @@ public partial class WordCell : Panel
 
     private Label _label;
 
-    /// <summary>Negrita del tema, cargada una sola vez (todas las celdas la comparten).</summary>
-    private static Font BoldFont
+    /// <summary>Fuente pixel compartida por todas las celdas (Press Start 2P).</summary>
+    private static Font PixelFont
     {
         get
         {
-            if (_boldFont == null && ResourceLoader.Exists(BoldFontPath))
+            if (_pixelFont == null && ResourceLoader.Exists(Constants.FontPixelPath))
             {
-                _boldFont = GD.Load<Font>(BoldFontPath);
+                _pixelFont = GD.Load<Font>(Constants.FontPixelPath);
             }
 
-            return _boldFont;
+            return _pixelFont;
         }
     }
 
@@ -63,7 +60,10 @@ public partial class WordCell : Panel
         _label ??= CreateLabel();
         _label.Text = letter.ToString();
         _label.AddThemeFontSizeOverride("font_size", Mathf.Max(WordSearchVisuals.MinCellFontSize, fontSize));
-        _label.AddThemeColorOverride("font_color", PixelStyles.Tinta);
+        if (PixelFont != null)
+        {
+            _label.AddThemeFontOverride("font", PixelFont);
+        }
 
         RestoreBaseState();
     }
@@ -73,15 +73,13 @@ public partial class WordCell : Panel
     {
         IsFound = true;
         FoundBy = word ?? string.Empty;
-        State = WordCellState.Found;
-        ApplyState(State);
+        ApplyState(WordCellState.Found);
     }
 
     /// <summary>Cambia solo el estado visual (selección, pista o reposo).</summary>
     public void SetState(WordCellState state)
     {
-        State = state;
-        ApplyState(State);
+        ApplyState(state);
     }
 
     /// <summary>Ajusta el tamaño de la letra al tamaño de la celda.</summary>
@@ -93,8 +91,7 @@ public partial class WordCell : Panel
     /// <summary>Vuelve al estado permanente: encontrada si pertenece a una palabra, si no reposo.</summary>
     public void RestoreBaseState()
     {
-        State = IsFound ? WordCellState.Found : WordCellState.Normal;
-        ApplyState(State);
+        ApplyState(IsFound ? WordCellState.Found : WordCellState.Normal);
     }
 
     private Label CreateLabel()
@@ -127,18 +124,18 @@ public partial class WordCell : Panel
             return;
         }
 
-        // La celda encontrada invierte el contraste (letras crema sobre turquesa
-        // oscuro) y engorda la letra: no se distingue solo por el color.
-        bool found = State == WordCellState.Found;
-        Color textColor = found ? PixelStyles.Celda : (State == WordCellState.Selected ? Colors.White : PixelStyles.TextDark);
-        _label.AddThemeColorOverride("font_color", textColor);
-        if (found && BoldFont != null)
-        {
-            _label.AddThemeFontOverride("font", BoldFont);
-        }
-        else
-        {
-            _label.RemoveThemeFontOverride("font");
-        }
+        // Reposo: tinta oscura sobre celda clara. Selección y acierto: texto
+        // blanco puro sobre el relleno de acento (nunca negro).
+        bool whiteText = State is WordCellState.Found or WordCellState.Selected;
+        _label.AddThemeColorOverride(
+            "font_color",
+            whiteText ? PixelStyles.TextLight : PixelStyles.TextDark);
+
+        // El texto blanco lleva contorno turquesa oscuro para reforzar el
+        // contraste y distinguir el estado por forma, no solo por color.
+        _label.AddThemeColorOverride(
+            "font_outline_color",
+            whiteText ? PixelStyles.EncontradaBorde : PixelStyles.TextLight);
+        _label.AddThemeConstantOverride("outline_size", whiteText ? 2 : 0);
     }
 }

@@ -22,6 +22,9 @@ public partial class SaveManager : Node
     /// <summary>Id del nivel inicial por defecto (Fácil).</summary>
     public const string DefaultLevelId = Constants.DefaultDifficultyId;
 
+    /// <summary>Victorias necesarias para desbloquear el siguiente nivel.</summary>
+    public const int WinsToUnlockNextLevel = 20;
+
     private string _savePath;
     private string _backupPath;
     private SaveData _data = new() { Version = SaveVersion };
@@ -161,6 +164,8 @@ public partial class SaveManager : Node
                 stats.BestScore = score;
             }
         }
+
+        SaveToFile();
     }
 
     public void ResetStats()
@@ -232,24 +237,20 @@ public partial class SaveManager : Node
 
     private void UnlockNextLevelIfNeeded(string gameId, string levelId)
     {
-        if (_data.Stats.TryGetValue(gameId, out var stats))
+        if (!_data.Stats.TryGetValue(gameId, out var stats) || stats.Wins < WinsToUnlockNextLevel)
         {
             return;
         }
 
-        // Si ya tiene 20 o más victorias, desbloquear el siguiente nivel
-        if (stats.Wins >= 20)
+        string nextLevelId = NextLevelId(levelId);
+        if (string.IsNullOrEmpty(nextLevelId))
         {
-            var nextLevelId = NextLevelId(levelId);
-            if (!string.IsNullOrEmpty(nextLevelId))
-            {
-                stats.CurrentLevelId = nextLevelId;
-                // Reset wins count when unlocking a new level, 
-                // or keep accumulating - let's keep accumulating for total tracking
-                // but mark the level as unlocked
-                GD.Print($"[SaveLevelUnlock] Nivel {levelId} completado con 20+ victorias, desbloqueando {nextLevelId}");
-            }
+            return;
         }
+
+        stats.CurrentLevelId = nextLevelId;
+        GD.Print($"[SaveLevelUnlock] Nivel {levelId} completado con "
+            + $"{WinsToUnlockNextLevel}+ victorias, desbloqueando {nextLevelId}");
     }
 }
 

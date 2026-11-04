@@ -83,16 +83,17 @@ public class PixelStylesTest
     [TestCase]
     public void TrazoDeSeleccionVisibleSobreLasCeldas()
     {
-        // El trazo se dibuja sobre el fondo del tablero (arena) y sobre las
+        // El trazo se dibuja sobre el fondo blanco del tablero y sobre las
         // celdas en reposo (crema): debe alcanzar 3:1 en ambos.
         AssertBool(Ratio(PixelStyles.Trazo, PixelStyles.Celda) >= 3.0f).IsTrue();
-        AssertBool(Ratio(PixelStyles.Trazo, PixelStyles.Arena) >= 3.0f)
-            .OverrideFailureMessage($"trazo {PixelStyles.Trazo.ToHtml()} sobre arena = {Ratio(PixelStyles.Trazo, PixelStyles.Arena):F2}")
+        AssertBool(Ratio(PixelStyles.Trazo, PixelStyles.Fondo) >= 3.0f)
+            .OverrideFailureMessage($"trazo {PixelStyles.Trazo.ToHtml()} sobre fondo = {Ratio(PixelStyles.Trazo, PixelStyles.Fondo):F2}")
             .IsTrue();
 
-        // La celda seleccionada usa relleno secundario con letras crema.
-        AssertBool(Ratio(PixelStyles.Celda, PixelStyles.Tinta) >= 4.5f)
-            .OverrideFailureMessage($"letras crema sobre tinta = {Ratio(PixelStyles.Celda, PixelStyles.Tinta):F2}")
+        // La celda seleccionada usa el acento turquesa con letras blancas
+        // (texto grande: umbral 3:1).
+        AssertBool(Ratio(PixelStyles.TextLight, PixelStyles.Turquesa) >= 3.0f)
+            .OverrideFailureMessage($"letras blancas sobre turquesa = {Ratio(PixelStyles.TextLight, PixelStyles.Turquesa):F2}")
             .IsTrue();
     }
 
@@ -119,22 +120,22 @@ public class PixelStylesTest
         StyleBoxFlat normal = PixelStyles.CellNormal();
         AssertInt(normal.CornerRadiusTopLeft).IsEqual(PixelStyles.Radius);
         AssertInt(normal.BorderWidthLeft).IsEqual(2);
-        AssertBool(normal.BgColor.IsEqualApprox(PixelStyles.Arena)).IsTrue();
-        AssertBool(normal.BorderColor.IsEqualApprox(PixelStyles.Tinta)).IsTrue();
+        AssertBool(normal.BgColor.IsEqualApprox(PixelStyles.Celda)).IsTrue();
+        AssertBool(normal.BorderColor.IsEqualApprox(PixelStyles.Arena)).IsTrue();
 
         StyleBoxFlat selected = PixelStyles.CellSelected();
-        AssertBool(selected.BgColor.IsEqualApprox(PixelStyles.Tinta)).IsTrue();
+        AssertBool(selected.BgColor.IsEqualApprox(PixelStyles.Turquesa)).IsTrue();
         AssertBool(selected.BorderColor.IsEqualApprox(PixelStyles.Tinta)).IsTrue();
 
         StyleBoxFlat found = PixelStyles.CellFound();
         AssertInt(found.BorderWidthLeft).IsEqual(3);
-        AssertBool(found.BgColor.IsEqualApprox(PixelStyles.EncontradaBorde)).IsTrue();
+        AssertBool(found.BgColor.IsEqualApprox(PixelStyles.Turquesa)).IsTrue();
         AssertBool(found.BgColor.IsEqualApprox(normal.BgColor)).IsFalse();
-        AssertBool(Ratio(PixelStyles.Celda, found.BgColor) >= 4.5f)
-            .OverrideFailureMessage($"letras crema sobre encontrada: {Ratio(PixelStyles.Celda, found.BgColor):0.00}:1")
+        AssertBool(Ratio(PixelStyles.TextLight, found.BgColor) >= 3.0f)
+            .OverrideFailureMessage($"letras blancas sobre encontrada: {Ratio(PixelStyles.TextLight, found.BgColor):0.00}:1")
             .IsTrue();
-        AssertBool(Ratio(found.BgColor, PixelStyles.Arena) >= 3.0f)
-            .OverrideFailureMessage($"celda encontrada vs fondo: {Ratio(found.BgColor, PixelStyles.Arena):0.00}:1")
+        AssertBool(Ratio(found.BgColor, PixelStyles.Fondo) >= 3.0f)
+            .OverrideFailureMessage($"celda encontrada vs fondo: {Ratio(found.BgColor, PixelStyles.Fondo):0.00}:1")
             .IsTrue();
 
         AssertInt(PixelStyles.CellHint().BorderWidthLeft).IsEqual(3);

@@ -43,32 +43,36 @@ public partial class SceneManager : Node
 		CreateServices();
 	}
 
-	/// <summary>Crea los servicios compartidos una sola vez como hijos de SceneManager.</summary>
+	/// <summary>Crea los servicios compartidos una sola vez como autoloads de la raíz.</summary>
 	private void CreateServices()
 	{
-		Save = GetNodeOrNull<ClasicosMenteActiva.core.SaveManager>("SaveManager") ?? new ClasicosMenteActiva.core.SaveManager { Name = "SaveManager" };
-		Theme = GetNodeOrNull<ClasicosMenteActiva.core.ThemeManager>("ThemeManager") ?? new ClasicosMenteActiva.core.ThemeManager { Name = "ThemeManager" };
-		Audio = GetNodeOrNull<AudioManager>("AudioManager") ?? new AudioManager { Name = "AudioManager" };
-		Ads = GetNodeOrNull<AdManager>("AdManager") ?? new AdManager { Name = "AdManager" };
+		Save = GetNodeOrNull<ClasicosMenteActiva.core.SaveManager>("/root/SaveManager")
+			?? new ClasicosMenteActiva.core.SaveManager { Name = "SaveManager" };
+		Theme = GetNodeOrNull<ClasicosMenteActiva.core.ThemeManager>("/root/ThemeManager")
+			?? new ClasicosMenteActiva.core.ThemeManager { Name = "ThemeManager" };
+		Audio = GetNodeOrNull<AudioManager>("/root/AudioManager")
+			?? new AudioManager { Name = "AudioManager" };
+		Ads = GetNodeOrNull<AdManager>("/root/AdManager")
+			?? new AdManager { Name = "AdManager" };
 
-		if (!GodotObject.IsInstanceValid(Save.GetParent()))
-		{
-			AddChild(Save);
-		}
-		if (!GodotObject.IsInstanceValid(Theme.GetParent()))
-		{
-			AddChild(Theme);
-		}
-		if (!GodotObject.IsInstanceValid(Audio.GetParent()))
-		{
-			AddChild(Audio);
-		}
-		if (!GodotObject.IsInstanceValid(Ads.GetParent()))
-		{
-			AddChild(Ads);
-		}
+		AttachServiceIfOrphan(Save);
+		AttachServiceIfOrphan(Theme);
+		AttachServiceIfOrphan(Audio);
+		AttachServiceIfOrphan(Ads);
 
-		GD.Print("[SceneManager] servicios core creados: SaveManager, ThemeManager, AudioManager, AdManager");
+		GD.Print("[SceneManager] servicios core listos: SaveManager, ThemeManager, AudioManager, AdManager");
+	}
+
+	/// <summary>
+	/// Los servicios se registran como autoloads en <c>project.godot</c>. Si
+	/// alguno falta (tests aislados), se cuelga de SceneManager como respaldo.
+	/// </summary>
+	private void AttachServiceIfOrphan(Node service)
+	{
+		if (!GodotObject.IsInstanceValid(service.GetParent()))
+		{
+			AddChild(service);
+		}
 	}
 
 	/// <summary>Cambia a otra escena por ruta <c>res://…</c>.</summary>

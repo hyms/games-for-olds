@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using ClasicosMenteActiva.core;
 using Godot;
 
@@ -10,24 +9,38 @@ using Godot;
 /// Pantalla de la Sopa de Letras (Singleton vía SceneManager autoload, Composite
 /// vía WordGridContainer, Strategy vía WordSearchGenerator).
 /// Mantiene el estado y las reglas de la partida; <see cref="WordSearchHud"/>
-/// solo formatea el footer y maqueta las etiquetas.
-/// Provisional: la pausa y el modal de victoria llegan en las fases 5 y 8.
+/// solo formatea el footer y maqueta las etiquetas. La presentación (tiempo,
+/// pausa, pistas y victoria) vive aquí para no mezclar reglas con píxeles.
 /// </summary>
 public partial class WordSearchMain : Control
 {
     /// <summary>Ruta de esta escena (la usa el selector de dificultad).</summary>
     public const string ScenePath = "res://minigames/word_search/WordSearchMain.tscn";
 
+    /// <summary>Pistas disponibles por partida.</summary>
+    private const int MaxHints = 3;
+
     private SceneManager _sceneManager;
     private BigButton _btnBack;
+    private BigButton _btnPause;
+    private BigButton _btnResume;
+    private BigButton _btnHint;
+    private BigButton _btnReset;
+    private BigButton _btnPauseMenu;
+    private BigButton _btnNextGame;
+    private BigButton _btnWinMenu;
     private Control _boardArea;
     private WordSearchHud _hud;
     private Label _wordsCounter;
     private Label _timeLabel;
+    private Label _winScore;
+    private Label _winTime;
     private PanelContainer _pauseModal;
-    private BigButton _btnPause;
-    private Stopwatch _stopwatch = new();
-    private DateTime _startTime;
+    private PanelContainer _winModal;
+    private Timer _clockTimer;
+    private readonly Stopwatch _stopwatch = new();
+    private bool _completed;
+    private int _hintUses = MaxHints;
 
     public DifficultyConfig Config { get; private set; }
 
@@ -52,66 +65,86 @@ public partial class WordSearchMain : Control
     public int InvalidSelections { get; private set; }
 
     public bool IsComplete => _order.Count > 0 && _pending.Count == 0;
-    private int _hintUses = 3;
 
     public override void _Ready()
     {
         _sceneManager = GetNode<SceneManager>($"/root/{Constants.AutoloadSceneManager}");
         _btnBack = GetNode<BigButton>("%BtnBack");
+        _btnPause = GetNode<BigButton>("%BtnPause");
+        _btnResume = GetNode<BigButton>("%BtnResume");
+        _btnHint = GetNode<BigButton>("%BtnHint");
+        _btnReset = GetNode<BigButton>("%BtnReset");
+        _btnPauseMenu = GetNode<BigButton>("%BtnPauseMenu");
+        _btnNextGame = GetNode<BigButton>("%BtnNextGame");
+        _btnWinMenu = GetNode<BigButton>("%BtnWinMenu");
         _boardArea = GetNode<Control>("%BoardArea");
+        _wordsCounter = GetNode<Label>("%WordsCounter");
+        _timeLabel = GetNode<Label>("%TimeLabel");
+        _winScore = GetNodeOrNull<Label>("%WinScore");
+        _winTime = GetNodeOrNull<Label>("%WinTime");
+        _pauseModal = GetNodeOrNull<PanelContainer>("%PauseModal");
+        _winModal = GetNodeOrNull<PanelContainer>("%WinModal");
 
         _hud = new WordSearchHud(
-            GetNode<Label>("%WordsCounter"),
+            _wordsCounter,
             GetNode<Label>("%DifficultyLabel"),
             GetNode<RichTextLabel>("%WordList"),
-            GetNode<Label>("%VictoryLabel"));
+            GetNodeOrNull<Label>("%VictoryLabel"));
 
-        _wordsCounter = GetNode<Label>("%WordsCounter");
-        _timeLabel = GetNodeOrNull<Label>("%TimeLabel");
-        _pauseModal = GetNodeOrNull<PanelContainer>("%PauseModal");
-        _btnPause = GetNodeOrNull<BigButton>("%BtnPause");
-        if (_btnPause != null) _btnPause.Pressed += () => { if (_pauseModal != null) _pauseModal.Visible = true; };
-        var btnReset = GetNodeOrNull<BigButton>("%BtnReset");
-        if (btnReset != null) btnReset.Pressed += () => { if (_pauseModal != null) { _pauseModal.Visible = false; StartFromSession(); } };
-        var btnMenu = GetNodeOrNull<BigButton>("%BtnMenu");
-        if (btnMenu != null) btnMenu.Pressed += () => { _pauseModal?.Hide(); _sceneManager.GoTo(DifficultySelector.ScenePath); };
-        var btnHint = GetNodeOrNull<BigButton>("%BtnHint");
-        if (btnHint != null)
-            btnHint.Pressed += () =>
-            {
-                if (_hintUses > 0 && _pending.Count > 0)
-                {
-                    _hintUses--;
-                    btnHint.Text = $"Pista ({_hintUses})";
-                    _pauseModal?.Hide();
-                    // Resaltar primera pendiente 3 s (simulación básica)
-                    string pendingWord = new List<string>(_pending).FirstOrDefault();
-                    if (!string.IsNullOrEmpty(pendingWord)) Board.FlashHint(pendingWord);
-                    GD.Print($"[Hint] palabra pendiente resaltada: {pendingWord}");
-                    if (_hintUses == 0) btnHint.Text = "Sin pistas";
-                }
-            };
-
-        _btnBack.Pressed += OnBackPressed;
-
-        if (_boardArea.GetParent() is PanelContainer boardSlot)
-        {
-            boardSlot.AddThemeStyleboxOverride("panel", PixelStyles.Plate());
-        }
-
-        if (GetNodeOrNull<PanelContainer>("%WordPanel") is PanelContainer wordPanel)
-        {
-            wordPanel.AddThemeStyleboxOverride("panel", PixelStyles.Plate());
-        }
+        StylePanels();
+        WireButtons();
+        CreateClockTimer();
 
         Board = new WordGridContainer { Name = "Board" };
         Board.WordSelected += OnWordSelected;
         _boardArea.AddChild(Board);
         Board.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
 
-        // Aplicar márgenes de seguridad (Notch / Safe Area / Acordeón)
-        ApplySafeAreaMargin();
         StartFromSession();
+    }
+
+    private void StylePanels()
+    {
+        StylePanel("%TitlePanel", PixelStyles.TitlePanel());
+        StylePanel("%SubtitlePanel", PixelStyles.SubtitlePanel());
+        StylePanel("%WordPanel", PixelStyles.WordPanel());
+        StylePanel("%PauseModal", PixelStyles.ModalBackdrop());
+        StylePanel("%PauseCard", PixelStyles.ModalCard());
+        StylePanel("%WinModal", PixelStyles.ModalBackdrop());
+        StylePanel("%WinCard", PixelStyles.ModalCard());
+    }
+
+    private void StylePanel(string uniquePath, StyleBoxFlat style)
+    {
+        if (GetNodeOrNull<PanelContainer>(uniquePath) is PanelContainer panel)
+        {
+            panel.AddThemeStyleboxOverride("panel", style);
+        }
+    }
+
+    private void WireButtons()
+    {
+        _btnBack.Pressed += OnBackPressed;
+        _btnPause.Pressed += OpenPause;
+        _btnResume.Pressed += ClosePause;
+        _btnHint.Pressed += UseHint;
+        _btnReset.Pressed += StartNewGame;
+        _btnPauseMenu.Pressed += GoToMainMenu;
+        _btnNextGame.Pressed += StartNewGame;
+        _btnWinMenu.Pressed += GoToMainMenu;
+    }
+
+    private void CreateClockTimer()
+    {
+        _clockTimer = new Timer
+        {
+            Name = "ClockTimer",
+            WaitTime = 0.5,
+            OneShot = false,
+            Autostart = false,
+        };
+        _clockTimer.Timeout += UpdateClock;
+        AddChild(_clockTimer);
     }
 
     /// <summary>Carga el nivel elegido, sortea las palabras y genera el tablero.</summary>
@@ -156,6 +189,8 @@ public partial class WordSearchMain : Control
         _foundOrder.Clear();
         _order.Clear();
         InvalidSelections = 0;
+        _completed = false;
+        _hintUses = MaxHints;
 
         foreach (WordPlacement placement in result.Placements)
         {
@@ -167,22 +202,23 @@ public partial class WordSearchMain : Control
 
         Board.Setup(result);
         _hud.Bind(config);
-        _startTime = DateTime.Now;
         _stopwatch.Restart();
-        _hintUses = 3;
-        StartTimerUpdate();
+        _clockTimer.Start();
+        UpdateHintButton();
+        HideModals();
         RenderHud();
+        UpdateClock();
     }
 
     private void OnWordSelected(Vector2I start, Vector2I end)
     {
-        if (_order.Count == 0)
+        if (_order.Count == 0 || _completed)
         {
             return;
         }
 
         List<Vector2I> path = WordPath.Build(start, end);
-        string word = ResultReader(start, end);
+        string word = Board.Result?.ReadPath(start, end) ?? string.Empty;
         if (path.Count < 2 || string.IsNullOrEmpty(word))
         {
             InvalidSelections++;
@@ -208,52 +244,85 @@ public partial class WordSearchMain : Control
         RenderHud();
         if (_pending.Count == 0)
         {
-            GD.Print($"[WordSearch] completada en {Config.DisplayName}");
-
-            int secondsElapsed = Math.Max(0, (int)(DateTime.Now - _startTime).TotalSeconds);
-            int score = Math.Max(0,
-                (WordsFound * 100)
-                + (Math.Max(0, (int)(Config.ParSeconds - secondsElapsed)) * 50)
-                - (InvalidSelections * 10));
-
-            GD.Print($"[Score] {score} (palabras={WordsFound}, par={Config.ParSeconds}, segundos={secondsElapsed}, invalid={InvalidSelections})");
-
-            var save = GetNodeOrNull<ClasicosMenteActiva.core.SaveManager>("/root/SaveManager");
-            save?.RegisterResult("word_search", Config.Id, true, (float)(DateTime.Now - _startTime).TotalSeconds, score);
-
-            var winModal = GetNodeOrNull<PanelContainer>("%WinModal");
-            if (winModal != null)
-            {
-                winModal.Visible = true;
-                var title = winModal.GetNodeOrNull<Label>("WinTitle");
-                if (title != null) title.Text = "¡Victoria!";
-            }
+            CompleteGame();
         }
     }
 
-    private void StartTimerUpdate()
+    private void CompleteGame()
     {
-        var timer = new Timer();
-        timer.WaitTime = 0.5;
-        timer.OneShot = false;
-        timer.Timeout += () =>
+        if (_completed)
         {
-            if (_timeLabel != null && _startTime != default)
-            {
-                TimeSpan elapsed = DateTime.Now - _startTime;
-                _timeLabel.Text = $"{(int)elapsed.TotalMinutes:D2}:{elapsed.Seconds:D2}";
-            }
-        };
-        AddChild(timer);
-        timer.Start();
+            return;
+        }
+
+        _completed = true;
+        _stopwatch.Stop();
+        _clockTimer.Stop();
+
+        int secondsElapsed = Math.Max(0, (int)Math.Ceiling(_stopwatch.Elapsed.TotalSeconds));
+        int score = CalculateScore(secondsElapsed);
+
+        GD.Print($"[WordSearch] completada en {Config.DisplayName}");
+        GD.Print($"[Score] {score} (palabras={WordsFound}, par={Config.ParSeconds}, "
+            + $"segundos={secondsElapsed}, pistas={MaxHints - _hintUses}, invalid={InvalidSelections})");
+
+        SaveManager save = _sceneManager?.Save
+            ?? GetNodeOrNull<SaveManager>("/root/SaveManager");
+        save?.RegisterResult("word_search", Config.Id, true, secondsElapsed, score);
+
+        if (_winScore != null)
+        {
+            _winScore.Text = $"Puntaje: {score}";
+        }
+
+        if (_winTime != null)
+        {
+            _winTime.Text = $"Tiempo: {FormatSeconds(secondsElapsed)}";
+        }
+
+        if (_winModal != null)
+        {
+            _winModal.Visible = true;
+            _btnNextGame.GrabFocus();
+        }
     }
 
-    /// <summary>Lee la palabra entre dos celdas usando el tablero montado.</summary>
-    private string ResultReader(Vector2I start, Vector2I end)
+    private int CalculateScore(int secondsElapsed)
     {
-        return Board.Result?.ReadPath(start, end) ?? string.Empty;
+        float multiplier = Config.Id switch
+        {
+            "medio" => 1.25f,
+            "dificil" => 1.5f,
+            "maestro" => 2.0f,
+            _ => 1.0f,
+        };
+
+        int hintsUsed = MaxHints - _hintUses;
+        int baseScore = (WordsFound * 100)
+            + Math.Max(0, Config.ParSeconds - secondsElapsed)
+            - (hintsUsed * 50);
+
+        return Math.Max(0, Mathf.RoundToInt(baseScore * multiplier));
     }
 
+    private void UpdateClock()
+    {
+        if (_timeLabel == null)
+        {
+            return;
+        }
+
+        _timeLabel.Text = FormatSeconds((int)_stopwatch.Elapsed.TotalSeconds);
+    }
+
+    private static string FormatSeconds(int totalSeconds)
+    {
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        return $"{minutes:D2}:{seconds:D2}";
+    }
+
+    /// <summary>Refresca contador, tiempo y lista de palabras del HUD.</summary>
     private void RenderHud()
     {
         // Pendientes en el orden del tablero, reordenadas al azar al encontrar
@@ -266,22 +335,85 @@ public partial class WordSearchMain : Control
         }
 
         _hud.Render(WordsFound, TotalWords, orderedPending, FoundWords, IsComplete);
-        if (_wordsCounter != null) _wordsCounter.Text = $"{WordsFound}/{TotalWords}";
-        if (_timeLabel != null)
+        UpdateClock();
+    }
+
+    private void OpenPause()
+    {
+        if (_pauseModal == null || _completed)
         {
-            TimeSpan elapsed = DateTime.Now - _startTime;
-            _timeLabel.Text = $"{(int)elapsed.TotalMinutes:D2}:{elapsed.Seconds:D2}";
+            return;
+        }
+
+        _stopwatch.Stop();
+        _clockTimer.Stop();
+        _pauseModal.Visible = true;
+        _btnResume.GrabFocus();
+    }
+
+    private void ClosePause()
+    {
+        if (_pauseModal != null)
+        {
+            _pauseModal.Visible = false;
+        }
+
+        if (!_completed)
+        {
+            _stopwatch.Start();
+            _clockTimer.Start();
         }
     }
 
-    /// <summary>Aplica el margen de seguridad del panel word_search.</summary>
-    private void ApplySafeAreaMargin()
+    private void UseHint()
     {
-        var safe = GetNodeOrNull<ClasicosMenteActiva.core.SafeAreaManager>("/root/SafeAreaManager");
-        if (safe == null) return;
-        // El área segura ya está configurada; aquí solo confirmamos que la
-        // escena respete el offset superior (el .tscn usa AnchorPreset y el
-        // HUD se coloca debajo del área segura por diseño).
+        if (_hintUses <= 0 || _pending.Count == 0)
+        {
+            return;
+        }
+
+        string pendingWord = _pending.FirstOrDefault();
+        if (string.IsNullOrEmpty(pendingWord))
+        {
+            return;
+        }
+
+        _hintUses--;
+        UpdateHintButton();
+        ClosePause();
+        Board.FlashHint(pendingWord);
+        GD.Print($"[Hint] palabra pendiente resaltada: {pendingWord}");
+    }
+
+    private void UpdateHintButton()
+    {
+        _btnHint.Text = _hintUses > 0 ? $"Pista ({_hintUses})" : "Sin pistas";
+        _btnHint.Disabled = _hintUses <= 0;
+    }
+
+    private void StartNewGame()
+    {
+        HideModals();
+        StartFromSession();
+    }
+
+    private void HideModals()
+    {
+        if (_pauseModal != null)
+        {
+            _pauseModal.Visible = false;
+        }
+
+        if (_winModal != null)
+        {
+            _winModal.Visible = false;
+        }
+    }
+
+    private void GoToMainMenu()
+    {
+        HideModals();
+        _sceneManager.GoToMainMenu();
     }
 
     private void OnBackPressed()

@@ -4,8 +4,8 @@ using Godot;
 /// <summary>
 /// Selector de dificultad previo a la partida (spec §4.1 · plan Fase 2 §2.3).
 /// Cuatro botones grandes con nombre, tablero y objetivo; el grupo de palabras
-/// no se elige: lo reparte la Shuffle Bag según la dificultad.
-/// Provisional hasta la Fase 7: todos los niveles entran sin candado.
+/// no se elige: lo reparte la Shuffle Bag según la dificultad. Los niveles
+/// distintos de Fácil se desbloquean al acumular victorias (Fase 7).
 /// </summary>
 public partial class DifficultySelector : Control
 {
@@ -54,11 +54,13 @@ public partial class DifficultySelector : Control
             button.CustomMinimumSize = new Vector2(0, WordSearchVisuals.LevelButtonMinHeight);
             button.AddThemeFontSizeOverride("font_size", WordSearchVisuals.LevelButtonFontSize);
 
-            bool locked = level.Id != "facil" && completed < 20;
+            bool locked = level.Id != DifficultyCatalog.DefaultId
+                && completed < SaveManager.WinsToUnlockNextLevel;
+            int required = SaveManager.WinsToUnlockNextLevel;
             button.Disabled = locked;
             button.Text = locked
-                ? $"🔒 {level.MenuLabel} (20/20)"
-                : $"🔓 {level.MenuLabel} ({completed}/20)";
+                ? $"🔒 {level.MenuLabel} ({required}/{required})"
+                : $"🔓 {level.MenuLabel} ({completed}/{required})";
 
             if (locked)
             {

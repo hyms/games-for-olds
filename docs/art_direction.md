@@ -37,7 +37,8 @@
 
 | Token / Rol | Hex | Uso en UI |
 |-------------|-----|-----------|
-| Fondo global (`background`) | `#fffcfb` | Color de fondo principal para toda la aplicación y pantallas |
+| Fondo global (`background`) | `#FFFFFF` | Color de fondo principal para toda la aplicación y pantallas |
+| Panel de título (`title`) | `#a0bfc7` | Cabecera del minijuego con texto blanco y borde `#4e6077` |
 | Primario (`primary`) | `#b0c2cc` | Celdas del tablero en reposo, bordes de marcos y botones estándar |
 | Bloqueado / Inactivo (`blocked`) | `#efefee` | Estados inactivos, elementos deshabilitados o celdas secundarias |
 | Secundario (`secondary`) | `#4e6077` | Celdas seleccionadas, textos de alto contraste, acentos y bordes principales |
@@ -53,8 +54,8 @@
 |-----|-------|----------|
 | Texto `#101010` sobre primario `#b0c2cc` | 7,4:1 | Sí |
 | Texto blanco `#fffcfb` sobre secundario `#4e6077` | 6,8:1 | Sí |
-| Texto `#101010` sobre fondo global `#fffcfb` | 18,5:1 | Sí |
-| Borde secundario `#4e6077` sobre fondo `#fffcfb` | 6,8:1 | Sí |
+| Texto `#101010` sobre fondo global `#FFFFFF` | 19,6:1 | Sí |
+| Borde secundario `#4e6077` sobre fondo `#FFFFFF` | 6,8:1 | Sí |
 
 ---
 
@@ -81,12 +82,12 @@
 |--------|-----------------|-------|----------------|
 | **Reposo** | Primario (`#b0c2cc`) | Oscuro (`#4e6077`) | Oscuro (`#101010`) |
 | **Seleccionada** | Secundario (`#4e6077`) | Oscuro (`#4e6077`) | Blanco (`#fffcfb`) |
-| **Encontrada** | Turquesa (`#099c92`) | Turquesa oscuro | Blanco (`#fffcfb`, negrita) |
+| **Encontrada** | Turquesa oscuro (`#06706a`) | Turquesa acento (`#099c92`) | Blanco (`#ffffff`) |
 | **Bloqueada / Inactiva** | Bloqueado (`#efefee`) | Gris sutil | Gris oscuro (`#535456`) |
 
 ### 4.3 Panel Superior de Palabras
 - Sin marcos ni recuadros oscuros envolventes.
-- Integrado en flujo continuo (*wrapping*) sobre el fondo global (`#fffcfb`).
+- Integrado en flujo continuo (*wrapping*) sobre el fondo global (`#FFFFFF`).
 
 ---
 

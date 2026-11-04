@@ -34,6 +34,9 @@ public static class Constants
     /// <summary>Id del nivel de dificultad por defecto (Fácil, C6).</summary>
     public const string DefaultDifficultyId = "facil";
 
+    /// <summary>Ruta de la fuente pixel para las letras del tablero.</summary>
+    public const string FontPixelPath = "res://assets/fonts/PressStart2P.ttf";
+
     /// <summary>Ruta de la fuente en negrita para celdas encontradas.</summary>
     public const string FontBoldPath = "res://assets/fonts/AtkinsonHyperlegible-Bold.ttf";
 

@@ -1,8 +1,7 @@
+using System;
 using System.Collections.Generic;
 using ClasicosMenteActiva.core;
 using Godot;
-
-#pragma warning disable CS8632
 
 /// <summary>
 /// Catálogo de los cuatro niveles de dificultad (plan Fase 2 §2.1).
@@ -23,7 +22,7 @@ public static class DifficultyCatalog
 	};
 
 	/// <summary>Caché de niveles cargados (evita recargar .tres en cada llamada).</summary>
-	private static List<DifficultyConfig>? _levelsCache;
+	private static List<DifficultyConfig> _levelsCache;
 
 	/// <summary>
 	/// Carga los cuatro niveles. Se carga una sola vez y se reutiliza el caché.
@@ -83,6 +82,21 @@ public static class DifficultyCatalog
 	{
 		List<DifficultyConfig> levels = LoadAll();
 		return levels.Count > 0 ? levels[0] : null;
+	}
+
+	/// <summary>Número visible del nivel (1 = Fácil, 2 = Medio, …).</summary>
+	public static int LevelNumberFor(string id)
+	{
+		List<DifficultyConfig> levels = LoadAll();
+		for (int i = 0; i < levels.Count; i++)
+		{
+			if (string.Equals(levels[i].Id, id, StringComparison.Ordinal))
+			{
+				return i + 1;
+			}
+		}
+
+		return 1;
 	}
 
 	/// <summary>Invalida el caché (útil para tests o recargas de recursos).</summary>
