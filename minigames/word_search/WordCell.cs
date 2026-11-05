@@ -14,12 +14,12 @@ public enum WordCellState
 }
 
 /// <summary>
-/// Celda del tablero de Sopa de Letras. Hereda de <see cref="PixelGridCell"/>
+/// Celda del tablero de Sopa de Letras. Hereda de <see cref="PixelCell"/>
 /// para obtener estilo pixel art puro (sin anti-aliasing, corner_radius = 0)
 /// y soporte de temas dinámicos mediante <see cref="ThemeManager.OnThemeChanged"/>.
 /// Añade la coordenada, la letra y el seguimiento de la palabra que la encontró.
 /// </summary>
-public partial class WordCell : PixelGridCell
+public partial class WordCell : PixelCell
 {
     private static Font _pixelFont;
 
@@ -120,16 +120,14 @@ public partial class WordCell : PixelGridCell
 
     private void UpdateVisuals()
     {
-        // Los StyleBox de PixelGridCell ya aplican los colores del tema activo.
+        // Los StyleBox de PixelCell ya aplican los colores del tema activo.
         // Solo se ajusta el color de la letra y el contorno.
         bool whiteText = WordState is WordCellState.Found or WordCellState.Selected;
         _label.AddThemeColorOverride(
             "font_color",
             whiteText ? Colors.White : Color.FromHtml("#101010"));
 
-        _label.AddThemeColorOverride(
-            "font_outline_color",
-            whiteText ? Color.FromHtml("#06706a") : Colors.White);
-        _label.AddThemeConstantOverride("outline_size", whiteText ? 2 : 0);
+        _label.AddThemeColorOverride("font_outline_color", Colors.White);
+        _label.AddThemeConstantOverride("outline_size", 0);
     }
 }

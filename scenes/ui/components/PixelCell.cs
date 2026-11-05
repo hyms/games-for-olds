@@ -11,7 +11,7 @@ namespace ClasicosMenteActiva.scenes.ui.components;
 /// actualizar sus colores cuando el tema cambia globalmente.
 /// </summary>
 [Tool]
-public partial class PixelGridCell : Panel
+public partial class PixelCell : Panel
 {
     private Label _label;
     private StyleBoxFlat _styleIdle;
@@ -157,8 +157,8 @@ public partial class PixelGridCell : Panel
 
         bool whiteText = State is PixelCellState.Found or PixelCellState.Selected;
         _label.AddThemeColorOverride("font_color", whiteText ? Colors.White : Color.FromHtml("#101010"));
-        _label.AddThemeColorOverride("font_outline_color", whiteText ? Color.FromHtml("#06706a") : Colors.White);
-        _label.AddThemeConstantOverride("outline_size", whiteText ? 2 : 0);
+        _label.AddThemeColorOverride("font_outline_color", Colors.White);
+        _label.AddThemeConstantOverride("outline_size", 0);
     }
 
     private Label CreateLabel()
