@@ -1,104 +1,76 @@
-# Dirección de Arte — Clásicos Mente Activa 2D (v0.3)
+# Dirección de Arte — Clásicos Mente Activa 2D (v0.5)
 
-> **Documento SDD global** de estilo visual.
-> Extraído de la plantilla y requerimientos visuales aprobados por el usuario. Se aplica a todos los
-> minijuegos y pantallas, empezando por la Sopa de Letras.
->
-> **Versión:** 0.3 · **Fecha:** 31/10/2026 · **Estado:** Sincronizado con paleta definitiva e intento visual 2
-> **Documentación relacionada:** [Spec global](spec.md) · [Plan global](plan.md) ·
-> [Plan de la Sopa](word_search/plan.md) ·
-> [Manifiesto de assets](../assets/asset-manifest.json)
->
-> **Plantilla de referencia:** `docs/word_search/wathersoup.jpg`.
+> **Documento SDD global de estilo visual, librería de componentes y temas dinámicos.**
+> Define las reglas de diseño para la UI en Pixel Art adaptada a dispositivos móviles con notch, pantallas OLED/LCD y soporte para personalización de colores global.
 
 ---
 
-## 1. Marco técnico
+## 1. Reglas Generales de Pantalla y Arte Retro
 
-- **Motor:** Godot 4.x, 2D, renderizado `mobile`.
-- **Viewport:** 360×640 lógicos, estirado `canvas_items`, orientación vertical con soporte estricto para áreas de seguridad (*Safe Area* / *Notch*).
-- **Plataforma:** Android (gama media/baja), escritorio para desarrollo.
-- **Escala de la plantilla:** La imagen mide 574×1024 px y equivale a nuestro viewport 360×640. **Factor de conversión: ÷ 1,594** (1 px de plantilla = 0,627 px lógicos).
-- **Filtrado:** Vecino más cercano (nearest), sin mipmaps (`default_texture_filter=0`).
-
----
-
-## 2. Sistema visual
-
-### 2.1 Lenguaje de formas
-
-- Esquinas redondeadas pequeñas y consistentes (radio ≈ 5 px lógicos).
-- Bordes limpios de 2 px lógicos en tono oscuro (`#4e6077` o `#535456`) para garantizar alto contraste y delimitación clara frente al fondo marfil/blanco.
-- Sombra dura y pequeña (2 px lógicos) sin difuminado.
-- Contornos oscuros y contundentes; sin degradados ni efectos de profundidad complejos.
-- **Sin marco contenedor:** El tablero de celdas no lleva borde ni recuadro exterior envolvente; flota libremente sobre el fondo global.
-
-### 2.2 Paleta de Colores Oficial (Tokens de Tema)
-
-| Token / Rol | Hex | Uso en UI |
-|-------------|-----|-----------|
-| Fondo global (`background`) | `#FFFFFF` | Color de fondo principal para toda la aplicación y pantallas |
-| Panel de título (`title`) | `#a0bfc7` | Cabecera del minijuego con texto blanco y borde `#4e6077` |
-| Primario (`primary`) | `#b0c2cc` | Celdas del tablero en reposo, bordes de marcos y botones estándar |
-| Bloqueado / Inactivo (`blocked`) | `#efefee` | Estados inactivos, elementos deshabilitados o celdas secundarias |
-| Secundario (`secondary`) | `#4e6077` | Celdas seleccionadas, textos de alto contraste, acentos y bordes principales |
-| Tinta de texto oscuro (`text_dark`) | `#101010` | Letras sobre celdas en reposo y fondos claros |
-| Tinta de texto claro (`text_light`) | `#fffcfb` | Letras sobre fondos oscuros (ej. celdas seleccionadas en `#4e6077`) |
-| Amarillo acento | `#fdc109` | Acciones mágicas (pistas) |
-| Turquesa acento | `#099c92` | Confirmaciones y superficies de éxito |
-| Naranja pista | `#f9881e` | Animación y resaltado de pistas |
-
-### 2.3 Contraste verificado (WCAG 2.1)
-
-| Par | Ratio | ¿Cumple? |
-|-----|-------|----------|
-| Texto `#101010` sobre primario `#b0c2cc` | 7,4:1 | Sí |
-| Texto blanco `#fffcfb` sobre secundario `#4e6077` | 6,8:1 | Sí |
-| Texto `#101010` sobre fondo global `#FFFFFF` | 19,6:1 | Sí |
-| Borde secundario `#4e6077` sobre fondo `#FFFFFF` | 6,8:1 | Sí |
+* **Regla de Oro (Pixel Art Puro):** Todo elemento visual (UI, botones, iconos, contenedores, tipografías y efectos) debe dibujarse mediante sprites pixel art o `StyleBoxFlat` sin suavizado de bordes (*anti-aliasing* desactivado).
+* **Fondo Principal:** Base clara adaptable por tema (`#FFFFFF` por defecto).
+* **Safe Area (Notch Support):** Todo layout de escena debe envolverse en un `MarginContainer` con:
+  * `margin_top = 48`
+  * `margin_bottom = 16`
+  * `margin_left = 16`
+  * `margin_right = 16`
+* **Texturas y Filtros:** Texturas con `Texture Filter = Nearest` sin anti-aliasing ni mipmaps en importación y nodos de Godot.
 
 ---
 
-## 3. Geometría
+## 2. Sistema de Temas Dinámicos de Color (ThemeManager Architecture)
 
-| Elemento | Lógico (px) | Notas |
-|----------|-------------|-------|
-| Celda (Tablero 8x8) | 41 × 41 | Se ajusta dinámicamente según la dificultad |
-| Separación entre celdas | 6 | Margen uniforme entre botones de letra |
-| Margen lateral | 19 | El tablero queda centrado simétricamente |
-| Radio de esquina | 5 | Uniforme en celdas, tarjetas y botones |
-| Botón de navegación / HUD | **56 × 56** | Tamaño accesible optimizado para usuarios 40+ |
+Para permitir que el usuario cambie el aspecto visual de la aplicación completa (ej. Tema Clásico, Tema Noche / Dark, Tema Pastel, Tema Retro GameBoy), la paleta de colores se abstrae en recursos de datos y tokens globales.
 
----
+### 2.1 Estructura de Data Theme (`ThemeData.cs`)
 
-## 4. Componentes y Estados de Celdas
+Cada tema es una clase pura o `Resource` que define los siguientes tokens de color:
 
-### 4.1 Celda del tablero
-- Relleno inicial con color **Primario (`#b0c2cc`)**, radio de esquina 5 px, borde oscuro `#4e6077` o `#535456` de 2 px.
-- Letra centrada en tinta `#101010`.
+```csharp
+public class ThemeData
+{
+    public string ThemeId { get; set; } = "classic";
+    public Color BackgroundColor { get; set; } = Color.FromHtml("#FFFFFF");
+    public Color HeaderBannerColor { get; set; } = Color.FromHtml("#A0BFC7");
+    public Color SubheaderBannerColor { get; set; } = Color.FromHtml("#477987");
+    public Color CellIdleBackgroundColor { get; set; } = Color.FromHtml("#EBF2F5");
+    public Color CellIdleBorderColor { get; set; } = Color.FromHtml("#A0BFC7");
+    public Color CellIdleTextColor { get; set; } = Color.FromHtml("#101010");
+    public Color CellFoundBackgroundColor { get; set; } = Color.FromHtml("#099C92");
+    public Color CellFoundTextColor { get; set; } = Color.FromHtml("#FFFFFF");
+    public Color FooterTextColor { get; set; } = Color.FromHtml("#477987");
+    public Color FooterStrikethroughColor { get; set; } = Color.FromHtml("#099C92");
+}
+```
 
-### 4.2 Estados de la celda
-| Estado | Fondo / Relleno | Borde | Color de Texto |
-|--------|-----------------|-------|----------------|
-| **Reposo** | Primario (`#b0c2cc`) | Oscuro (`#4e6077`) | Oscuro (`#101010`) |
-| **Seleccionada** | Secundario (`#4e6077`) | Oscuro (`#4e6077`) | Blanco (`#fffcfb`) |
-| **Encontrada** | Turquesa oscuro (`#06706a`) | Turquesa acento (`#099c92`) | Blanco (`#ffffff`) |
-| **Bloqueada / Inactiva** | Bloqueado (`#efefee`) | Gris sutil | Gris oscuro (`#535456`) |
-
-### 4.3 Panel Superior de Palabras
-- Sin marcos ni recuadros oscuros envolventes.
-- Integrado en flujo continuo (*wrapping*) sobre el fondo global (`#FFFFFF`).
+### 2.2 Notificación Replay / Inyección de Temas
+El `ThemeManager.cs` (Autoload / Singleton) emite un evento `event Action<ThemeData> OnThemeChanged` al seleccionar una paleta nueva. Todas las celdas, botones y banners se suscriben para actualizar su `StyleBoxFlat` o `SelfModulate` en tiempo real.
 
 ---
 
-## 5. Tipografía
+## 3. Librería Reutilizable de Componentes Pixel Art (`res://scenes/ui/components/`)
 
-- **Letras del tablero:** `PressStart2P.ttf` (OFL), a **24 px** lógicos (múltiplo de la rejilla de 8 px para nitidez perfecta con filtrado `nearest`).
-- **Interfaz y HUD:** `AtkinsonHyperlegible-Regular.ttf` (OFL, Braille Institute), configurada en `core/AccessibleTheme.tres` como tipografía por defecto.
+Todos los minijuegos deben reutilizar los siguientes componentes prefabricados:
+
+| Componente | Ruta de la Escena | Descripción y Función Visual |
+|---|---|---|
+| **PixelButton** | `res://scenes/ui/components/PixelButton.tscn` | Botón táctil universal ($48 \times 48\text{ px}$ mínimo) con borde de píxel de 2 px y animación Tween de pulsación (*press depth effect*). |
+| **PixelBanner** | `res://scenes/ui/components/PixelBanner.tscn` | Panel de título o sub-banner personalizable con marco estilo retro de 3 píxeles de grosor. |
+| **PixelGridCell** | `res://scenes/ui/components/PixelGridCell.tscn` | Celda interactiva reutilizable para Sopa de Letras, Tangram o grillas de lógica con estados `Idle`, `Hover/Selected` y `Completed`. |
+| **PixelHeaderHUD** | `res://scenes/ui/components/PixelHeaderHUD.tscn` | Barra de navegación superior estandarizada (Atrás, Pausa, Cronómetro y Progreso). |
+| **PixelFooterPanel** | `res://scenes/ui/components/PixelFooterPanel.tscn` | Panel contenedor inferior para lista de palabras u objetivos con divisores pixelados (`|`). |
 
 ---
 
-## 6. Producción de assets e iconos
+## 4. Tipografías Oficiales
 
-- Todos los componentes gráficos estructurales se generan dinámicamente mediante `StyleBoxFlat` utilizando estrictamente la paleta de tokens oficial (`primary`, `secondary`, `blocked`, `background`).
-- Iconos: PNG con alfa de 16×16 px escalados a 32×32 con filtrado `nearest`.
+* **Títulos, Cabeceras y Celdas de Juego:** `PressStart2P.ttf`
+* **UI Accesible, Ajustes y Palabras Pendientes:** `AtkinsonHyperlegible-Regular.ttf`
+
+---
+
+## 5. Micro-animaciones de Retroalimentación (*Game Juice*)
+
+1. **Selección de Celda:** Escalado elástico suave (`1.0 -> 1.06 -> 1.0`) mediante `CreateTween()`.
+2. **Acierto de Palabra:** Destello de color de acento (`CellFoundBackgroundColor`) en las celdas coincidentes con un micro-rebote y efecto de tachado en el footer.
+3. **Pulsación de Botones UI:** Desplazamiento vertical de 2 píxeles hacia abajo al presionar para simular la pulsación física de un botón de consola clásica.
