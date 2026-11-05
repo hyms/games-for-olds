@@ -43,7 +43,7 @@ theme_override_constants/margin_bottom = 16
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="Header" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -170,16 +170,11 @@ icon_max_width = 18
 theme_override_font_sizes/font_size = 16
 text = "Pausa"
 
-[node name="BoardArea" type="Control" parent="MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-
 [node name="WordPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+size_flags_vertical = 1
 
 [node name="WordMargin" type="MarginContainer" parent="MarginContainer/VBoxContainer/WordPanel"]
 layout_mode = 2
@@ -199,6 +194,12 @@ horizontal_scroll_mode = 0
 theme_override_colors/default_color = Color(0.305882, 0.376471, 0.466667, 1)
 theme_override_constants/line_separation = 2
 theme_override_font_sizes/normal_font_size = 18
+
+[node name="BoardArea" type="Control" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
 
 [node name="VictoryLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 visible = false
