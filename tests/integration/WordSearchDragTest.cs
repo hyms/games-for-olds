@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClasicosMenteActiva.minigames.word_search;
 using GdUnit4;
 using Godot;
 using static GdUnit4.Assertions;

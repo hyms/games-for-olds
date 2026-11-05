@@ -1,4 +1,7 @@
+namespace ClasicosMenteActiva.minigames.word_search;
+
 using ClasicosMenteActiva.core;
+using ClasicosMenteActiva.scenes.ui.components;
 using Godot;
 
 /// <summary>Estados visuales de una celda del tablero (plan Fase 3 §3.1).</summary>
@@ -11,29 +14,20 @@ public enum WordCellState
 }
 
 /// <summary>
-/// Celda del tablero: letra, coordenada y estado visual. Es un <see cref="Panel"/>
-/// (no captura entrada: el arrastre lo gestiona <see cref="WordGridContainer"/>).
-/// Una celda puede pertenecer a varias palabras; guarda la última que la marcó
-/// (<see cref="FoundBy"/>) y prevalece su estilo (plan Fase 3 §3.1).
+/// Celda del tablero de Sopa de Letras. Hereda de <see cref="PixelGridCell"/>
+/// para obtener estilo pixel art puro (sin anti-aliasing, corner_radius = 0)
+/// y soporte de temas dinámicos mediante <see cref="ThemeManager.OnThemeChanged"/>.
+/// Añade la coordenada, la letra y el seguimiento de la palabra que la encontró.
 /// </summary>
-public partial class WordCell : Panel
+public partial class WordCell : PixelGridCell
 {
     private static Font _pixelFont;
-
-    public Vector2I Coords { get; private set; }
-
-    public char Letter { get; private set; } = ' ';
-
-    /// <summary>Estado visual actual (puede ser <c>Selected</c> de forma temporal).</summary>
-    public WordCellState State { get; private set; } = WordCellState.Normal;
-
-    /// <summary>¿La celda pertenece ya a alguna palabra encontrada?</summary>
-    public bool IsFound { get; private set; }
 
     /// <summary>Palabra que marcó la celda por última vez (vacío si no se ha encontrado).</summary>
     public string FoundBy { get; private set; } = string.Empty;
 
-    private Label _label;
+    /// <summary>Estado visual específico de Sopa de Letras.</summary>
+    public WordCellState WordState { get; private set; } = WordCellState.Normal;
 
     /// <summary>Fuente pixel compartida por todas las celdas (Press Start 2P).</summary>
     private static Font PixelFont
@@ -49,8 +43,11 @@ public partial class WordCell : Panel
         }
     }
 
+    private Label _label;
+
     /// <summary>Configura la celda; debe llamarse antes de añadirla a la escena.</summary>
-    public void Setup(Vector2I coords, char letter, int fontSize)
+
+    public new void Setup(Vector2I coords, char letter, int fontSize)
     {
         Coords = coords;
         Letter = letter;
@@ -73,25 +70,39 @@ public partial class WordCell : Panel
     {
         IsFound = true;
         FoundBy = word ?? string.Empty;
-        ApplyState(WordCellState.Found);
+        WordState = WordCellState.Found;
+        State = PixelCellState.Found;
+        UpdateVisuals();
     }
 
     /// <summary>Cambia solo el estado visual (selección, pista o reposo).</summary>
     public void SetState(WordCellState state)
     {
-        ApplyState(state);
+        WordState = state;
+        State = state switch
+        {
+            WordCellState.Normal => PixelCellState.Idle,
+            WordCellState.Selected => PixelCellState.Selected,
+            WordCellState.Found => PixelCellState.Found,
+            WordCellState.Hint => PixelCellState.Hint,
+            _ => PixelCellState.Idle,
+        };
+        UpdateVisuals();
     }
 
     /// <summary>Ajusta el tamaño de la letra al tamaño de la celda.</summary>
-    public void SetFontSize(int size)
+    public new void SetFontSize(int size)
     {
         _label?.AddThemeFontSizeOverride("font_size", Mathf.Max(WordSearchVisuals.MinCellFontSize, size));
     }
 
     /// <summary>Vuelve al estado permanente: encontrada si pertenece a una palabra, si no reposo.</summary>
-    public void RestoreBaseState()
+    public new void RestoreBaseState()
     {
-        ApplyState(IsFound ? WordCellState.Found : WordCellState.Normal);
+        bool found = IsFound;
+        WordState = found ? WordCellState.Found : WordCellState.Normal;
+        State = found ? PixelCellState.Found : PixelCellState.Idle;
+        UpdateVisuals();
     }
 
     private Label CreateLabel()
@@ -107,35 +118,18 @@ public partial class WordCell : Panel
         return label;
     }
 
-    public void ApplyState(WordCellState state)
+    private void UpdateVisuals()
     {
-        State = state;
-        StyleBoxFlat style = State switch
-        {
-            WordCellState.Selected => PixelStyles.CellSelected(),
-            WordCellState.Found => PixelStyles.CellFound(),
-            WordCellState.Hint => PixelStyles.CellHint(),
-            _ => PixelStyles.CellNormal(),
-        };
-        AddThemeStyleboxOverride("panel", style);
-
-        if (_label == null)
-        {
-            return;
-        }
-
-        // Reposo: tinta oscura sobre celda clara. Selección y acierto: texto
-        // blanco puro sobre el relleno de acento (nunca negro).
-        bool whiteText = State is WordCellState.Found or WordCellState.Selected;
+        // Los StyleBox de PixelGridCell ya aplican los colores del tema activo.
+        // Solo se ajusta el color de la letra y el contorno.
+        bool whiteText = WordState is WordCellState.Found or WordCellState.Selected;
         _label.AddThemeColorOverride(
             "font_color",
-            whiteText ? PixelStyles.TextLight : PixelStyles.TextDark);
+            whiteText ? Colors.White : Color.FromHtml("#101010"));
 
-        // El texto blanco lleva contorno turquesa oscuro para reforzar el
-        // contraste y distinguir el estado por forma, no solo por color.
         _label.AddThemeColorOverride(
             "font_outline_color",
-            whiteText ? PixelStyles.EncontradaBorde : PixelStyles.TextLight);
+            whiteText ? Color.FromHtml("#06706a") : Colors.White);
         _label.AddThemeConstantOverride("outline_size", whiteText ? 2 : 0);
     }
 }

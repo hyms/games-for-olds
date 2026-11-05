@@ -1,3 +1,4 @@
+using ClasicosMenteActiva.core;
 using System.Collections.Generic;
 using System.Text;
 using Godot;
@@ -48,12 +49,29 @@ public sealed class WordSearchHud
         if (_victory != null) _victory.Visible = complete;
     }
 
+    /// <summary>Refresca la lista de palabras aplicando el tema activo (colores y tachado).</summary>
+    public void RenderWithTheme(int found, int total, ICollection<string> pending, IReadOnlyList<string> foundOrder, bool complete, ThemeData theme)
+    {
+        if (_counter != null) _counter.Text = $"{found}/{total} Palabras";
+        if (_wordList != null) _wordList.Text = BuildWordList(pending, foundOrder, theme);
+        if (_victory != null) _victory.Visible = complete;
+    }
+
     /// <summary>
     /// Texto del footer: primero las pendientes en el orden del tablero y al
     /// final las encontradas, tachadas y en el color de «encontrada».
     /// Flujo continuo separado por barras, sin saltos de línea.
     /// </summary>
     public static string BuildWordList(ICollection<string> pending, IReadOnlyList<string> found)
+    {
+        return BuildWordList(pending, found, null);
+    }
+
+    /// <summary>
+    /// Texto del footer con colores de tema: primero las pendientes y al
+    /// final las encontradas, tachadas (~~TEXTO~~) con el color del tema.
+    /// </summary>
+    public static string BuildWordList(ICollection<string> pending, IReadOnlyList<string> found, ThemeData theme)
     {
         var text = new StringBuilder();
         foreach (string word in pending)
@@ -62,7 +80,8 @@ public sealed class WordSearchHud
             text.Append(word);
         }
 
-        string color = PixelStyles.EncontradaBorde.ToHtml(false);
+        Color strikeColor = theme?.FooterStrikethroughColor ?? PixelStyles.EncontradaBorde;
+        string color = strikeColor.ToHtml(false);
         foreach (string word in found)
         {
             AppendSeparator(text);

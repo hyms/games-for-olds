@@ -41,6 +41,7 @@ public partial class WordSearchMain : Control
     private readonly Stopwatch _stopwatch = new();
     private bool _completed;
     private int _hintUses = MaxHints;
+    private ThemeData _currentThemeData;
 
     public DifficultyConfig Config { get; private set; }
 
@@ -100,7 +101,57 @@ public partial class WordSearchMain : Control
         _boardArea.AddChild(Board);
         Board.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
 
+        // Suscribirse a cambios de tema para actualizar la UI globalmente.
+        ThemeManager theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
+        if (theme != null)
+        {
+            _currentThemeData = theme.CurrentThemeData;
+            theme.OnThemeChanged += OnThemeChanged;
+        }
+
         StartFromSession();
+    }
+
+    private void OnThemeChanged(ThemeData themeData)
+    {
+        _currentThemeData = themeData;
+
+        // Aplicar colores de tema a banners, paneles y fondo.
+        if (GetNodeOrNull<PanelContainer>("%TitlePanel") is PanelContainer titlePanel)
+        {
+            titlePanel.AddThemeStyleboxOverride("panel", MakeBannerStyle(themeData.HeaderBannerColor));
+        }
+        if (GetNodeOrNull<PanelContainer>("%SubtitlePanel") is PanelContainer subtitlePanel)
+        {
+            subtitlePanel.AddThemeStyleboxOverride("panel", MakeBannerStyle(themeData.SubheaderBannerColor));
+        }
+        if (GetNodeOrNull<PanelContainer>("%WordPanel") is PanelContainer wordPanel)
+        {
+            wordPanel.AddThemeStyleboxOverride("panel", MakeBannerStyle(themeData.SubheaderBannerColor));
+        }
+
+        // Refrescar fondo raíz.
+        if (GetNodeOrNull<ColorRect>("Background") is ColorRect bg)
+        {
+            bg.Color = themeData.BackgroundColor;
+        }
+
+        // Refrescar HUD (colores de texto del footer).
+        RenderHud();
+    }
+
+    private static StyleBoxFlat MakeBannerStyle(Color bgColor)
+    {
+        var box = new StyleBoxFlat
+        {
+            BgColor = bgColor,
+            BorderColor = Color.FromHtml("#101010"),
+            AntiAliasing = false,
+            CornerDetail = 1,
+        };
+        box.SetBorderWidthAll(2);
+        box.SetCornerRadiusAll(0);
+        return box;
     }
 
     private void StylePanels()
@@ -334,7 +385,7 @@ public partial class WordSearchMain : Control
             (orderedPending[i], orderedPending[j]) = (orderedPending[j], orderedPending[i]);
         }
 
-        _hud.Render(WordsFound, TotalWords, orderedPending, FoundWords, IsComplete);
+        _hud.RenderWithTheme(WordsFound, TotalWords, orderedPending, FoundWords, IsComplete, _currentThemeData);
         UpdateClock();
     }
 

@@ -58,6 +58,7 @@ public partial class WordGridContainer : Control
         _input.SelectionUpdated += OnInputUpdated;
         _input.SelectionEnded += OnInputEnded;
         _input.SelectionCanceled += OnInputCanceled;
+
     }
 
     public override void _Notification(int what)
@@ -106,8 +107,7 @@ public partial class WordGridContainer : Control
         {
             for (int x = 0; x < Columns; x++)
             {
-                var cell = new WordCell();
-                cell.Setup(new Vector2I(x, y), result.GetLetter(new Vector2I(x, y)), WordSearchVisuals.DefaultCellFontSize);
+                var cell = WordCellFactory.Create(new Vector2I(x, y), result.GetLetter(new Vector2I(x, y)), WordSearchVisuals.DefaultCellFontSize);
                 AddChild(cell);
                 _cells[y, x] = cell;
             }
@@ -129,7 +129,11 @@ public partial class WordGridContainer : Control
     }
 
     /// <summary>Estado visual actual de una celda.</summary>
-    public WordCellState GetCellState(Vector2I coord) => GetCell(coord)?.State ?? WordCellState.Normal;
+    public WordCellState GetCellState(Vector2I coord)
+    {
+        var cell = GetCell(coord);
+        return cell != null ? cell.WordState : WordCellState.Normal;
+    }
 
     /// <summary>Centro de una celda en coordenadas locales del contenedor.</summary>
     public Vector2 GetCellCenter(Vector2I coord)
@@ -337,7 +341,7 @@ public partial class WordGridContainer : Control
         _hintWord = placement.Word;
         foreach (Vector2I coord in placement.Cells)
         {
-            GetCell(coord)?.ApplyState(WordCellState.Hint);
+            GetCell(coord)?.SetState(WordCellState.Hint);
         }
 
         _hintTimer.Stop();
