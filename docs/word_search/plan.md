@@ -40,6 +40,7 @@
 | Lista de palabras | Lista básica con tachado | Footer aleatorio que reordena al encontrar | Fase 5 |
 | Puntaje | Fórmula definida (spec anterior) | Fórmula nueva definida en este plan (C7) | Fase 8 |
 | Selector | `DifficultySelector`: 4 botones sin candados | **Submenú de dificultad** (spec §4.1) con candados y progreso | Hecho como provisional (Fase 2); candados en la Fase 7 |
+| Arquitectura de UI | `PixelCell.cs` + `PixelButton.cs` (base modular) | Refactor completado ✅ |
 
 > **Estado tras la migración a C#:** el prototipo GDScript se borró en el commit
 > `2f66c5e`; las pantallas de temáticas (`ui/theme_selector/`) y el marcador de

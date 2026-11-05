@@ -95,6 +95,24 @@ public class WordSearchGeneratorTest
 ### 3.2 Zoom y Desplazamiento
 - **IT-WS-04 (Pinch-To-Zoom):** Enviar evento multitáctil simulando 2 dedos alejándose. El contenedor `WordGridContainer` debe escalar manteniendo legibilidad de celdas.
 
+### 3.3 Estados Visuales de PixelCell y Validación de Colores
+
+Este subsección cubre las pruebas de validación visual del componente `PixelCell`/`WordCell`, asegurando el renderizado correcto en los estados Normal y Encontrado.
+
+| ID | Componente | Acción | Criterio de Aprobación |
+|---|---|---|---|
+| **VT-WS-01** | `PixelCell` | Verificar estado Normal | Fondo `#EBF2F5`, borde `#A0BFC7`, texto `#101010` (gris oscuro) |
+| **VT-WS-02** | `PixelCell` | Cambiar a estado Encontrado | Fondo `#099c92`, texto `#FFFFFF` (blanco puro), borde oculto |
+| **VT-WS-03** | `PixelCell` | Validar contraste de texto | ≥ 4,5:1 para texto sobre fondo turquesa (≥ 3:1 para bordes) |
+| **VT-WS-04** | `WordCell` | Herencia de `PixelCell` | `WordCell : PixelCell` compila y renderiza sin errores |
+
+### 3.4 Tachado BBCode en Panel de Palabras
+
+| ID | Acción | Criterio de Aprobación |
+|---|---|---|
+| **VT-WS-05** | Seleccionar una palabra completa | La palabra en el panel inferior muestra `~~PALABRA~~` con tachado visual |
+| **VT-WS-06** | Verificar tachado después de encontrar | El texto de la palabra encontrada tiene línea central visible |
+| **VT-WS-07** | Cambiar entre estados de celda | Transición fluida de Normal → Encontrado con cambio de color turquesa `#099c92` y texto blanco `#FFFFFF` |
 ---
 
 ## 4. Pruebas de Sistema, HUD y Progresión

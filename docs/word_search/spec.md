@@ -30,6 +30,7 @@
 
 ## 2. Arquitectura de C# y Patrones
 
-* **`WordGridFactory.cs` (Factory Pattern):** Encargado de instanciar y posicionar las celdas del tablero.
-* **`GridCell.cs`:** Controla los estados visuales (Reposo, Seleccionado, Encontrado) mediante `StyleBoxFlat` de Godot.
-* **`WordSearchMain.cs`:** Controla la lógica de selección por arrastre y emite eventos (`event Action OnWordFound`).
+* **`WordGridFactory.cs` (Factory Pattern):** Encargado de instanciar y posicionar las celdas del tablero usando `PixelCell` como base reutilizable.
+* **`PixelCell.cs`:** Componente base para celdas de grilla con estilo pixel art puro (sin anti-aliasing, `corner_radius = 0`). Hereda de `Panel` y soporta estados visuales (Normal, Seleccionado, Encontrado) mediante `StyleBoxFlat` y modulación de color dinámica a través de `ThemeManager.OnThemeChanged`.
+* **`WordCell.cs`:** Hereda de `PixelCell` y añade lógica específica de Sopa de Letras (coordenadas, letra, seguimiento de palabra encontrada, `WordCellState`). Aplica colores turquesa `#099c92` y texto blanco `#FFFFFF` al estado Encontrado.
+* **`WordSearchMain.cs`:** Controla la lógica de selección por arrastre, emite eventos (`event Action OnWordFound`) y gestiona la transición de estados en `PixelCell`/`WordCell`.
