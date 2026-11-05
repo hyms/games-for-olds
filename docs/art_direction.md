@@ -56,7 +56,7 @@ Todos los minijuegos deben reutilizar los siguientes componentes prefabricados:
 |---|---|---|
 | **PixelButton** | `res://scenes/ui/components/PixelButton.tscn` | Botón táctil universal ($48 \times 48\text{ px}$ mínimo) con borde de píxel de 2 px y animación Tween de pulsación (*press depth effect*). |
 | **PixelBanner** | `res://scenes/ui/components/PixelBanner.tscn` | Panel de título o sub-banner personalizable con marco estilo retro de 3 píxeles de grosor. |
-| **PixelGridCell** | `res://scenes/ui/components/PixelGridCell.tscn` | Celda interactiva reutilizable para Sopa de Letras, Tangram o grillas de lógica con estados `Idle`, `Hover/Selected` y `Completed`. |
+| **PixelCell** | `res://scenes/ui/components/PixelCell.tscn` | Celda interactiva reutilizable para Sopa de Letras, Tangram o grillas de lógica con estados `Idle`, `Hover/Selected` y `Completed`. |
 | **PixelHeaderHUD** | `res://scenes/ui/components/PixelHeaderHUD.tscn` | Barra de navegación superior estandarizada (Atrás, Pausa, Cronómetro y Progreso). |
 | **PixelFooterPanel** | `res://scenes/ui/components/PixelFooterPanel.tscn` | Panel contenedor inferior para lista de palabras u objetivos con divisores pixelados (`|`). |
 
