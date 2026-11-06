@@ -1,8 +1,8 @@
-namespace ClasicosMenteActiva.minigames.word_search;
-
 using ClasicosMenteActiva.core;
 using ClasicosMenteActiva.scenes.ui.components;
 using Godot;
+
+namespace ClasicosMenteActiva.minigames.word_search;
 
 /// <summary>Estados visuales de una celda del tablero (plan Fase 3 §3.1).</summary>
 public enum WordCellState
@@ -10,18 +10,20 @@ public enum WordCellState
     Normal,
     Selected,
     Found,
-    Hint,
+    Hint
 }
 
 /// <summary>
-/// Celda del tablero de Sopa de Letras. Hereda de <see cref="PixelCell"/>
-/// para obtener estilo pixel art puro (sin anti-aliasing, corner_radius = 0)
-/// y soporte de temas dinámicos mediante <see cref="ThemeManager.OnThemeChanged"/>.
-/// Añade la coordenada, la letra y el seguimiento de la palabra que la encontró.
+///     Celda del tablero de Sopa de Letras. Hereda de <see cref="PixelCell" />
+///     para obtener estilo pixel art puro (sin anti-aliasing, corner_radius = 0)
+///     y soporte de temas dinámicos mediante <see cref="ThemeManager.OnThemeChanged" />.
+///     Añade la coordenada, la letra y el seguimiento de la palabra que la encontró.
 /// </summary>
 public partial class WordCell : PixelCell
 {
     private static Font _pixelFont;
+
+    private Label _label;
 
     /// <summary>Palabra que marcó la celda por última vez (vacío si no se ha encontrado).</summary>
     public string FoundBy { get; private set; } = string.Empty;
@@ -29,24 +31,19 @@ public partial class WordCell : PixelCell
     /// <summary>Estado visual específico de Sopa de Letras.</summary>
     public WordCellState WordState { get; private set; } = WordCellState.Normal;
 
-    /// <summary>Fuente pixel compartida por todas las celdas (Press Start 2P).</summary>
+    /// <summary>Fuente pixel compartida por todas las celdas (PixelOperator, spec §1.3).</summary>
     private static Font PixelFont
     {
         get
         {
-            if (_pixelFont == null && ResourceLoader.Exists(Constants.FontPixelPath))
-            {
-                _pixelFont = GD.Load<Font>(Constants.FontPixelPath);
-            }
+            if (_pixelFont == null && ResourceLoader.Exists(Constants.FontCellPath))
+                _pixelFont = GD.Load<Font>(Constants.FontCellPath);
 
             return _pixelFont;
         }
     }
 
-    private Label _label;
-
     /// <summary>Configura la celda; debe llamarse antes de añadirla a la escena.</summary>
-
     public new void Setup(Vector2I coords, char letter, int fontSize)
     {
         Coords = coords;
@@ -57,10 +54,7 @@ public partial class WordCell : PixelCell
         _label ??= CreateLabel();
         _label.Text = letter.ToString();
         _label.AddThemeFontSizeOverride("font_size", Mathf.Max(WordSearchVisuals.MinCellFontSize, fontSize));
-        if (PixelFont != null)
-        {
-            _label.AddThemeFontOverride("font", PixelFont);
-        }
+        if (PixelFont != null) _label.AddThemeFontOverride("font", PixelFont);
 
         RestoreBaseState();
     }
@@ -85,7 +79,7 @@ public partial class WordCell : PixelCell
             WordCellState.Selected => PixelCellState.Selected,
             WordCellState.Found => PixelCellState.Found,
             WordCellState.Hint => PixelCellState.Hint,
-            _ => PixelCellState.Idle,
+            _ => PixelCellState.Idle
         };
         UpdateVisuals();
     }
@@ -99,7 +93,7 @@ public partial class WordCell : PixelCell
     /// <summary>Vuelve al estado permanente: encontrada si pertenece a una palabra, si no reposo.</summary>
     public new void RestoreBaseState()
     {
-        bool found = IsFound;
+        var found = IsFound;
         WordState = found ? WordCellState.Found : WordCellState.Normal;
         State = found ? PixelCellState.Found : PixelCellState.Idle;
         UpdateVisuals();
@@ -111,10 +105,10 @@ public partial class WordCell : PixelCell
         {
             MouseFilter = MouseFilterEnum.Ignore,
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
         };
         AddChild(label);
-        label.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        label.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         return label;
     }
 
@@ -122,7 +116,7 @@ public partial class WordCell : PixelCell
     {
         // Los StyleBox de PixelCell ya aplican los colores del tema activo.
         // Solo se ajusta el color de la letra y el contorno.
-        bool whiteText = WordState is WordCellState.Found or WordCellState.Selected;
+        var whiteText = WordState is WordCellState.Found or WordCellState.Selected or WordCellState.Hint;
         _label.AddThemeColorOverride(
             "font_color",
             whiteText ? Colors.White : Color.FromHtml("#101010"));

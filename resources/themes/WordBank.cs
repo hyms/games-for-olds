@@ -4,11 +4,11 @@ using Godot;
 #pragma warning disable CS8632
 
 /// <summary>
-/// Catálogo de las 10 categorías del banco de palabras (spec §5.1).
-/// Recursos <c>.tres</c> incluidos en la app (decisión C9): funcionan sin
-/// conexión y se editan desde el editor. Rutas explícitas para que el orden
-/// de la spec sea estable también dentro de una exportación.
-/// Equivalente C# de <c>resources/themes/WordBank.gd</c>.
+///     Catálogo de las 10 categorías del banco de palabras (spec §5.1).
+///     Recursos <c>.tres</c> incluidos en la app (decisión C9): funcionan sin
+///     conexión y se editan desde el editor. Rutas explícitas para que el orden
+///     de la spec sea estable también dentro de una exportación.
+///     Equivalente C# de <c>resources/themes/WordBank.gd</c>.
 /// </summary>
 public static class WordBank
 {
@@ -24,26 +24,23 @@ public static class WordBank
         "res://resources/themes/themes/comidas.tres",
         "res://resources/themes/themes/instrumentos.tres",
         "res://resources/themes/themes/herramientas.tres",
-        "res://resources/themes/themes/ropa.tres",
+        "res://resources/themes/themes/ropa.tres"
     };
 
     /// <summary>Caché de categorías cargadas (evita recargar .tres en cada llamada).</summary>
     private static List<WordSearchTheme>? _categoriesCache;
 
     /// <summary>
-    /// Carga las 10 categorías en el orden de la spec. Se carga una sola vez y
-    /// se reutiliza el caché. Los recursos ausentes o inválidos se saltan con
-    /// error en consola (no rompen la partida).
+    ///     Carga las 10 categorías en el orden de la spec. Se carga una sola vez y
+    ///     se reutiliza el caché. Los recursos ausentes o inválidos se saltan con
+    ///     error en consola (no rompen la partida).
     /// </summary>
     public static List<WordSearchTheme> LoadAll()
     {
-        if (_categoriesCache != null)
-        {
-            return _categoriesCache;
-        }
+        if (_categoriesCache != null) return _categoriesCache;
 
         var categories = new List<WordSearchTheme>();
-        foreach (string path in CategoryPaths)
+        foreach (var path in CategoryPaths)
         {
             if (!ResourceLoader.Exists(path))
             {
@@ -68,13 +65,9 @@ public static class WordBank
     /// <summary>Carga una categoría por identificador; null si no existe.</summary>
     public static WordSearchTheme LoadById(string categoryId)
     {
-        foreach (WordSearchTheme category in LoadAll())
-        {
+        foreach (var category in LoadAll())
             if (category.CategoryId == categoryId)
-            {
                 return category;
-            }
-        }
 
         return null;
     }
@@ -83,14 +76,14 @@ public static class WordBank
     public static List<string> Ids()
     {
         var ids = new List<string>();
-        foreach (WordSearchTheme category in LoadAll())
-        {
-            ids.Add(category.CategoryId);
-        }
+        foreach (var category in LoadAll()) ids.Add(category.CategoryId);
 
         return ids;
     }
 
     /// <summary>Invalida el caché (útil para tests o recargas de recursos).</summary>
-    public static void InvalidateCache() => _categoriesCache = null;
+    public static void InvalidateCache()
+    {
+        _categoriesCache = null;
+    }
 }

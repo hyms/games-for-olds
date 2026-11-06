@@ -1,28 +1,28 @@
 <Project Sdk="Godot.NET.Sdk/4.7.2">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
-    <LangVersion>12.0</LangVersion>
-    <RootNamespace>ClasicosMenteActiva</RootNamespace>
-    <AssemblyName>ClasicosMenteActiva2D</AssemblyName>
-    <!-- dotnet-aot-compat: Habilitar análisis de Native AOT y trimming para optimizar APK Android -->
-    <IsAotCompatible>true</IsAotCompatible>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <LangVersion>12.0</LangVersion>
+        <RootNamespace>ClasicosMenteActiva</RootNamespace>
+        <AssemblyName>ClasicosMenteActiva2D</AssemblyName>
+        <!-- dotnet-aot-compat: Habilitar análisis de Native AOT y trimming para optimizar APK Android -->
+        <IsAotCompatible>true</IsAotCompatible>
+    </PropertyGroup>
 
-  <!-- gdUnit4Net: mismo framework que la versión GDScript (decisión D7). -->
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
-    <PackageReference Include="gdUnit4.api" Version="5.1.0-rc6" />
-    <PackageReference Include="gdUnit4.test.adapter" Version="3.2.0" />
-    <PackageReference Include="gdUnit4.analyzers" Version="1.1.0">
-      <PrivateAssets>none</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+    <!-- gdUnit4Net: mismo framework que la versión GDScript (decisión D7). -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0"/>
+        <PackageReference Include="gdUnit4.api" Version="5.1.0-rc6"/>
+        <PackageReference Include="gdUnit4.test.adapter" Version="3.2.0"/>
+        <PackageReference Include="gdUnit4.analyzers" Version="1.1.0">
+            <PrivateAssets>none</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-  <!-- Excluir archivos de skills (no son parte del juego) -->
-  <ItemGroup>
-    <Compile Remove=".agents/skills/**/*.cs" />
-    <Compile Remove="skills/**/*.cs" />
-  </ItemGroup>
+    <!-- Excluir archivos de skills (no son parte del juego) -->
+    <ItemGroup>
+        <Compile Remove=".agents/skills/**/*.cs"/>
+        <Compile Remove="skills/**/*.cs"/>
+    </ItemGroup>
 </Project>

@@ -2,16 +2,16 @@ using ClasicosMenteActiva.core;
 using Godot;
 
 /// <summary>
-/// Pantalla de ajustes navegable (Fase 4 §4.3).
-/// Permite cambiar tamaño de texto y tema, y guarda en <see cref="SaveManager"/>.
+///     Pantalla de ajustes navegable (Fase 4 §4.3).
+///     Permite cambiar tamaño de texto y tema, y guarda en <see cref="SaveManager" />.
 /// </summary>
 public partial class SettingsScreen : Control
 {
-    private SceneManager _sceneManager;
+    private Button _btnBack;
     private SaveManager _saveManager;
+    private SceneManager _sceneManager;
     private OptionButton _textSizeOption;
     private OptionButton _themeOption;
-    private Button _btnBack;
 
     public override void _Ready()
     {
@@ -36,13 +36,13 @@ public partial class SettingsScreen : Control
         // Cargar valores guardados
         if (_saveManager != null)
         {
-            string size = _saveManager.Settings.TextSize;
-            string theme = _saveManager.Settings.Theme;
+            var size = _saveManager.Settings.TextSize;
+            var theme = _saveManager.Settings.Theme;
             _textSizeOption.Selected = size switch
             {
                 "normal" => 0,
                 "large" => 1,
-                _ => 2,
+                _ => 2
             };
             _themeOption.Selected = theme == "dark" ? 1 : 0;
         }
@@ -52,11 +52,11 @@ public partial class SettingsScreen : Control
 
     private void OnTextSizeChanged(long index)
     {
-        string sizeId = index switch
+        var sizeId = index switch
         {
             0 => "normal",
             1 => "large",
-            _ => "xlarge",
+            _ => "xlarge"
         };
         if (_saveManager != null)
             _saveManager.Settings.TextSize = sizeId;
@@ -65,7 +65,7 @@ public partial class SettingsScreen : Control
 
     private void OnThemeChanged(long index)
     {
-        string themeId = index == 1 ? "dark" : "light";
+        var themeId = index == 1 ? "dark" : "light";
         if (_saveManager != null)
             _saveManager.Settings.Theme = themeId;
         UpdateLabels();

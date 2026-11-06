@@ -3,8 +3,8 @@ using Godot;
 namespace ClasicosMenteActiva.core;
 
 /// <summary>
-/// Rutas, grupos y medidas compartidas del proyecto.
-/// Equivalente C# de <c>core/Constants.gd</c>.
+///     Rutas, grupos y medidas compartidas del proyecto.
+///     Equivalente C# de <c>core/Constants.gd</c>.
 /// </summary>
 public static class Constants
 {
@@ -26,16 +26,19 @@ public static class Constants
     /// <summary>Nombre del autoload que gestiona las escenas.</summary>
     public const string AutoloadSceneManager = "SceneManager";
 
-    /// <summary>Tamaño mínimo táctil recomendado en Android (px lógicos).</summary>
-    public static readonly Vector2 MinTouchSize = new(56, 56);
-
     // --- Sopa de Letras ------------------------------------------------------
 
     /// <summary>Id del nivel de dificultad por defecto (Fácil, C6).</summary>
     public const string DefaultDifficultyId = "facil";
 
-    /// <summary>Ruta de la fuente pixel para las letras del tablero.</summary>
+    /// <summary>Ruta de la fuente pixel para las letras de las celdas del tablero (spec §1.3).</summary>
+    public const string FontCellPath = "res://assets/fonts/PixelOperator.ttf";
+
+    /// <summary>Ruta de la fuente de títulos y banners (spec §1.1).</summary>
     public const string FontPixelPath = "res://assets/fonts/PressStart2P.ttf";
+
+    /// <summary>Ruta de la fuente del HUD, cronómetro, contadores y botones (spec §1.2).</summary>
+    public const string FontVcrOsdPath = "res://assets/fonts/VCR_OSD_Mono.ttf";
 
     /// <summary>Ruta de la fuente en negrita para celdas encontradas.</summary>
     public const string FontBoldPath = "res://assets/fonts/AtkinsonHyperlegible-Bold.ttf";
@@ -55,4 +58,7 @@ public static class Constants
 
     /// <summary>Ubicación permitida: pantalla de estadísticas.</summary>
     public const string AdLocationStatistics = "statistics";
+
+    /// <summary>Tamaño mínimo táctil recomendado en Android (px lógicos).</summary>
+    public static readonly Vector2 MinTouchSize = new(56, 56);
 }

@@ -7,9 +7,9 @@ using Godot;
 using static GdUnit4.Assertions;
 
 /// <summary>
-/// Fase 3 — Integración de la selección por arrastre (IT-WS-01 a IT-WS-03).
-/// Carga la escena real, simula el ratón sobre el tablero y comprueba la señal
-/// <c>word_selected</c>, el desvanecido sin penalizar y el solape visual.
+///     Fase 3 — Integración de la selección por arrastre (IT-WS-01 a IT-WS-03).
+///     Carga la escena real, simula el ratón sobre el tablero y comprueba la señal
+///     <c>word_selected</c>, el desvanecido sin penalizar y el solape visual.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -29,7 +29,7 @@ public class WordSearchDragTest
     [TestCase]
     public async Task ArrastreRectoEmiteSeleccionYEncuentraLaPalabra() // IT-WS-01
     {
-        (DifficultyConfig config, GenerationResult result) = BuildBoard("facil", seed: 21);
+        var (config, result) = BuildBoard("facil", 21);
         _scene.StartGame(config, result);
         await _runner.SimulateFrames(3);
 
@@ -45,7 +45,7 @@ public class WordSearchDragTest
             emittedEnd = end;
         };
 
-        WordPlacement target = result.Placements[0];
+        var target = result.Placements[0];
         await Drag(target.Start, target.End);
 
         AssertBool(emittedStart.HasValue)
@@ -57,7 +57,7 @@ public class WordSearchDragTest
         AssertBool(_scene.FoundWords.Contains(target.Word)).IsTrue();
 
         // La celda debe cambiar de relleno al acento turquesa, no solo el borde.
-        StyleBoxFlat foundStyle = _scene.Board.GetCell(target.Start).GetThemeStylebox("panel") as StyleBoxFlat;
+        var foundStyle = _scene.Board.GetCell(target.Start).GetThemeStylebox("panel") as StyleBoxFlat;
         AssertObject(foundStyle).IsNotNull();
         AssertBool(foundStyle.BgColor.IsEqualApprox(PixelStyles.Turquesa))
             .OverrideFailureMessage($"la celda encontrada conserva el relleno {foundStyle.BgColor}")
@@ -67,7 +67,7 @@ public class WordSearchDragTest
     [TestCase]
     public async Task SeleccionInvalidaSeDesvaneceSinPenalizar() // IT-WS-02
     {
-        (DifficultyConfig config, GenerationResult result) = BuildBoard("facil", seed: 33);
+        var (config, result) = BuildBoard("facil", 33);
         _scene.StartGame(config, result);
         await _runner.SimulateFrames(3);
 
@@ -96,13 +96,14 @@ public class WordSearchDragTest
     [TestCase]
     public async Task LaUltimaPalabraEncontradaPrevaleceEnElCruce() // IT-WS-03
     {
-        (DifficultyConfig config, GenerationResult result, WordPlacement first, WordPlacement second, Vector2I cross)? crossing
-            = FindCrossingBoard("facil");
+        (DifficultyConfig config, GenerationResult result, WordPlacement first, WordPlacement second, Vector2I cross)?
+            crossing
+                = FindCrossingBoard("facil");
         AssertBool(crossing.HasValue)
             .OverrideFailureMessage("no se encontró un tablero con dos palabras cruzadas")
             .IsTrue();
 
-        (DifficultyConfig config, GenerationResult result, WordPlacement first, WordPlacement second, Vector2I cross) = crossing.Value;
+        var (config, result, first, second, cross) = crossing.Value;
         _scene.StartGame(config, result);
         await _runner.SimulateFrames(3);
 
@@ -122,8 +123,8 @@ public class WordSearchDragTest
 
     private async Task Drag(Vector2I start, Vector2I end)
     {
-        Vector2 from = BoardPoint(start);
-        Vector2 to = BoardPoint(end);
+        var from = BoardPoint(start);
+        var to = BoardPoint(end);
 
         _runner.SetMousePos(from);
         _runner.SimulateMouseButtonPress(MouseButton.Left);
@@ -141,39 +142,30 @@ public class WordSearchDragTest
 
     private static (DifficultyConfig, GenerationResult) BuildBoard(string id, long seed)
     {
-        DifficultyConfig config = DifficultyCatalog.LoadById(id);
-        WordSelectionResult selection = WordSelection.Pick(config, WordBank.LoadAll(), null, seed + 100);
-        GenerationResult result = new WordSearchGenerator().Generate(config, selection.Words, seed);
+        var config = DifficultyCatalog.LoadById(id);
+        var selection = WordSelection.Pick(config, WordBank.LoadAll(), null, seed + 100);
+        var result = new WordSearchGenerator().Generate(config, selection.Words, seed);
         return (config, result);
     }
 
     private static (DifficultyConfig, GenerationResult, WordPlacement, WordPlacement, Vector2I)?
         FindCrossingBoard(string id)
     {
-        DifficultyConfig config = DifficultyCatalog.LoadById(id);
-        WordSelectionResult selection = WordSelection.Pick(config, WordBank.LoadAll(), null, seed: 77);
+        var config = DifficultyCatalog.LoadById(id);
+        var selection = WordSelection.Pick(config, WordBank.LoadAll(), null, 77);
         var generator = new WordSearchGenerator();
 
         for (long seed = 1; seed <= 80; seed++)
         {
-            GenerationResult result = generator.Generate(config, selection.Words, seed);
-            for (int i = 0; i < result.Placements.Count; i++)
+            var result = generator.Generate(config, selection.Words, seed);
+            for (var i = 0; i < result.Placements.Count; i++)
+            for (var j = 0; j < result.Placements.Count; j++)
             {
-                for (int j = 0; j < result.Placements.Count; j++)
-                {
-                    if (i == j)
-                    {
-                        continue;
-                    }
+                if (i == j) continue;
 
-                    foreach (Vector2I coord in result.Placements[i].Cells)
-                    {
-                        if (Contains(result.Placements[j].Cells, coord))
-                        {
-                            return (config, result, result.Placements[i], result.Placements[j], coord);
-                        }
-                    }
-                }
+                foreach (var coord in result.Placements[i].Cells)
+                    if (Contains(result.Placements[j].Cells, coord))
+                        return (config, result, result.Placements[i], result.Placements[j], coord);
             }
         }
 
@@ -182,13 +174,9 @@ public class WordSearchDragTest
 
     private static bool Contains(IReadOnlyList<Vector2I> cells, Vector2I coord)
     {
-        foreach (Vector2I cell in cells)
-        {
+        foreach (var cell in cells)
             if (cell == coord)
-            {
                 return true;
-            }
-        }
 
         return false;
     }

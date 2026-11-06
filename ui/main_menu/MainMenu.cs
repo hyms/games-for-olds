@@ -2,19 +2,19 @@ using ClasicosMenteActiva.core;
 using Godot;
 
 /// <summary>
-/// Menú principal: punto de entrada. Navega con <see cref="SceneManager"/>
-/// (desacoplado del resto de escenas).
-/// Equivalente C# de <c>ui/main_menu/MainMenu.gd</c>.
+///     Menú principal: punto de entrada. Navega con <see cref="SceneManager" />
+///     (desacoplado del resto de escenas).
+///     Equivalente C# de <c>ui/main_menu/MainMenu.gd</c>.
 /// </summary>
 public partial class MainMenu : Control
 {
-    private SceneManager _sceneManager;
-    private BigButton _btnWordSearch;
-    private BigButton _btnTangram;
     private BigButton _btnBlocks;
-    private BigButton _btnStats;
-    private BigButton _btnSettings;
     private BigButton _btnQuit;
+    private BigButton _btnSettings;
+    private BigButton _btnStats;
+    private BigButton _btnTangram;
+    private BigButton _btnWordSearch;
+    private SceneManager _sceneManager;
 
     public override void _Ready()
     {

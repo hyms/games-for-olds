@@ -1,10 +1,8 @@
-using Godot;
-
 /// <summary>
-/// Valores de presentación de la Sopa de Letras en un único sitio: geometría
-/// del tablero, tipografía de celda, tiempos de feedback y medidas del
-/// selector. La lógica de juego no decide píxeles ni duraciones (SRP · plan
-/// Fase 3). Los colores y estilos salen de <see cref="PixelStyles"/>.
+///     Valores de presentación de la Sopa de Letras en un único sitio: geometría
+///     del tablero, tipografía de celda, tiempos de feedback y medidas del
+///     selector. La lógica de juego no decide píxeles ni duraciones (SRP · plan
+///     Fase 3). Los colores y estilos salen de <see cref="PixelStyles" />.
 /// </summary>
 public static class WordSearchVisuals
 {
@@ -27,22 +25,22 @@ public static class WordSearchVisuals
     public const int MaxCellFontSize = 24;
 
     // --- Feedback ------------------------------------------------------------
-    /// <summary>Duración del desvanecido de una selección inválida (spec §3).</summary>
-    public const float InvalidFadeSeconds = 0.5f;
+    /// <summary>Duración del resaltado de pista (spec §4.2, 1.5 s).</summary>
+    public const float HintFlashSeconds = 1.5f;
 
-    /// <summary>Transparencia mínima del desvanecido (vuelve a 1 al terminar).</summary>
-    public const float InvalidFadeAlpha = 0.25f;
+    /// <summary>Duración del destello de una selección inválida (spec §3).</summary>
+    public const float InvalidFlashSeconds = 0.5f;
 
     /// <summary>Grosor del trazo de arrastre en píxeles.</summary>
     public const float TraceWidth = 6.0f;
 
-    /// <summary>Opacidad de la línea del trazo.</summary>
-    public const float TraceAlpha = 0.7f;
+    /// <summary>Opacidad de la línea del trazo (opacidad absoluta, regla de oro pixel art).</summary>
+    public const float TraceAlpha = 1.0f;
 
     /// <summary>Radio y opacidad de los nodos de los extremos del trazo.</summary>
     public const float TraceDotRadius = 5.0f;
 
-    public const float TraceDotAlpha = 0.9f;
+    public const float TraceDotAlpha = 1.0f;
 
     // --- Zoom (Fase 4) -------------------------------------------------------
     /// <summary>Factor zoom mínimo sin distorsión.</summary>

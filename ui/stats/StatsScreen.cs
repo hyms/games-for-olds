@@ -2,22 +2,23 @@ using ClasicosMenteActiva.core;
 using Godot;
 
 /// <summary>
-/// Pantalla de estadísticas (Fase 4 §4.3).
-/// Lee de <see cref="SaveManager.Data.Stats"/> y muestra una tarjeta por juego:
-/// nivel actual, mejor tiempo, mejor puntaje, partidas y victorias.
-/// Incluye botón para reiniciar estadísticas con confirmación.
+///     Pantalla de estadísticas (Fase 4 §4.3).
+///     Lee de <see cref="SaveManager.Data.Stats" /> y muestra una tarjeta por juego:
+///     nivel actual, mejor tiempo, mejor puntaje, partidas y victorias.
+///     Incluye botón para reiniciar estadísticas con confirmación.
 /// </summary>
 public partial class StatsScreen : Control
 {
     [Signal]
     public delegate void BackRequestedEventHandler();
 
-    private SceneManager _sceneManager;
-    private SaveManager _saveManager;
     private Button _btnBack;
     private Button _btnReset;
-    private VBoxContainer _statsList;
     private Label _emptyLabel;
+    private SaveManager _saveManager;
+
+    private SceneManager _sceneManager;
+    private VBoxContainer _statsList;
 
     public override void _Ready()
     {
@@ -38,7 +39,7 @@ public partial class StatsScreen : Control
     private void Refresh()
     {
         // Limpiar lista (excepto el label vacío)
-        foreach (Node child in _statsList.GetChildren())
+        foreach (var child in _statsList.GetChildren())
         {
             if (child is Label) continue;
             child.QueueFree();
@@ -54,9 +55,9 @@ public partial class StatsScreen : Control
         _emptyLabel.Visible = false;
         _btnReset.Disabled = false;
 
-        foreach (string gameId in SaveManager.KnownGames)
+        foreach (var gameId in SaveManager.KnownGames)
         {
-            GameStats stats = _saveManager.GetStats(gameId);
+            var stats = _saveManager.GetStats(gameId);
             if (stats == null) continue;
 
             var card = CreateStatCard(gameId, stats);
@@ -68,9 +69,9 @@ public partial class StatsScreen : Control
     {
         var panel = new PanelContainer
         {
-            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
-            SizeFlagsVertical = Control.SizeFlags.ShrinkCenter,
-            CustomMinimumSize = new Vector2I(300, 120),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            SizeFlagsVertical = SizeFlags.ShrinkCenter,
+            CustomMinimumSize = new Vector2I(300, 120)
         };
 
         var vbox = new VBoxContainer();
@@ -88,34 +89,53 @@ public partial class StatsScreen : Control
         var row1 = new HBoxContainer();
         row1.AddThemeConstantOverride("separation", 8);
         row1.AddChild(new Label { Text = "Nivel:", CustomMinimumSize = new Vector2I(60, 0) });
-        row1.AddChild(new Label { Text = stats.CurrentLevelId, HorizontalAlignment = HorizontalAlignment.Right, SizeFlagsHorizontal = SizeFlags.ExpandFill });
+        row1.AddChild(new Label
+        {
+            Text = stats.CurrentLevelId, HorizontalAlignment = HorizontalAlignment.Right,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        });
         vbox.AddChild(row1);
 
         var row2 = new HBoxContainer();
         row2.AddThemeConstantOverride("separation", 8);
         row2.AddChild(new Label { Text = "Partidas:", CustomMinimumSize = new Vector2I(60, 0) });
-        row2.AddChild(new Label { Text = stats.Plays.ToString(), HorizontalAlignment = HorizontalAlignment.Right, SizeFlagsHorizontal = SizeFlags.ExpandFill });
+        row2.AddChild(new Label
+        {
+            Text = stats.Plays.ToString(), HorizontalAlignment = HorizontalAlignment.Right,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        });
         vbox.AddChild(row2);
 
         var row3 = new HBoxContainer();
         row3.AddThemeConstantOverride("separation", 8);
         row3.AddChild(new Label { Text = "Victorias:", CustomMinimumSize = new Vector2I(60, 0) });
-        row3.AddChild(new Label { Text = stats.Wins.ToString(), HorizontalAlignment = HorizontalAlignment.Right, SizeFlagsHorizontal = SizeFlags.ExpandFill });
+        row3.AddChild(new Label
+        {
+            Text = stats.Wins.ToString(), HorizontalAlignment = HorizontalAlignment.Right,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        });
         vbox.AddChild(row3);
 
         var row4 = new HBoxContainer();
         row4.AddThemeConstantOverride("separation", 8);
         row4.AddChild(new Label { Text = "Mejor tiempo:", CustomMinimumSize = new Vector2I(60, 0) });
-        string bestTime = stats.BestTimeSeconds.HasValue
+        var bestTime = stats.BestTimeSeconds.HasValue
             ? $"{(int)(stats.BestTimeSeconds.Value / 60):D2}:{stats.BestTimeSeconds.Value % 60:D2}"
             : "—";
-        row4.AddChild(new Label { Text = bestTime, HorizontalAlignment = HorizontalAlignment.Right, SizeFlagsHorizontal = SizeFlags.ExpandFill });
+        row4.AddChild(new Label
+        {
+            Text = bestTime, HorizontalAlignment = HorizontalAlignment.Right, SizeFlagsHorizontal = SizeFlags.ExpandFill
+        });
         vbox.AddChild(row4);
 
         var row5 = new HBoxContainer();
         row5.AddThemeConstantOverride("separation", 8);
         row5.AddChild(new Label { Text = "Mejor puntaje:", CustomMinimumSize = new Vector2I(60, 0) });
-        row5.AddChild(new Label { Text = stats.BestScore.ToString(), HorizontalAlignment = HorizontalAlignment.Right, SizeFlagsHorizontal = SizeFlags.ExpandFill });
+        row5.AddChild(new Label
+        {
+            Text = stats.BestScore.ToString(), HorizontalAlignment = HorizontalAlignment.Right,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        });
         vbox.AddChild(row5);
 
         return panel;

@@ -1,12 +1,12 @@
-using System;
 using System.Collections.Generic;
 using Godot;
+using Godot.Collections;
 
 /// <summary>
-/// Datos de un nivel de dificultad de la Sopa de Letras (spec §4.1 y §4.2 ·
-/// plan Fase 2 §2.1). Toda la lógica del generador se apoya en estos datos:
-/// no hay condicionales del tipo «si es el nivel 3» en el código.
-/// Un archivo <c>.tres</c> por nivel en <c>resources/difficulties/</c>.
+///     Datos de un nivel de dificultad de la Sopa de Letras (spec §4.1 y §4.2 ·
+///     plan Fase 2 §2.1). Toda la lógica del generador se apoya en estos datos:
+///     no hay condicionales del tipo «si es el nivel 3» en el código.
+///     Un archivo <c>.tres</c> por nivel en <c>resources/difficulties/</c>.
 /// </summary>
 [GlobalClass]
 public partial class DifficultyConfig : Resource
@@ -42,10 +42,10 @@ public partial class DifficultyConfig : Resource
 
     /// <summary>Vectores unitarios permitidos al colocar palabras (8 direcciones como máximo).</summary>
     [Export]
-    public Godot.Collections.Array<Vector2I> Directions { get; set; } = new()
+    public Array<Vector2I> Directions { get; set; } = new()
     {
         new Vector2I(1, 0),
-        new Vector2I(0, 1),
+        new Vector2I(0, 1)
     };
 
     /// <summary>Grupos temáticos que se mezclan en cada partida (C3: 1/1/2/4).</summary>
@@ -73,75 +73,57 @@ public partial class DifficultyConfig : Resource
     public string MenuLabel => $"{DisplayName}\n{BoardLabel} · {TargetWords} palabras";
 
     /// <summary>¿La configuración permite colocar palabras en esta dirección?</summary>
-    public bool AllowsDirection(Vector2I direction) => Directions.Contains(direction);
+    public bool AllowsDirection(Vector2I direction)
+    {
+        return Directions.Contains(direction);
+    }
 
     /// <summary>Mínimo del 80 % redondeado hacia arriba (nunca menos de 1).</summary>
-    public static int EightyPercent(int targetWords) =>
-        Mathf.CeilToInt(Mathf.Max(1, targetWords) * MinimumRatio);
+    public static int EightyPercent(int targetWords)
+    {
+        return Mathf.CeilToInt(Mathf.Max(1, targetWords) * MinimumRatio);
+    }
 
     /// <summary>
-    /// Mínimo aceptable para un objetivo: el 80 % redondeado hacia arriba,
-    /// acotado por el mínimo declarado en la configuración. Fuente única de la
-    /// regla (la usan la validación, el generador y las pruebas).
+    ///     Mínimo aceptable para un objetivo: el 80 % redondeado hacia arriba,
+    ///     acotado por el mínimo declarado en la configuración. Fuente única de la
+    ///     regla (la usan la validación, el generador y las pruebas).
     /// </summary>
-    public static int MinimumFor(int targetWords, int declaredMinimum) =>
-        Mathf.Clamp(declaredMinimum, EightyPercent(targetWords), Mathf.Max(1, targetWords));
+    public static int MinimumFor(int targetWords, int declaredMinimum)
+    {
+        return Mathf.Clamp(declaredMinimum, EightyPercent(targetWords), Mathf.Max(1, targetWords));
+    }
 
     /// <summary>
-    /// Comprueba la coherencia de los datos (spec §4.2). Devuelve la lista de
-    /// errores; vacío = configuración válida.
+    ///     Comprueba la coherencia de los datos (spec §4.2). Devuelve la lista de
+    ///     errores; vacío = configuración válida.
     /// </summary>
     public string[] Validate()
     {
         var errors = new List<string>();
-        if (string.IsNullOrWhiteSpace(Id))
-        {
-            errors.Add("falta id");
-        }
+        if (string.IsNullOrWhiteSpace(Id)) errors.Add("falta id");
 
-        if (string.IsNullOrWhiteSpace(DisplayName))
-        {
-            errors.Add("falta display_name");
-        }
+        if (string.IsNullOrWhiteSpace(DisplayName)) errors.Add("falta display_name");
 
         if (GridSize is < MinGridSize or > MaxGridSize)
-        {
             errors.Add($"tablero {GridSize} fuera de {MinGridSize}–{MaxGridSize}");
-        }
 
         if (TargetWords < 1 || TargetWords > GridSize * GridSize)
-        {
             errors.Add($"objetivo {TargetWords} imposible en {GridSize}×{GridSize}");
-        }
 
-        int minimumRequired = EightyPercent(TargetWords);
+        var minimumRequired = EightyPercent(TargetWords);
         if (MinimumWords < minimumRequired || MinimumWords > TargetWords)
-        {
             errors.Add($"mínimo {MinimumWords} fuera de {minimumRequired}–{TargetWords} (80 %)");
-        }
 
-        if (Directions.Count == 0)
-        {
-            errors.Add("sin direcciones");
-        }
+        if (Directions.Count == 0) errors.Add("sin direcciones");
 
-        foreach (Vector2I direction in Directions)
-        {
+        foreach (var direction in Directions)
             if (!WordPath.IsUnitDirection(direction))
-            {
                 errors.Add($"dirección no unitaria: {direction}");
-            }
-        }
 
-        if (CategoryCount < 1 || CategoryCount > 10)
-        {
-            errors.Add($"category_count {CategoryCount} fuera de 1–10");
-        }
+        if (CategoryCount < 1 || CategoryCount > 10) errors.Add($"category_count {CategoryCount} fuera de 1–10");
 
-        if (ParSeconds <= 0)
-        {
-            errors.Add("par_seconds debe ser positivo");
-        }
+        if (ParSeconds <= 0) errors.Add("par_seconds debe ser positivo");
 
         return errors.ToArray();
     }

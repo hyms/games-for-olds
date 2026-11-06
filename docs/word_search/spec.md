@@ -1,36 +1,135 @@
-# 🔤 Especificación Técnica — Sopa de Letras
+# 🔤 Especificación Técnica y Arquitectura — Sopa de Letras (SDD-WS-01 v3.0)
 
-> **Documento SDD** del minijuego *Sopa de Letras*.
-> Especifica las reglas visuales, mecánicas y la arquitectura orientada a C# y Godot 4.
+> **Módulo:** Minijuego Sopa de Letras
+>
+> **Motor:** Godot 4.x (.NET / C#)
+>
+> **Patrones de Diseño:** Factory, Singleton, Strategy, Observer.
+>
+> **Principios:** SRP, OCP, DRY, KISS, YAGNI, Bajo Acoplamiento.
 
----
+## 1. Tipografías Oficiales del Proyecto
 
-## 1. Layout y Ajustes de Pantalla
+Para mantener la jerarquía visual y la coherencia pixel art, se utilizan tres fuentes retro específicas:
 
-* **Área Superior (Header):**
-  * Banner principal con título "SOPA DE LETRAS" en `#A0BFC7` con bordes pixel art.
-  * Sub-banner "FÁCIL - NIVEL 1" encajado con colores inversos.
-  * Respetar el margen superior de **48 px** para librar la cámara/notch de dispositivos Android.
+1. **`PressStart2P.ttf`**: Títulos principales, banners de cabecera (`PixelBanner`), modales de victoria y números destacados del temporizador.
 
-* **HUD de Control:**
-  * Botones de "Atrás" y "Pausa" alineados horizontalmente con el temporizador (`00:10`) y el contador de progreso (`0/5 Palabras`).
-  * Sin duplicaciones de iconos de texto como `(<-)`.
+2. **`VCR_OSD_Mono.ttf`**: HUD de control, cronómetro retro (`00:50`), contador de progreso (`1/5 Palabras`), botones de interfaz (`Atrás`, `Pausa`, `Pistas`) y mensajes estilo pantalla CRT/arcade.
 
-* **Tablero Central:**
-  * Celdas independientes con formato de botón pixel art en tono claro (`#EBF2F5`).
-  * **Sin recuadro contenedor gris exterior** que sature la pantalla.
-  * Al acertar una palabra (ej: `ACORDEON` / `TARA`), las celdas adoptan el color turquesa (`#099c92`) con la letra en **blanco puro (`#FFFFFF`)**.
+3. **`PixelOperator.ttf`** (o `PixelOperatorMono.ttf`): Celdas del tablero (`PixelCell`), matriz de letras y lista de palabras pendientes en el panel inferior (`PixelFooterPanel`), garantizando máxima legibilidad en píxel art.
 
-* **Panel Inferior (Lista de Palabras):**
-  * Contenedor con borde pixel art limpio.
-  * Texto claro en *AtkinsonHyperlegible*. Palabras separadas por `|`.
-  * Las palabras encontradas muestran una línea de tachado central (`~~GUITARRA~~` / `~~ACORDEON~~`).
+## 2. Directrices Visuales y Regla de Oro (Pixel Art Puro)
 
----
+* **Cero Suavizado:** Todos los nodos y componentes (`StyleBoxFlat`, fuentes, bordes) deben configurarse con `AntiAliasing = false` y `CornerRadius = 0`.
 
-## 2. Arquitectura de C# y Patrones
+* **Opacidad Absoluta (Anti-Fantasma):** Prohibido el uso de canales alfa reducidos (`< 1.0`) o modulations translucidas en celdas encontradas o activas. Los fondos y textos son 100% sólidos.
 
-* **`WordGridFactory.cs` (Factory Pattern):** Encargado de instanciar y posicionar las celdas del tablero usando `PixelCell` como base reutilizable.
-* **`PixelCell.cs`:** Componente base para celdas de grilla con estilo pixel art puro (sin anti-aliasing, `corner_radius = 0`). Hereda de `Panel` y soporta estados visuales (Normal, Seleccionado, Encontrado) mediante `StyleBoxFlat` y modulación de color dinámica a través de `ThemeManager.OnThemeChanged`.
-* **`WordCell.cs`:** Hereda de `PixelCell` y añade lógica específica de Sopa de Letras (coordenadas, letra, seguimiento de palabra encontrada, `WordCellState`). Aplica colores turquesa `#099c92` y texto blanco `#FFFFFF` al estado Encontrado.
-* **`WordSearchMain.cs`:** Controla la lógica de selección por arrastre, emite eventos (`event Action OnWordFound`) y gestiona la transición de estados en `PixelCell`/`WordCell`.
+* **Tokens de Color Oficiales (`ThemeData`):**
+
+  * **Fondo Global / Celdas Reposo:** `#EBF2F5` (`CellIdleBackgroundColor`)
+
+  * **Bordes Finos de Grilla:** `#A0BFC7` (`CellIdleBorderColor`, 2px solid)
+
+  * **Texto Oscuro Base:** `#101010` (`TextDark`) con `PixelOperator`
+
+  * **Acento de Acierto / Selección:** `#099C92` (Turquesa sólido, Alfa 1.0)
+
+  * **Texto de Acierto / Selección:** `#FFFFFF` (Blanco puro, Alfa 1.0, sin contornos translucidos)
+
+  * **Subtítulo / Banners Secundarios:** `#6C95A1`
+
+  * **Pista / Ayuda Activa:** Fondo `#F9881E` (Naranja retro), Borde `#8A4600`, Texto `#FFFFFF`.
+
+## 3. Especificación de los 4 Niveles de Dificultad
+
+### 3.1 Nivel 1: Fácil
+
+* **Dimensiones de Grilla:** $8 \times 8$ celdas.
+
+* **Cantidad de Palabras:** 5 palabras por tablero.
+
+* **Direcciones Permitidas:** Horizontal (izquierda a derecha) y Vertical (arriba hacia abajo).
+
+* **Pistas / Ayudas:** 3 pistas por partida.
+
+### 3.2 Nivel 2: Medio
+
+* **Dimensiones de Grilla:** $10 \times 10$ celdas.
+
+* **Cantidad de Palabras:** 8 palabras por tablero.
+
+* **Direcciones Permitidas:** Horizontal, Vertical y Diagonal descendente.
+
+* **Pistas / Ayudas:** 3 pistas por partida.
+
+### 3.3 Nivel 3: Difícil
+
+* **Dimensiones de Grilla:** $12 \times 12$ celdas.
+
+* **Cantidad de Palabras:** 12 palabras por tablero.
+
+* **Direcciones Permitidas:** Horizontal, Vertical, Diagonal (ambas orientaciones) e Inversas (derecha a izquierda, abajo hacia arriba).
+
+* **Pistas / Ayudas:** 3 pistas por partida.
+
+### 3.4 Nivel 4: Maestro
+
+* **Dimensiones de Grilla:** $15 \times 15$ celdas.
+
+* **Cantidad de Palabras:** 20 palabras por tablero.
+
+* **Direcciones Permitidas:** Las 8 direcciones (horizontal, vertical, diagonales y sus inversas).
+
+* **Pistas / Ayudas:** 3 pistas por partida.
+
+## 4. Reglas de Juego, Sistema de Pistas y Progresión
+
+### 4.1 Progresión y Criterios de Victoria (20 Nivel / 2 Categoría)
+
+* **Criterio de Desbloqueo de Nivel:** Se requieren **20 partidas ganadas por nivel** para desbloquear el siguiente (C6). Fácil está abierto por defecto; Medio tras 20 de Fácil; Difícil tras 20 de Medio; Maestro tras 20 de Difícil. Se cuentan solo victorias, no intentos abandonados.
+
+* **Distribución por Categorías:** Los grupos temáticos se reparten con la Shuffle Bag según `category_count` de cada dificultad (1/1/2/4 · C3 y §5).
+
+### 4.2 Sistema de Pistas / Ayudas (3 por Partida)
+
+* Cada partida otorga exactamente **3 Pistas / Ayudas**.
+
+* **Mecánica:** Al presionar el botón de pista en el HUD (`PixelButton` con `VCR OSD Mono`), la primera letra no descubierta de una palabra pendiente parpadea en naranja (`#F9881E`) durante 1.5 segundos.
+
+* Al llegar a `0/3`, el botón se deshabilita visualmente.
+
+### 4.3 Celebración y Game Juice (Lluvia de Confeti)
+
+* Al encontrar la última palabra del tablero (`20/20` o final de partida), el cronómetro se detiene y se activa la lluvia de confeti pixel art (`PixelConfettiEmitter` con `CpuParticles2D` en cuadrados de 4x4 o 6x6 píxeles).
+
+* Transcurridos 300 ms, un modal elástico (`LevelCompleteModal`) muestra el tiempo total, pistas usadas y el progreso hacia las 20 victorias.
+
+## 5. Arquitectura de Software y Patrones de Diseño (C# / Godot 4)
+
+La arquitectura sigue estrictamente los principios **SOLID**, **KISS**, **YAGNI**, **DRY** y **Bajo Acoplamiento**:
+
+1. **Singleton Pattern (`ThemeManager.cs`):**
+
+   * Instancia única accesible globalmente (`/root/ThemeManager`) que administra los datos de `ThemeData` y notifica cambios a la UI mediante eventos.
+
+2. **Factory Pattern (`WordGridFactory.cs`):**
+
+   * Responsable exclusivo de instanciar y ubicar espacialmente los nodos `PixelCell` en la grilla según la dimensión del nivel (SRP).
+
+3. **Strategy Pattern (`IWordPlacementStrategy.cs`):**
+
+   * Desacopla los algoritmos de colocación de palabras en la grilla (`HorizontalVerticalPlacement`, `DiagonalPlacement`, `ReversePlacement`). Permite cambiar o agregar nuevas reglas sin modificar el código existente (OCP).
+
+4. **Observer Pattern (`event Action`):**
+
+   * `WordSearchMain` emite eventos desacoplados (`OnWordFound`, `OnLevelCompleted`, `OnHintUsed`) para que los componentes visuales, sonidos y métricas reaccionen sin acoplamiento directo.
+
+5. **Principios de Diseño:**
+
+   * **SRP (Single Responsibility):** `PixelCell` solo renderiza su estado visual; `WordSearchMain` coordina reglas; `WordGridFactory` construye el tablero.
+
+   * **OCP (Open/Closed):** Nuevos temas o estrategias de colocación se añaden creando clases/recursos sin alterar el flujo principal.
+
+   * **DRY & KISS:** Estilos centralizados en `PixelStyles.cs`, sin estructuras sobre-diseñadas.
+
+   * **YAGNI:** Implementar estrictamente lo necesario para el minijuego sin abstracciones innecesarias.

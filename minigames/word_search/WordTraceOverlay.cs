@@ -1,14 +1,14 @@
 using Godot;
 
 /// <summary>
-/// Trazo de arrastre dibujado por encima de las celdas (plan Fase 3 §3.2).
-/// Es un control transparente que no captura entrada: la línea semitransparente
-/// y los nodos de los extremos los pinta <see cref="WordGridContainer"/>.
+///     Trazo de arrastre dibujado por encima de las celdas (plan Fase 3 §3.2).
+///     Es un control transparente que no captura entrada: la línea semitransparente
+///     y los nodos de los extremos los pinta <see cref="WordGridContainer" />.
 /// </summary>
 public partial class WordTraceOverlay : Control
 {
-    private bool _hasTrace;
     private Vector2 _from;
+    private bool _hasTrace;
     private Vector2 _to;
 
     public override void _Ready()
@@ -29,10 +29,7 @@ public partial class WordTraceOverlay : Control
     /// <summary>Oculta el trazo (fin o cancelación de la selección).</summary>
     public void HideTrace()
     {
-        if (!_hasTrace)
-        {
-            return;
-        }
+        if (!_hasTrace) return;
 
         _hasTrace = false;
         QueueRedraw();
@@ -40,18 +37,11 @@ public partial class WordTraceOverlay : Control
 
     public override void _Draw()
     {
-        if (!_hasTrace)
-        {
-            return;
-        }
+        if (!_hasTrace) return;
 
-        Color line = PixelStyles.Trazo;
-        line.A = WordSearchVisuals.TraceAlpha;
-        DrawLine(_from, _to, line, WordSearchVisuals.TraceWidth, false);
+        DrawLine(_from, _to, PixelStyles.Trazo, WordSearchVisuals.TraceWidth);
 
-        Color dot = PixelStyles.Trazo;
-        dot.A = WordSearchVisuals.TraceDotAlpha;
-        DrawCircle(_from, WordSearchVisuals.TraceDotRadius, dot);
-        DrawCircle(_to, WordSearchVisuals.TraceDotRadius, dot);
+        DrawCircle(_from, WordSearchVisuals.TraceDotRadius, PixelStyles.Trazo);
+        DrawCircle(_to, WordSearchVisuals.TraceDotRadius, PixelStyles.Trazo);
     }
 }

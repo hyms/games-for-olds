@@ -1,28 +1,29 @@
+using System;
 using Godot;
 
 namespace ClasicosMenteActiva.minigames.word_search;
 
 /// <summary>
-/// Traduce eventos de entrada (tacto y ratón) en acciones de selección sobre una
-/// cuadrícula. Clase pura: no conoce <see cref="WordCell"/> ni
-/// <see cref="WordGridContainer"/>, solo posiciones locales y callbacks.
-/// Se puede probar sin levantar escenas (SRP · plan Fase 3).
+///     Traduce eventos de entrada (tacto y ratón) en acciones de selección sobre una
+///     cuadrícula. Clase pura: no conoce <see cref="WordCell" /> ni
+///     <see cref="WordGridContainer" />, solo posiciones locales y callbacks.
+///     Se puede probar sin levantar escenas (SRP · plan Fase 3).
 /// </summary>
 public sealed class BoardInputHandler
 {
+    private bool _isPressed;
+
     /// <summary>Se emite al iniciar una selección con la posición local.</summary>
-    public event System.Action<Vector2> SelectionBegan;
+    public event Action<Vector2> SelectionBegan;
 
     /// <summary>Se emite mientras se arrastra con la posición local actual.</summary>
-    public event System.Action<Vector2> SelectionUpdated;
+    public event Action<Vector2> SelectionUpdated;
 
     /// <summary>Se emite al soltar sobre una posición local válida.</summary>
-    public event System.Action<Vector2> SelectionEnded;
+    public event Action<Vector2> SelectionEnded;
 
     /// <summary>Se emite al cancelar (dedo/botón suelto sin inicio previo).</summary>
-    public event System.Action SelectionCanceled;
-
-    private bool _isPressed;
+    public event Action SelectionCanceled;
 
     /// <summary>Procesa un evento de entrada. Devuelve <c>true</c> si lo consumió.</summary>
     public bool Process(InputEvent @event)
@@ -49,10 +50,7 @@ public sealed class BoardInputHandler
                 return true;
 
             case InputEventScreenDrag drag:
-                if (!_isPressed)
-                {
-                    return false;
-                }
+                if (!_isPressed) return false;
 
                 SelectionUpdated?.Invoke(drag.Position);
                 return true;

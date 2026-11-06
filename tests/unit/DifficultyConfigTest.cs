@@ -1,12 +1,11 @@
-using System.Collections.Generic;
 using GdUnit4;
 using Godot;
 using static GdUnit4.Assertions;
 
 /// <summary>
-/// Fase 2 §2.1 — Datos de dificultad (spec §4.1 y §4.2).
-/// Carga los cuatro recursos <c>.tres</c> y verifica tablero, objetivo,
-/// mínimo del 80 %, categorías, direcciones, par y encadenado de niveles.
+///     Fase 2 §2.1 — Datos de dificultad (spec §4.1 y §4.2).
+///     Carga los cuatro recursos <c>.tres</c> y verifica tablero, objetivo,
+///     mínimo del 80 %, categorías, direcciones, par y encadenado de niveles.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -15,7 +14,7 @@ public class DifficultyConfigTest
     [TestCase]
     public void CatalogoCargaLosCuatroNivelesEnOrden()
     {
-        List<DifficultyConfig> levels = DifficultyCatalog.LoadAll();
+        var levels = DifficultyCatalog.LoadAll();
         AssertBool(levels.Count == 4)
             .OverrideFailureMessage($"se esperaban 4 niveles, hay {levels.Count}")
             .IsTrue();
@@ -56,7 +55,7 @@ public class DifficultyConfigTest
     [TestCase]
     public void FacilNoAdmiteDiagonalesNiReversos()
     {
-        DifficultyConfig easy = DifficultyCatalog.LoadById("facil");
+        var easy = DifficultyCatalog.LoadById("facil");
         AssertInt(easy.Directions.Count).IsEqual(2);
         AssertBool(easy.AllowsDirection(new Vector2I(1, 0))).IsTrue();
         AssertBool(easy.AllowsDirection(new Vector2I(0, 1))).IsTrue();
@@ -68,12 +67,9 @@ public class DifficultyConfigTest
     [TestCase]
     public void LosNivelesSeEncadenanSinHuecos()
     {
-        List<DifficultyConfig> levels = DifficultyCatalog.LoadAll();
+        var levels = DifficultyCatalog.LoadAll();
         AssertString(levels[0].PreviousLevelId).IsEmpty();
-        for (int i = 1; i < levels.Count; i++)
-        {
-            AssertString(levels[i].PreviousLevelId).IsEqual(levels[i - 1].Id);
-        }
+        for (var i = 1; i < levels.Count; i++) AssertString(levels[i].PreviousLevelId).IsEqual(levels[i - 1].Id);
     }
 
     [TestCase]
@@ -91,12 +87,10 @@ public class DifficultyConfigTest
     [TestCase]
     public void EffectiveMinimumCoincideConLaReglaDelOchentaPorCiento()
     {
-        foreach (DifficultyConfig level in DifficultyCatalog.LoadAll())
-        {
+        foreach (var level in DifficultyCatalog.LoadAll())
             AssertInt(level.EffectiveMinimum)
                 .OverrideFailureMessage(level.Id)
                 .IsEqual(DifficultyConfig.MinimumFor(level.TargetWords, level.MinimumWords));
-        }
     }
 
     [TestCase]
@@ -110,12 +104,12 @@ public class DifficultyConfigTest
             TargetWords = 0,
             MinimumWords = 0,
             CategoryCount = 0,
-            ParSeconds = 0,
+            ParSeconds = 0
         };
         broken.Directions.Clear();
         broken.Directions.Add(new Vector2I(2, 0));
 
-        string[] errors = broken.Validate();
+        var errors = broken.Validate();
         AssertBool(errors.Length >= 5)
             .OverrideFailureMessage($"se esperaban varios errores, hay {errors.Length}: {string.Join(" | ", errors)}")
             .IsTrue();
@@ -141,17 +135,15 @@ public class DifficultyConfigTest
         AssertInt(level.ParSeconds).IsEqual(parSeconds);
         AssertString(level.PreviousLevelId).IsEqual(previous);
 
-        string[] errors = level.Validate();
+        var errors = level.Validate();
         AssertBool(errors.Length == 0)
             .OverrideFailureMessage($"{level.Id}: {string.Join(", ", errors)}")
             .IsTrue();
 
         AssertInt(level.Directions.Count).IsEqual(directions.Length);
-        foreach (Vector2I direction in directions)
-        {
+        foreach (var direction in directions)
             AssertBool(level.AllowsDirection(direction))
                 .OverrideFailureMessage($"{level.Id} no permite {direction}")
                 .IsTrue();
-        }
     }
 }

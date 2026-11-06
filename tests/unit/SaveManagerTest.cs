@@ -1,13 +1,14 @@
-using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using ClasicosMenteActiva.core;
 using GdUnit4;
 using Godot;
 using static GdUnit4.Assertions;
 
 /// <summary>
-/// Fase 3 §3.1 — SaveManager (CORE-SAVE-01 a CORE-SAVE-06).
-/// Persistencia, estadísticas por juego, corrupción, escritura segura,
-/// migración y reinicio.
+///     Fase 3 §3.1 — SaveManager (CORE-SAVE-01 a CORE-SAVE-06).
+///     Persistencia, estadísticas por juego, corrupción, escritura segura,
+///     migración y reinicio.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -16,24 +17,24 @@ public class SaveManagerTest
     private const string TestSavePath = "user://test_save_data.json";
     private const string TestBackupPath = "user://test_save_data.json.bak";
 
-    private ClasicosMenteActiva.core.SaveManager _save;
+    private SaveManager _save;
 
     [BeforeTest]
     public void BeforeTest()
     {
-        _save = new ClasicosMenteActiva.core.SaveManager();
+        _save = new SaveManager();
         // Forzar ruta de prueba para no tocar el save real.
-        var pathField = typeof(ClasicosMenteActiva.core.SaveManager).GetField("_savePath",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var pathField = typeof(SaveManager).GetField("_savePath",
+            BindingFlags.NonPublic | BindingFlags.Instance);
         pathField?.SetValue(_save, ProjectSettings.GlobalizePath(TestSavePath));
 
-        var backupField = typeof(ClasicosMenteActiva.core.SaveManager).GetField("_backupPath",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var backupField = typeof(SaveManager).GetField("_backupPath",
+            BindingFlags.NonPublic | BindingFlags.Instance);
         backupField?.SetValue(_save, ProjectSettings.GlobalizePath(TestBackupPath));
 
         // Limpiar archivos de prueba previos.
-        string saveFile = ProjectSettings.GlobalizePath(TestSavePath);
-        string backupFile = ProjectSettings.GlobalizePath(TestBackupPath);
+        var saveFile = ProjectSettings.GlobalizePath(TestSavePath);
+        var backupFile = ProjectSettings.GlobalizePath(TestBackupPath);
         if (File.Exists(saveFile)) File.Delete(saveFile);
         if (File.Exists(backupFile)) File.Delete(backupFile);
     }
@@ -41,8 +42,8 @@ public class SaveManagerTest
     [AfterTest]
     public void AfterTest()
     {
-        string saveFile = ProjectSettings.GlobalizePath(TestSavePath);
-        string backupFile = ProjectSettings.GlobalizePath(TestBackupPath);
+        var saveFile = ProjectSettings.GlobalizePath(TestSavePath);
+        var backupFile = ProjectSettings.GlobalizePath(TestBackupPath);
         if (File.Exists(saveFile)) File.Delete(saveFile);
         if (File.Exists(backupFile)) File.Delete(backupFile);
     }
@@ -53,7 +54,7 @@ public class SaveManagerTest
         _save.LoadData();
 
         AssertObject(_save.Data).IsNotNull();
-        AssertInt(_save.Data.Version).IsEqual(ClasicosMenteActiva.core.SaveManager.SaveVersion);
+        AssertInt(_save.Data.Version).IsEqual(SaveManager.SaveVersion);
         AssertInt(_save.Data.Stats.Count).IsEqual(3);
         AssertBool(File.Exists(ProjectSettings.GlobalizePath(TestSavePath))).IsTrue();
     }
@@ -114,7 +115,7 @@ public class SaveManagerTest
         _save.RegisterResult("word_search", "facil", true, 60f, 100);
 
         // Verificar que el archivo es JSON válido.
-        string content = File.ReadAllText(ProjectSettings.GlobalizePath(TestSavePath));
+        var content = File.ReadAllText(ProjectSettings.GlobalizePath(TestSavePath));
         AssertBool(content.TrimStart().StartsWith("{")).IsTrue();
 
         // Guardar nuevamente y verificar que sigue siendo válido.
@@ -132,7 +133,7 @@ public class SaveManagerTest
 
         _save.LoadData();
 
-        AssertInt(_save.Data.Version).IsEqual(ClasicosMenteActiva.core.SaveManager.SaveVersion);
+        AssertInt(_save.Data.Version).IsEqual(SaveManager.SaveVersion);
     }
 
     [TestCase]

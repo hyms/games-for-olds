@@ -1,10 +1,8 @@
-using Godot;
-
 /// <summary>
-/// Estado de sesión de la Sopa de Letras entre el selector de dificultad y el
-/// tablero: nivel elegido y bolsa de grupos (plan Fase 2 §2.3).
-/// Provisional hasta que <c>SaveManager</c> persista la bolsa y el progreso
-/// (Fase 3 global y Fase 7); mientras tanto vive en memoria estática.
+///     Estado de sesión de la Sopa de Letras entre el selector de dificultad y el
+///     tablero: nivel elegido y bolsa de grupos (plan Fase 2 §2.3).
+///     Provisional hasta que <c>SaveManager</c> persista la bolsa y el progreso
+///     (Fase 3 global y Fase 7); mientras tanto vive en memoria estática.
 /// </summary>
 public static class WordSearchSession
 {
@@ -17,21 +15,21 @@ public static class WordSearchSession
     public static string SelectedId => SelectedDifficulty?.Id ?? DifficultyCatalog.DefaultId;
 
     /// <summary>
-    /// Bolsa de grupos compartida entre partidas: en 20 partidas cada grupo
-    /// temático aparece dos veces (spec §5 · UT-WS-06).
+    ///     Bolsa de grupos compartida entre partidas: en 20 partidas cada grupo
+    ///     temático aparece dos veces (spec §5 · UT-WS-06).
     /// </summary>
     public static ShuffleBagSystem Bag => _bag ??= new ShuffleBagSystem(WordBank.Ids());
 
     /// <summary>Fija el nivel que jugará la próxima partida.</summary>
-    public static void Select(DifficultyConfig difficulty) => SelectedDifficulty = difficulty;
+    public static void Select(DifficultyConfig difficulty)
+    {
+        SelectedDifficulty = difficulty;
+    }
 
     /// <summary>Nivel actual; si no hay selección carga el Fácil del catálogo.</summary>
     public static DifficultyConfig ResolveDifficulty()
     {
-        if (SelectedDifficulty != null)
-        {
-            return SelectedDifficulty;
-        }
+        if (SelectedDifficulty != null) return SelectedDifficulty;
 
         SelectedDifficulty = DifficultyCatalog.LoadById(DifficultyCatalog.DefaultId) ?? DifficultyCatalog.First();
         return SelectedDifficulty;

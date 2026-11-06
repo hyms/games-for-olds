@@ -4,7 +4,7 @@
 > Checklist de construcción alineado con la nueva [spec](spec.md) y el nuevo
 > [plan de pruebas](test.md).
 >
-> **Versión:** 0.6 · **Fecha:** 29/10/2026 · **Estado:** Fases 2 y 3 completadas (dificultades, generador, selector, tablero y arrastre; pendiente de revisión visual en editor)
+> **Versión:** 0.7 · **Fecha:** 05/11/2026 · **Estado:** Fases 2 y 3 completadas; espec alineada a decisiones C1–C9 (path `minigames/word_search/`, dificultad Maestro 15×15/20, desbloqueo 20/nivel). Pendiente de revisión visual en editor.
 > **Documentación relacionada:** [Spec global](../spec.md) ·
 > [Plan global](../plan.md) · [Pruebas globales](../test.md) ·
 > [Spec del juego](spec.md) · [Pruebas del juego](test.md) ·
@@ -70,7 +70,21 @@ en `docs/` al cerrar la Fase 9.
 | C9 | Banco de palabras (Fase 1) | Recursos **`.tres`** en `resources/themes/themes/` (offline, editables en el editor). El modelo es una **evolución de `WordSearchTheme`** (nuevo `category_id`, sin clase nueva), con `validate()` y `normalize_word()`. `category_id` = nombre del archivo; palabras normalizadas A–Z, únicas también **entre** categorías (evita palabras ambiguas al combinar 2 o 4 grupos). | `WordBank` carga las 10 rutas en orden de spec §5.1; el Shuffle Bag (`minigames/word_search/ShuffleBagSystem.cs`) trabaja con ids. |
 
 **Regla:** ninguna decisión de la spec se implementa si contradice esta tabla.
-Si cambia una decisión, se actualiza primero aquí y luego el código.
+Si cambia una decisión, se actualiza primero aquí, luego en el código y finalmente
+en el spec correspondiente (ver conformidad abajo).
+
+### 2.1 Conformidad del spec con esta planificación
+
+El spec `docs/word_search/spec.md` debe reflejar las decisiones cerradas de esta tabla:
+
+| Ítem del spec | Estado actual | Valor requerido (decisión) | Estado |
+|---------------|---------------|----------------------------|--------|
+| §3 Nivel 4 | "Experto", 14×14/15×15, 12–15 palabras | "Maestro", 15×15, 20 palabras, 8 direcciones (C3/D6) | ✅ Aplicado |
+| §4.1 Desbloqueo | "20 victorias / bloque, 2 por categoría" | "20 partidas ganadas por nivel para desbloquear el siguiente" (C6) | ✅ Aplicado |
+| `docs/spec.md` §4 ruta | `scenes/minigames/word_search/` | `minigames/word_search/` (C1/D1) | ✅ Aplicado |
+| `docs/readme.md` árbol | Juego bajo `scenes/…` | `minigames/word_search/` (D1/C1) | Pendiente (menor) |
+
+> Si el spec se edita de nuevo, estas filas deben volver a coincidir con esta tabla.
 
 ---
 

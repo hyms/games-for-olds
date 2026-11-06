@@ -1,10 +1,9 @@
 using GdUnit4;
-using Godot;
 using static GdUnit4.Assertions;
 
 /// <summary>
-/// Fase 3 §3.3 — AudioManager (CORE-AUDIO-01 a CORE-AUDIO-03).
-/// Volumen por bus, silencio total.
+///     Fase 3 §3.3 — AudioManager (CORE-AUDIO-01 a CORE-AUDIO-03).
+///     Volumen por bus, silencio total.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]

@@ -1,5 +1,17 @@
 // Copyright (c) 2025 Mike Schulze
 // MIT License - See LICENSE file in the repository root for full license text
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using GdUnit4;
+using GdUnit4.Api;
+using Godot;
+using Godot.Collections;
+
 #pragma warning disable IDE1006
 #pragma warning disable CS8632
 
@@ -7,18 +19,7 @@ namespace gdUnit4.addons.gdUnit4.src.dotnet;
 #pragma warning restore IDE1006
 
 #if GDUNIT4NET_API_V5
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-using GdUnit4;
-using GdUnit4.Api;
-
-using Godot;
-using Godot.Collections;
 
 /// <summary>
 ///     The GdUnit4 GDScript - C# API wrapper.
@@ -42,7 +43,9 @@ public partial class GdUnit4CSharpApi : RefCounted
     /// </summary>
     /// <returns>Returns true if the API already loaded.</returns>
     public static bool IsApiLoaded()
-        => true;
+    {
+        return true;
+    }
 
     /// <summary>
     ///     Runs test discovery on the given script.
@@ -75,10 +78,10 @@ public partial class GdUnit4CSharpApi : RefCounted
                 .Aggregate(
                     new Array<Dictionary>(),
                     (array, dict) =>
-                        {
-                            array.Add(dict);
-                            return array;
-                        });
+                    {
+                        array.Add(dict);
+                        return array;
+                    });
         }
 #pragma warning disable CA1031
         catch (Exception e)
@@ -92,21 +95,25 @@ public partial class GdUnit4CSharpApi : RefCounted
     }
 
     /// <summary>
-    /// Creates a test suite based on the specified source path and line number.
+    ///     Creates a test suite based on the specified source path and line number.
     /// </summary>
     /// <param name="sourcePath">The path to the source file from which to create the test suite.</param>
     /// <param name="lineNumber">The line number in the source file where the method to test is defined.</param>
     /// <param name="testSuitePath">The path where the test suite should be created.</param>
     /// <returns>A dictionary containing information about the created test suite.</returns>
     public static Dictionary CreateTestSuite(string sourcePath, int lineNumber, string testSuitePath)
-        => GdUnit4NetApiGodotBridge.CreateTestSuite(sourcePath, lineNumber, testSuitePath);
+    {
+        return GdUnit4NetApiGodotBridge.CreateTestSuite(sourcePath, lineNumber, testSuitePath);
+    }
 
     /// <summary>
-    /// Gets the version of the GdUnit4 assembly.
+    ///     Gets the version of the GdUnit4 assembly.
     /// </summary>
     /// <returns>The version string of the GdUnit4 assembly.</returns>
     public static string Version()
-        => GdUnit4NetApiGodotBridge.Version();
+    {
+        return GdUnit4NetApiGodotBridge.Version();
+    }
 
     /// <inheritdoc />
     public override void _Notification(int what)

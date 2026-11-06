@@ -74,8 +74,8 @@
       "verification": { "native_scale_reviewed": true, "technical_checks_passed": true, "approved_by": "usuario (pendiente de revisión en editor)" }
     },
     {
-      "id": "font-letters",
-      "role": "letras del tablero",
+      "id": "font-titles",
+      "role": "títulos, banners y modales (spec §1.1)",
       "path": "assets/fonts/PressStart2P.ttf",
       "status": "ready",
       "technical": { "glyphs": "A-Z uppercase", "logical_size": "24", "grid": "8px", "hinting": "none" },
@@ -83,8 +83,26 @@
       "source": { "kind": "downloaded", "url_or_tool": "https://fonts.google.com/specimen/Press+Start+2P", "license": "SIL OFL 1.1", "attribution": "assets/fonts/OFL-PressStart2P.txt" }
     },
     {
+      "id": "font-letters",
+      "role": "letras de las celdas del tablero y lista de palabras pendientes (spec §1.3)",
+      "path": "assets/fonts/PixelOperator.ttf",
+      "status": "ready",
+      "technical": { "glyphs": "A-Z uppercase", "logical_size": "20", "grid": "8px", "hinting": "none" },
+      "visual_locks": ["pixel-style", "legibility"],
+      "source": { "kind": "downloaded", "url_or_tool": "https://www.dafont.com/pixel-operator.font", "license": "CC0 1.0", "attribution": "assets/fonts/CC0-PixelOperator.txt" }
+    },
+    {
+      "id": "font-hud",
+      "role": "HUD, cronómetro, contadores y botones CRT/arcade (spec §1.2)",
+      "path": "assets/fonts/VCR_OSD_Mono.ttf",
+      "status": "ready",
+      "technical": { "glyphs": "A-Z uppercase + numeración", "logical_size": "18", "grid": "8px", "hinting": "none" },
+      "visual_locks": ["crt-style", "legibility"],
+      "source": { "kind": "downloaded", "url_or_tool": "https://www.dafont.com/vcr-osd-mono.font", "license": "Freeware", "attribution": "assets/fonts/VCR-OSD-Mono-LICENSE.txt" }
+    },
+    {
       "id": "font-ui",
-      "role": "texto de interfaz",
+      "role": "texto de interfaz accesible global",
       "path": "assets/fonts/AtkinsonHyperlegible-Regular.ttf (+ -Bold.ttf)",
       "status": "ready",
       "technical": { "glyphs": "latin + accents", "sizes": "20/24/28 logical" },

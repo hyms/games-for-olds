@@ -51,6 +51,16 @@ ocho decisiones que ajustan D3 y D6 sin romperlos. Detalle completo en
 | C10 | Rediseño del footer de palabras: flujo continuo con auto-wrapping en línea, separado limpiamente, en lugar de lista de una sola columna. |
 | C11 | Paleta de colores centralizada en `core/AccessibleTheme.tres` (tema global) y `WordSearchTheme.tres` (tema de la partida): `#b0c2cc`, `#efefee`, `#fffcfb`, `#4e6077` aplicados mediante `Theme` y `StyleBox` de Godot, sin hardcodeo en las escenas. |
 
+### 1.1.1 Alineación de documentos (con readme + specs)
+
+| Origen | Hallazgo | Acción | Aplica |
+|--------|----------|--------|--------|
+| `docs/readme.md` árbol | Ubica el juego bajo `scenes/minigames/word_search/` | Corregir a `minigames/word_search/` (D1/C1) | `docs/spec.md` §4 |
+| `docs/word_search/spec.md` §3 | Usa "Experto" (14×14/15×15, 12–15 palabras) | Conformar a C3/D6: "Maestro" (15×15, 20 palabras, 8 dirs) | `docs/word_search/spec.md` §3.4 |
+| `docs/word_search/spec.md` §4.1 | "20 victorias / bloque, 2 por categoría" | Conformar a C6: "20 partidas ganadas por nivel para desbloquear el siguiente" | `docs/word_search/spec.md` §4.1 |
+
+> Las decisiones C1–C11 y D1–D7 están cerradas. El spec es la fuente que debe conformarse a ellas, no al revés.
+
 ---
 
 ## Orden de dependencias

@@ -1,0 +1,10 @@
+VCR OSD MONO 1.001
+--------------------
+Descargado de dafont.com:
+https://www.dafont.com/vcr-osd-mono.font
+
+Autor: VCR OSD MONO (fuente basada en el estilo VCR OSD de 1981)
+Uso: libre para uso personal y comercial conforme a los términos
+indicados por su autor en dafont.com (freeware / 100% gratis).
+
+Sin cambios sobre el fichero de fuente (.ttf) original.

@@ -3,10 +3,10 @@ using Godot;
 namespace ClasicosMenteActiva.core;
 
 /// <summary>
-/// Tokens de color de un tema visual. Define la paleta completa que se aplica
-/// globalmente a celdas, banners, botones y paneles (docs/art_direction.md §2.1).
-/// Es una clase pura (no Resource) para poder crear temas en código sin depender
-/// de archivos .tres.
+///     Tokens de color de un tema visual. Define la paleta completa que se aplica
+///     globalmente a celdas, banners, botones y paneles (docs/art_direction.md §2.1).
+///     Es una clase pura (no Resource) para poder crear temas en código sin depender
+///     de archivos .tres.
 /// </summary>
 public sealed class ThemeData
 {

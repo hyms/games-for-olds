@@ -1,10 +1,9 @@
 using GdUnit4;
-using Godot;
 using static GdUnit4.Assertions;
 
 /// <summary>
-/// Fase 3 §3.4 — AdManager (CORE-AD-01 a CORE-AD-04).
-/// Modo no-op para el MVP: sin anuncios reales.
+///     Fase 3 §3.4 — AdManager (CORE-AD-01 a CORE-AD-04).
+///     Modo no-op para el MVP: sin anuncios reales.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -33,7 +32,7 @@ public class AdManagerTest
     public void BannerFailedSinRomperLayout() // CORE-AD-02
     {
         string failedLocation = null;
-        _ads.BannerFailed += (loc) => failedLocation = loc;
+        _ads.BannerFailed += loc => failedLocation = loc;
 
         _ads.SimulateBannerFailed("main_menu");
 

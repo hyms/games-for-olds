@@ -1,33 +1,42 @@
 # Fuentes
 
-Fuentes incluidas en el proyecto (todas con licencia **SIL Open Font License 1.1**,
-texto original en cada `OFL-*.txt`):
+Fuentes incluidas en el proyecto para la Sopa de Letras según `docs/word_search/spec.md` §1:
 
-| Archivo | Uso | Tamaño | Origen |
-|---------|-----|--------|--------|
-| `PressStart2P.ttf` | **Letras del tablero** de la Sopa (A–Z) | 24 px lógicos (múltiplo de 8 para que los píxeles queden nítidos) | [Google Fonts](https://fonts.google.com/specimen/Press+Start+2P) |
-| `AtkinsonHyperlegible-Regular.ttf` | **Interfaz** (títulos, botones, listas) | 20 / 24 / 28 px lógicos | [Google Fonts](https://fonts.google.com/specimen/Atkinson+Hyperlegible) |
-| `AtkinsonHyperlegible-Bold.ttf` | Interfaz en negrita (contador, resultados) | Igual que la regular | Google Fonts |
+| Archivo | Licencia | Archivo de licencia | Uso (spec §1) |
+|---------|----------|---------------------|---------------|
+| `PressStart2P.ttf` | SIL OFL 1.1 | `OFL-PressStart2P.txt` | §1.1 Títulos principales, banners (`PixelBanner`), modales de victoria y números destacados del temporizador |
+| `VCR_OSD_Mono.ttf` | Freeware | `VCR-OSD-Mono-LICENSE.txt` | §1.2 HUD de control, cronómetro (`00:50`), contador de progreso (`1/5 Palabras`), botones (`PixelButton`) y mensajes estilo CRT/arcade |
+| `PixelOperator.ttf` | CC0 1.0 | `CC0-PixelOperator.txt` | §1.3 Celdas del tablero (`PixelCell`), matriz de letras y lista de palabras pendientes del panel inferior |
+| `AtkinsonHyperlegible-Regular.ttf` | SIL OFL 1.1 | `OFL-AtkinsonHyperlegible.txt` | Interfaz accesible global (`core/AccessibleTheme.tres`) |
+| `AtkinsonHyperlegible-Bold.ttf` | SIL OFL 1.1 | `OFL-AtkinsonHyperlegible.txt` | Interfaz en negrita (usos puntuales) |
 
-## Decisiones
+## Decisiones (spec §1)
 
-- **Interfaz:** Atkinson Hyperlegible, diseñada por el Braille Institute para
-  maximizar la legibilidad (perfil 40+/60+). Sustituye al `SystemFont` de
-  `core/AccessibleTheme.tres`.
-- **Letras del tablero:** Press Start 2P, fuente pixel de rejilla 8×8, acorde
-  con la plantilla `docs/word_search/wathersoup.jpg`. Como el juego normaliza
-  a A–Z sin tildes ni Ñ, el juego cubre todo lo necesario.
+- **Letras del tablero y lista de palabras:** `PixelOperator.ttf`, fuente pixel de máxima
+  legibilidad en píxel art. Sustituye a `PressStart2P.ttf` en las celdas (spec §1.3).
+- **HUD, cronómetro, contadores y botones:** `VCR_OSD_Mono.ttf`, estilo CRT/arcade (spec §1.2).
+- **Títulos y modales:** `PressStart2P.ttf`, rejilla 8×8 acorde con la plantilla
+  `docs/word_search/wathersoup.jpg` (spec §1.1). Como el juego normaliza a A–Z sin tildes
+  ni Ñ, cubre todo lo necesario.
+- **Interfaz accesible global:** Atkinson Hyperlegible (Braille Institute, perfil 40+/60+),
+  fuente por defecto de `core/AccessibleTheme.tres` para el resto de la app.
 
 ## Uso en Godot
 
 - El tema global (`core/AccessibleTheme.tres`) referencia
   `AtkinsonHyperlegible-Regular.ttf` como `default_font`.
-- Las letras del tablero se asignarán en la Fase 3/4 con un `Label` por celda
-  usando `PressStart2P.ttf` a 24 px; comprobar en editor que el glifo cabe en
-  la celda (41 px) y en 15×15 con zoom.
+- Celdas: `core/Constants.cs` → `FontCellPath` (PixelOperator), aplicado en
+  `minigames/word_search/WordCell.cs`.
+- HUD/botones de la Sopa: `VCR_OSD_Mono.ttf` en `WordSearchMain.tscn`
+  (`TimeLabel`, `WordsCounter`, botones, ventanas de pausa/victoria).
 
 ## Cambiar de fuente
 
 1. Colocar el `.ttf/.otf` aquí con su licencia.
-2. Actualizar `core/AccessibleTheme.tres` (interfaz) o el código de celdas (letras).
-3. Registrar el cambio en `docs/art_direction.md` §5 y en `assets/asset-manifest.json`.
+2. Actualizar `core/Constants.cs` (rutas) y las escenas que referencian la tipografía.
+3. Registrar el cambio en `docs/art_direction.md` §4 y en `assets/asset-manifest.json`.
+
+> Nota: `VCR_OSD_Mono.ttf` (renombrado desde `VCR OSD Mono.ttf` para evitar espacios en la
+> ruta del recurso) no es OFL (freeware de dafont.com); `PixelOperator.ttf` es CC0 1.0.
+> Ambas licencias quedan documentadas en los archivos `VCR-OSD-Mono-LICENSE.txt` y
+> `CC0-PixelOperator.txt`.

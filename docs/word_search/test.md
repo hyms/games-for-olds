@@ -74,6 +74,32 @@ public class WordSearchGeneratorTest
 | `tests/unit/ShuffleBagSystemTest.cs` | `UT-WS-06`: reparto de los 10 grupos en 20 extracciones. |
 | `tests/unit/WordBankTest.cs` | `UT-WS-07`: banco completo. |
 | `tests/integration/WordSearchDragTest.cs` | `IT-WS-01` a `IT-WS-03` con `SceneRunner` y ratón emulado. |
+| `tests/unit/PixelCellVisualStateTest.cs` | `VT-WS-01` a `VT-WS-04`: estados visuales de PixelCell (Normal/Found), contraste de colores `#EBF2F5`/`#099C92` vs `#FFFFFF`, y herencia `WordCell : PixelCell`. |
+| `tests/unit/PixelCellThemeTest.cs` | `VT-WS-03`: validación de contraste ≥ 4,5:1 con ThemeManager.OnThemeChanged cambios dinámicos. |
+| `tests/integration/WordSearchWordTest.cs` | `VT-WS-05` a `VT-WS-07`: tachado BBCode `~~PALABRA~~`, transición de estados y panel de palabras HUD. |
+
+---
+
+## 2.4 Trazabilidad: Spec → Plan → Pruebas
+
+Este sección mapea el cumplimiento de los requisitos desde la especificación hasta los casos de prueba, asegurando cobertura completa y sin contradicciones.
+
+| Requisito (spec) | Fase | Casos de Prueba | Estado |
+|------------------|------|-----------------|--------|
+| §3.1 Estados visuales de celda | 3 | `VT-WS-01` a `VT-WS-04` | Implementado ✅ |
+| §3.2 Patrones de señal/observer | 3 | `VT-WS-04` (herencia), `IT-WS-01` a `IT-WS-03` | Implementado ✅ |
+| §3.3 Tachado BBCode en panel | 5 | `VT-WS-05` a `VT-WS-07`, `ST-WS-01` | Implementado ✅ |
+| §4.1 Submenú de dificultad | 7 | Sin IDs propios (ver plan.md) | Pendiente de ampliar |
+| Puntaje (C7) | 8 | Casos `STAT` globales | Pendiente de implementar |
+
+**Huecos de cobertura en `test.md`:** Los casos de puntaje global y el submenú de dificultad sin IDs propios serán abordados en la Fase 5 y al cerrar la Fase 9, respectivamente. `VT-WS-03` cubre el contraste dinámico con ThemeManager, y `IT-WS-01` a `IT-WS-03` cubren la selección por arrastre con signals/observer pattern.
+
+---
+
+### 3. Pruebas de Integración y Módulos Visuales
+| `tests/unit/PixelCellVisualStateTest.cs` | `VT-WS-01` a `VT-WS-04`: estados visuales de PixelCell (Normal/Found), contraste de colores `#EBF2F5`/`#099C92` vs `#FFFFFF`, y herencia `WordCell : PixelCell`. |
+| `tests/unit/PixelCellThemeTest.cs` | `VT-WS-03`: validación de contraste ≥ 4,5:1 con ThemeManager.OnThemeChanged cambios dinámicos. |
+| `tests/integration/WordSearchWordTest.cs` | `VT-WS-05` a `VT-WS-07`: tachado BBCode `~~PALABRA~~`, transición de estados y panel de palabras HUD. |
 
 ---
 

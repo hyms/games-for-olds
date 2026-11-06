@@ -4,26 +4,26 @@ using Godot;
 namespace ClasicosMenteActiva.scenes.ui.components;
 
 /// <summary>
-/// Botón táctil universal en pixel art puro. Sin anti-aliasing, sin bordes
-/// redondeados: <see cref="StyleBoxFlat"/> con <c>corner_radius = 0</c> y
-/// borde recto de 2 píxeles. Soporta temas mediante
-/// <see cref="ThemeManager.OnThemeChanged"/>.
+///     Botón táctil universal en pixel art puro. Sin anti-aliasing, sin bordes
+///     redondeados: <see cref="StyleBoxFlat" /> con <c>corner_radius = 0</c> y
+///     borde recto de 2 píxeles. Soporta temas mediante
+///     <see cref="ThemeManager.OnThemeChanged" />.
 /// </summary>
 [Tool]
 public partial class PixelButton : Button
 {
-    private StyleBoxFlat _styleNormal;
-    private StyleBoxFlat _styleHover;
-    private StyleBoxFlat _stylePressed;
-    private StyleBoxFlat _styleFocus;
     private StyleBoxFlat _styleDisabled;
+    private StyleBoxFlat _styleFocus;
+    private StyleBoxFlat _styleHover;
+    private StyleBoxFlat _styleNormal;
+    private StyleBoxFlat _stylePressed;
 
     public override void _Ready()
     {
         MouseFilter = MouseFilterEnum.Stop;
         BuildStyleBoxes();
 
-        ThemeManager theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
+        var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
         ApplyTheme(theme?.CurrentThemeData);
         UpdateVisuals();
     }
@@ -48,7 +48,7 @@ public partial class PixelButton : Button
             BgColor = bg,
             BorderColor = border,
             AntiAliasing = false,
-            CornerDetail = 1,
+            CornerDetail = 1
         };
         box.SetBorderWidthAll(borderWidth);
         box.SetCornerRadiusAll(0);
@@ -63,7 +63,7 @@ public partial class PixelButton : Button
             BorderColor = Color.FromHtml("#101010"),
             DrawCenter = false,
             AntiAliasing = false,
-            CornerDetail = 1,
+            CornerDetail = 1
         };
         ring.SetBorderWidthAll(3);
         ring.SetCornerRadiusAll(0);

@@ -1,11 +1,11 @@
-using Godot;
 using System;
 using ClasicosMenteActiva.core;
+using Godot;
 
 /// <summary>
-/// Gestor de publicidad (plan Fase 3 §3.4 · spec §8.9).
-/// En el MVP el proveedor es <b>no-op</b>: la publicidad real entra en la Fase 8.
-/// Solo banners en menú principal y estadísticas, nunca en partida.
+///     Gestor de publicidad (plan Fase 3 §3.4 · spec §8.9).
+///     En el MVP el proveedor es <b>no-op</b>: la publicidad real entra en la Fase 8.
+///     Solo banners en menú principal y estadísticas, nunca en partida.
 /// </summary>
 public partial class AdManager : Node
 {
@@ -15,11 +15,11 @@ public partial class AdManager : Node
     private static readonly string[] AllowedLocations =
     {
         Constants.AdLocationMainMenu,
-        Constants.AdLocationStatistics,
+        Constants.AdLocationStatistics
     };
 
-    public bool IsEnabled { get; private set; } = false;
-    public bool ConsentGranted { get; private set; } = false;
+    public bool IsEnabled { get; private set; }
+    public bool ConsentGranted { get; private set; }
 
     public override void _Ready()
     {
@@ -28,20 +28,14 @@ public partial class AdManager : Node
 
     public void ShowBanner(string location)
     {
-        if (!IsEnabled || !ConsentGranted || !IsLocationAllowed(location))
-        {
-            return;
-        }
+        if (!IsEnabled || !ConsentGranted || !IsLocationAllowed(location)) return;
 
         GD.Print($"[AdManager] banner solicitado en '{location}' (no-op)");
     }
 
     public void HideBanner(string location)
     {
-        if (!IsLocationAllowed(location))
-        {
-            return;
-        }
+        if (!IsLocationAllowed(location)) return;
 
         GD.Print($"[AdManager] banner ocultado en '{location}' (no-op)");
     }
@@ -53,21 +47,15 @@ public partial class AdManager : Node
 
     public bool IsLocationAllowed(string location)
     {
-        foreach (string allowed in AllowedLocations)
-        {
+        foreach (var allowed in AllowedLocations)
             if (string.Equals(location, allowed, StringComparison.OrdinalIgnoreCase))
-            {
                 return true;
-            }
-        }
+
         return false;
     }
 
     public void SimulateBannerFailed(string location)
     {
-        if (IsLocationAllowed(location))
-        {
-            EmitSignal(SignalName.BannerFailed, location);
-        }
+        if (IsLocationAllowed(location)) EmitSignal(SignalName.BannerFailed, location);
     }
 }

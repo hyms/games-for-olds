@@ -64,8 +64,12 @@ Todos los minijuegos deben reutilizar los siguientes componentes prefabricados:
 
 ## 4. Tipografías Oficiales
 
-* **Títulos, Cabeceras y Celdas de Juego:** `PressStart2P.ttf`
-* **UI Accesible, Ajustes y Palabras Pendientes:** `AtkinsonHyperlegible-Regular.ttf`
+Jerarquía tipográfica de la Sopa de Letras (`docs/word_search/spec.md` §1, `assets/fonts/README.md`):
+
+* **Títulos, banners y modales:** `PressStart2P.ttf` (spec §1.1)
+* **HUD, cronómetro, contadores y botones:** `VCR_OSD_Mono.ttf` (spec §1.2)
+* **Celdas del tablero, matriz y lista de palabras pendientes:** `PixelOperator.ttf` (spec §1.3)
+* **Interfaz accesible global:** `AtkinsonHyperlegible-Regular.ttf`
 
 ---
 

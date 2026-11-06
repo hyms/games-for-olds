@@ -1,11 +1,10 @@
-using System.Collections.Generic;
+using System;
 using GdUnit4;
-using Godot;
 using static GdUnit4.Assertions;
 
 /// <summary>
-/// Fase 2 §2.3 — Selector de dificultad: un botón por nivel del catálogo, con
-/// los datos del recurso y tamaño táctil suficiente (spec §3 y §4.1).
+///     Fase 2 §2.3 — Selector de dificultad: un botón por nivel del catálogo, con
+///     los datos del recurso y tamaño táctil suficiente (spec §3 y §4.1).
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -15,22 +14,21 @@ public class DifficultySelectorTest
     public void CreaUnBotonPorNivelConLosDatosDelCatalogo()
     {
         WordSearchSession.Reset();
-        ISceneRunner runner = ISceneRunner.Load(DifficultySelector.ScenePath, true);
+        var runner = ISceneRunner.Load(DifficultySelector.ScenePath, true);
         var scene = (DifficultySelector)runner.Scene();
-        List<DifficultyConfig> levels = DifficultyCatalog.LoadAll();
+        var levels = DifficultyCatalog.LoadAll();
 
-        AssertInt(scene.LevelButtons.Count).
-            OverrideFailureMessage("el selector no tiene un botón por nivel").
-            IsEqual(levels.Count);
+        AssertInt(scene.LevelButtons.Count).OverrideFailureMessage("el selector no tiene un botón por nivel")
+            .IsEqual(levels.Count);
 
-        for (int i = 0; i < levels.Count; i++)
+        for (var i = 0; i < levels.Count; i++)
         {
-            BigButton button = scene.LevelButtons[i];
+            var button = scene.LevelButtons[i];
             AssertString(button.Name.ToString()).IsEqual($"Level_{levels[i].Id}");
-            AssertBool(button.Text.Contains(levels[i].MenuLabel, System.StringComparison.Ordinal))
+            AssertBool(button.Text.Contains(levels[i].MenuLabel, StringComparison.Ordinal))
                 .OverrideFailureMessage($"«{button.Text}» debe contener «{levels[i].MenuLabel}»")
                 .IsTrue();
-            AssertBool(button.Text.Contains("/20", System.StringComparison.Ordinal))
+            AssertBool(button.Text.Contains("/20", StringComparison.Ordinal))
                 .OverrideFailureMessage($"«{button.Text}» debe mostrar el progreso X/20")
                 .IsTrue();
             AssertBool(button.CustomMinimumSize.Y >= 56.0f)

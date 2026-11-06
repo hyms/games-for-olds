@@ -1,11 +1,12 @@
+using System;
+using System.Collections.Generic;
 using GdUnit4;
-using Godot;
 using static GdUnit4.Assertions;
 
 /// <summary>
-/// Modelo del banco de palabras: normalización y <c>Validate()</c> (spec §5).
-/// El filtrado por longitud y la dificultad viven en <c>DifficultyConfig</c> y
-/// <c>WordSearchGenerator.PrepareWords</c>; aquí solo se prueba el banco.
+///     Modelo del banco de palabras: normalización y <c>Validate()</c> (spec §5).
+///     El filtrado por longitud y la dificultad viven en <c>DifficultyConfig</c> y
+///     <c>WordSearchGenerator.PrepareWords</c>; aquí solo se prueba el banco.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -53,20 +54,17 @@ public class WordSearchThemeTest
         var category = new WordSearchTheme
         {
             CategoryId = "prueba",
-            ThemeName = "Prueba",
+            ThemeName = "Prueba"
         };
         category.Words.AddRange(words);
         return category;
     }
 
-    /// <summary><paramref name="count"/> palabras únicas de 6 letras A–Z (AACASA, ABCASA, …).</summary>
+    /// <summary><paramref name="count" /> palabras únicas de 6 letras A–Z (AACASA, ABCASA, …).</summary>
     private static string[] ValidWords(int count)
     {
         var words = new string[count];
-        for (int i = 0; i < count; i++)
-        {
-            words[i] = $"{Letters[i / 26]}{Letters[i % 26]}CASA";
-        }
+        for (var i = 0; i < count; i++) words[i] = $"{Letters[i / 26]}{Letters[i % 26]}CASA";
 
         return words;
     }
@@ -74,8 +72,8 @@ public class WordSearchThemeTest
     [TestCase]
     public void ValidateAceptaUnaCategoriaCompleta()
     {
-        WordSearchTheme category = MakeCategory(ValidWords(60));
-        string[] errors = category.Validate();
+        var category = MakeCategory(ValidWords(60));
+        var errors = category.Validate();
         AssertBool(errors.Length == 0)
             .OverrideFailureMessage($"Validate() = {string.Join(", ", errors)}")
             .IsTrue();
@@ -84,18 +82,18 @@ public class WordSearchThemeTest
     [TestCase]
     public void ValidateDetectaDuplicadosLongitudYPalabrasSinNormalizar()
     {
-        var words = new System.Collections.Generic.List<string>(ValidWords(60));
+        var words = new List<string>(ValidWords(60));
         words.Add(words[0]); // duplicada
         words.Add("ABC"); // demasiado corta
         words.Add("MESAÑ"); // con Ñ: debe ir como MESAN
-        string[] errors = MakeCategory(words.ToArray()).Validate();
+        var errors = MakeCategory(words.ToArray()).Validate();
         AssertInt(errors.Length).IsEqual(3);
     }
 
     [TestCase]
     public void ValidateMarcaComoInvalidaUnaCategoriaVacia()
     {
-        string[] errors = MakeCategory(System.Array.Empty<string>()).Validate();
+        var errors = MakeCategory(Array.Empty<string>()).Validate();
         // sin palabras: mínimo 60 incumplido + categoría vacía tras el filtro
         AssertInt(errors.Length).IsGreaterEqual(2);
     }

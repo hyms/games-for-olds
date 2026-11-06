@@ -12,24 +12,26 @@ public partial class SaveManager : Node
     public const string SaveFileName = "save_data.json";
     public const string BackupFileName = "save_data.json.bak";
 
-    public static readonly string[] KnownGames =
-    {
-        "word_search",
-        "tangram",
-        "blocks",
-    };
-
     /// <summary>Id del nivel inicial por defecto (Fácil).</summary>
     public const string DefaultLevelId = Constants.DefaultDifficultyId;
 
     /// <summary>Victorias necesarias para desbloquear el siguiente nivel.</summary>
     public const int WinsToUnlockNextLevel = 20;
 
-    private string _savePath;
-    private string _backupPath;
-    private SaveData _data = new() { Version = SaveVersion };
+    public static readonly string[] KnownGames =
+    {
+        "word_search",
+        "tangram",
+        "blocks"
+    };
 
-    public SaveData Data => _data;
+    private string _backupPath;
+
+    private string _savePath;
+
+    public SaveData Data { get; private set; } = new() { Version = SaveVersion };
+
+    public UserSettings Settings => Data.Settings;
 
     public override void _Ready()
     {
@@ -41,48 +43,51 @@ public partial class SaveManager : Node
 
     public void SaveProgress(string levelId, int completedGames)
     {
-        string path = ProjectSettings.GlobalizePath("user://wordsearch_progress.json");
+        var path = ProjectSettings.GlobalizePath("user://wordsearch_progress.json");
         var progress = new WordSearchProgressData { LevelId = levelId, Completed = completedGames };
-        string json = JsonSerializer.Serialize(progress, AppJsonContext.Default.WordSearchProgressData);
+        var json = JsonSerializer.Serialize(progress, AppJsonContext.Default.WordSearchProgressData);
         File.WriteAllText(path, json);
     }
 
     public int LoadProgress(string levelId)
     {
-        string path = ProjectSettings.GlobalizePath("user://wordsearch_progress.json");
+        var path = ProjectSettings.GlobalizePath("user://wordsearch_progress.json");
         if (!File.Exists(path)) return 0;
         try
         {
-            string json = File.ReadAllText(path);
-            var progress = JsonSerializer.Deserialize<WordSearchProgressData>(json, AppJsonContext.Default.WordSearchProgressData);
+            var json = File.ReadAllText(path);
+            var progress = JsonSerializer.Deserialize(json, AppJsonContext.Default.WordSearchProgressData);
             if (progress != null && progress.LevelId == levelId)
                 return progress.Completed;
         }
-        catch { }
+        catch
+        {
+        }
+
         return 0;
     }
 
     public void LoadData()
     {
-        _data = new SaveData { Version = SaveVersion };
+        Data = new SaveData { Version = SaveVersion };
 
         if (!File.Exists(_savePath))
         {
-            _data.InitializeDefaults();
+            Data.InitializeDefaults();
             SaveToFile();
             return;
         }
 
         try
         {
-            string json = File.ReadAllText(_savePath);
-            var loaded = JsonSerializer.Deserialize(json, AppJsonContext.Default.SaveData) as SaveData;
+            var json = File.ReadAllText(_savePath);
+            var loaded = JsonSerializer.Deserialize(json, AppJsonContext.Default.SaveData);
             if (loaded != null)
             {
-                _data = loaded;
-                Migrate(_data);
-                _data.EnsureDefaults();
-                GD.Print($"[SaveManager] cargado: v{_data.Version}, {_data.Stats.Count} juegos");
+                Data = loaded;
+                Migrate(Data);
+                Data.EnsureDefaults();
+                GD.Print($"[SaveManager] cargado: v{Data.Version}, {Data.Stats.Count} juegos");
             }
             else
             {
@@ -98,43 +103,38 @@ public partial class SaveManager : Node
 
     public void SaveToFile()
     {
-        if (_data == null)
-        {
-            return;
-        }
+        if (Data == null) return;
 
-        string tmpPath = _savePath + ".tmp";
-        string json = JsonSerializer.Serialize(_data, AppJsonContext.Default.SaveData);
+        var tmpPath = _savePath + ".tmp";
+        var json = JsonSerializer.Serialize(Data, AppJsonContext.Default.SaveData);
 
         try
         {
-            if (File.Exists(_savePath))
-            {
-                File.Copy(_savePath, _backupPath, overwrite: true);
-            }
+            if (File.Exists(_savePath)) File.Copy(_savePath, _backupPath, true);
 
             File.WriteAllText(tmpPath, json);
-            File.Move(tmpPath, _savePath, overwrite: true);
+            File.Move(tmpPath, _savePath, true);
         }
         catch (Exception e)
         {
             GD.PushError($"[SaveManager] error al guardar: {e.Message}");
             if (File.Exists(tmpPath))
-            {
-                try { File.Delete(tmpPath); } catch { }
-            }
+                try
+                {
+                    File.Delete(tmpPath);
+                }
+                catch
+                {
+                }
         }
     }
 
     public void RegisterResult(string gameId, string levelId, bool won, float timeSeconds, int score)
     {
-        if (string.IsNullOrWhiteSpace(gameId))
-        {
-            return;
-        }
+        if (string.IsNullOrWhiteSpace(gameId)) return;
 
-        _data.EnsureGameStats(gameId);
-        GameStats stats = _data.Stats[gameId];
+        Data.EnsureGameStats(gameId);
+        var stats = Data.Stats[gameId];
 
         stats.Plays++;
 
@@ -146,23 +146,15 @@ public partial class SaveManager : Node
             UnlockNextLevelIfNeeded(gameId, levelId);
 
             if (stats.BestTimeSeconds == null || timeSeconds < stats.BestTimeSeconds.Value)
-            {
                 stats.BestTimeSeconds = timeSeconds;
-            }
 
-            if (score > stats.BestScore)
-            {
-                stats.BestScore = score;
-            }
+            if (score > stats.BestScore) stats.BestScore = score;
 
             stats.CurrentLevelId = NextLevelId(levelId) ?? stats.CurrentLevelId ?? levelId;
         }
         else
         {
-            if (score > stats.BestScore)
-            {
-                stats.BestScore = score;
-            }
+            if (score > stats.BestScore) stats.BestScore = score;
         }
 
         SaveToFile();
@@ -170,35 +162,35 @@ public partial class SaveManager : Node
 
     public void ResetStats()
     {
-        _data = new SaveData { Version = SaveVersion };
-        _data.InitializeDefaults();
+        Data = new SaveData { Version = SaveVersion };
+        Data.InitializeDefaults();
         SaveToFile();
     }
 
     public GameStats GetStats(string gameId)
     {
         GameStats stats = null;
-        _data?.Stats.TryGetValue(gameId, out stats);
+        Data?.Stats.TryGetValue(gameId, out stats);
         return stats;
     }
 
-    public UserSettings Settings => _data.Settings;
-
-    public void SaveSettings() => SaveToFile();
+    public void SaveSettings()
+    {
+        SaveToFile();
+    }
 
     private void RestoreFromBackupOrDefaults()
     {
         if (File.Exists(_backupPath))
-        {
             try
             {
-                string json = File.ReadAllText(_backupPath);
-                var restored = JsonSerializer.Deserialize(json, AppJsonContext.Default.SaveData) as SaveData;
+                var json = File.ReadAllText(_backupPath);
+                var restored = JsonSerializer.Deserialize(json, AppJsonContext.Default.SaveData);
                 if (restored != null)
                 {
-                    _data = restored;
-                    Migrate(_data);
-                    _data.EnsureDefaults();
+                    Data = restored;
+                    Migrate(Data);
+                    Data.EnsureDefaults();
                     SaveToFile();
                     return;
                 }
@@ -206,19 +198,15 @@ public partial class SaveManager : Node
             catch
             {
             }
-        }
 
-        _data = new SaveData { Version = SaveVersion };
-        _data.InitializeDefaults();
+        Data = new SaveData { Version = SaveVersion };
+        Data.InitializeDefaults();
         SaveToFile();
     }
 
     private static void Migrate(SaveData data)
     {
-        if (data.Version >= SaveVersion)
-        {
-            return;
-        }
+        if (data.Version >= SaveVersion) return;
 
         data.Version = SaveVersion;
         GD.Print($"[SaveManager] migrado a v{SaveVersion}");
@@ -231,26 +219,20 @@ public partial class SaveManager : Node
             "facil" => "medio",
             "medio" => "dificil",
             "dificil" => "maestro",
-            _ => null,
+            _ => null
         };
     }
 
     private void UnlockNextLevelIfNeeded(string gameId, string levelId)
     {
-        if (!_data.Stats.TryGetValue(gameId, out var stats) || stats.Wins < WinsToUnlockNextLevel)
-        {
-            return;
-        }
+        if (!Data.Stats.TryGetValue(gameId, out var stats) || stats.Wins < WinsToUnlockNextLevel) return;
 
-        string nextLevelId = NextLevelId(levelId);
-        if (string.IsNullOrEmpty(nextLevelId))
-        {
-            return;
-        }
+        var nextLevelId = NextLevelId(levelId);
+        if (string.IsNullOrEmpty(nextLevelId)) return;
 
         stats.CurrentLevelId = nextLevelId;
         GD.Print($"[SaveLevelUnlock] Nivel {levelId} completado con "
-            + $"{WinsToUnlockNextLevel}+ victorias, desbloqueando {nextLevelId}");
+                 + $"{WinsToUnlockNextLevel}+ victorias, desbloqueando {nextLevelId}");
     }
 }
 
@@ -264,39 +246,24 @@ public class SaveData
     {
         Settings = new UserSettings();
         Stats = new Dictionary<string, GameStats>();
-        foreach (string gameId in SaveManager.KnownGames)
-        {
+        foreach (var gameId in SaveManager.KnownGames)
             Stats[gameId] = new GameStats { CurrentLevelId = SaveManager.DefaultLevelId };
-        }
     }
 
     public void EnsureDefaults()
     {
-        if (Settings == null)
-        {
-            Settings = new UserSettings();
-        }
+        if (Settings == null) Settings = new UserSettings();
 
-        if (Stats == null)
-        {
-            Stats = new Dictionary<string, GameStats>();
-        }
+        if (Stats == null) Stats = new Dictionary<string, GameStats>();
 
-        foreach (string gameId in SaveManager.KnownGames)
-        {
+        foreach (var gameId in SaveManager.KnownGames)
             if (!Stats.ContainsKey(gameId))
-            {
                 Stats[gameId] = new GameStats { CurrentLevelId = SaveManager.DefaultLevelId };
-            }
-        }
     }
 
     public void EnsureGameStats(string gameId)
     {
-        if (!Stats.ContainsKey(gameId))
-        {
-            Stats[gameId] = new GameStats { CurrentLevelId = SaveManager.DefaultLevelId };
-        }
+        if (!Stats.ContainsKey(gameId)) Stats[gameId] = new GameStats { CurrentLevelId = SaveManager.DefaultLevelId };
     }
 }
 

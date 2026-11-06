@@ -4,7 +4,7 @@
 >
 > Describe la visión, los objetivos generales, los requisitos transversales, la **monetización por anuncios**, el **sistema de guardar estadísticas**, las **opciones de accesibilidad de pantalla/resolución** y la **arquitectura técnica de software (Godot 4 en C#)**.
 >
-> Cada minijuego extiende esta arquitectura mediante especificaciones detalladas en su carpeta respectiva (`/scenes/minigames/<juego>/spec.md`).
+> Cada minijuego extiende esta arquitectura mediante especificaciones detalladas en su carpeta respectiva (`docs/minigames/<juego>/spec.md`).
 
 ---
 
@@ -58,11 +58,10 @@ res://
 ├── assets/
 │   ├── fonts/                      # PressStart2P & AtkinsonHyperlegible
 │   └── audio/                      # Efectos retro de selección y victoria
-├── scenes/
-│   ├── minigames/
-│   │   └── word_search/            # Escena principal de Sopa de Letras
-│   │       ├── WordSearchMain.tscn
-│   │       ├── WordSearchMain.cs
-│   │       ├── WordGridFactory.cs
-│   │       └── GridCell.cs
+├── minigames/
+│   └── word_search/                # Módulo Sopa de Letras (C1: ruta raíz, no scenes/)
+│       ├── WordSearchMain.tscn
+│       ├── WordSearchMain.cs
+│       ├── WordGridFactory.cs
+│       └── components/             # PixelCell, PixelFooterPanel
 ```

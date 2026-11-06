@@ -1,11 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 
 /// <summary>
-/// Sistema de pistas para la Sopa de Letras (Fase 6).
-/// Cada dificultad tiene 3 pistas fijas y adicionales cuando se acaba el panel.
-/// El jugador puede solicitar pistas sin penalización (MVP: no-op, sin anuncios).
+///     Sistema de pistas para la Sopa de Letras (Fase 6).
+///     Cada dificultad tiene 3 pistas fijas y adicionales cuando se acaba el panel.
+///     El jugador puede solicitar pistas sin penalización (MVP: no-op, sin anuncios).
 /// </summary>
 public static class HintSystem
 {
@@ -13,7 +13,7 @@ public static class HintSystem
     private static readonly Dictionary<string, string[]> HintsByLevel = new()
     {
         {
-            "facil", new string[]
+            "facil", new[]
             {
                 "Empieza con las letras de la palabra en el tablero.",
                 "Busca una palabra corta (4-6 letras) en horizontal o vertical.",
@@ -21,7 +21,7 @@ public static class HintSystem
             }
         },
         {
-            "medio", new string[]
+            "medio", new[]
             {
                 "Cada palabra tiene al menos dos letras en común con su categoria.",
                 "Busca una palabra de 7-8 letras en diagonal o horizontal.",
@@ -29,7 +29,7 @@ public static class HintSystem
             }
         },
         {
-            "dificil", new string[]
+            "dificil", new[]
             {
                 "Une dos palabras que comparten una letra clave.",
                 "Una palabra sale de la esquina opuesta a la actual.",
@@ -37,7 +37,7 @@ public static class HintSystem
             }
         },
         {
-            "maestro", new string[]
+            "maestro", new[]
             {
                 "Las palabras mas complejas suelen doblarse dentro del tablero.",
                 "Será mas facil si buscas palabras de 10-12 letras.",
@@ -50,25 +50,28 @@ public static class HintSystem
     public static string GetHint(string levelId, int hintIndex)
     {
         if (string.IsNullOrEmpty(levelId)) return "Sin pista disponible.";
-        string[] hints = HintsByLevel.GetValueOrDefault(levelId);
-        if (hints == null || hintIndex < 0 || hintIndex >= hints.Length)
-        {
-            return "Pista no disponible en este nivel.";
-        }
+        var hints = HintsByLevel.GetValueOrDefault(levelId);
+        if (hints == null || hintIndex < 0 || hintIndex >= hints.Length) return "Pista no disponible en este nivel.";
         return hints[hintIndex];
     }
 
     /// <summary>Número de pistas fijas disponibles por nivel.</summary>
-    public static int GetHintCount(string levelId) => HintsByLevel.GetValueOrDefault(levelId)?.Length ?? 0;
+    public static int GetHintCount(string levelId)
+    {
+        return HintsByLevel.GetValueOrDefault(levelId)?.Length ?? 0;
+    }
 
     /// <summary>Siempre devuelve 3 pistas (independiente del nivel).</summary>
-    public static string[] GetHints(string levelId) => GetHintsInternal(levelId, 3);
+    public static string[] GetHints(string levelId)
+    {
+        return GetHintsInternal(levelId, 3);
+    }
 
     private static string[] GetHintsInternal(string levelId, int count)
     {
-        string[] all = HintsByLevel.GetValueOrDefault(levelId);
+        var all = HintsByLevel.GetValueOrDefault(levelId);
         if (all == null || all.Length == 0) return new[] { "Sin pistas disponibles." };
-        int take = Godot.Mathf.Clamp(count, 1, all.Length);
+        var take = Mathf.Clamp(count, 1, all.Length);
         return all.Take(take).ToArray();
     }
 }

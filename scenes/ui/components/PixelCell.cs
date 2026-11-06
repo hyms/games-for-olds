@@ -4,20 +4,20 @@ using Godot;
 namespace ClasicosMenteActiva.scenes.ui.components;
 
 /// <summary>
-/// Celda reutilizable en pixel art puro para grillas de juego (Sopa de Letras,
-/// Tangram, lógica). Sin anti-aliasing, sin bordes redondeados orgánicos:
-/// <see cref="StyleBoxFlat"/> con <c>corner_radius = 0</c> y bordes rectos de
-/// 2 píxeles. Se suscribe a <see cref="ThemeManager.OnThemeChanged"/> para
-/// actualizar sus colores cuando el tema cambia globalmente.
+///     Celda reutilizable en pixel art puro para grillas de juego (Sopa de Letras,
+///     Tangram, lógica). Sin anti-aliasing, sin bordes redondeados orgánicos:
+///     <see cref="StyleBoxFlat" /> con <c>corner_radius = 0</c> y bordes rectos de
+///     2 píxeles. Se suscribe a <see cref="ThemeManager.OnThemeChanged" /> para
+///     actualizar sus colores cuando el tema cambia globalmente.
 /// </summary>
 [Tool]
 public partial class PixelCell : Panel
 {
     private Label _label;
-    private StyleBoxFlat _styleIdle;
     private StyleBoxFlat _styleFound;
-    private StyleBoxFlat _styleSelected;
     private StyleBoxFlat _styleHint;
+    private StyleBoxFlat _styleIdle;
+    private StyleBoxFlat _styleSelected;
 
     /// <summary>Carácter mostrado en la celda.</summary>
     public char Letter { get; protected set; } = ' ';
@@ -38,24 +38,18 @@ public partial class PixelCell : Panel
 
         BuildStyleBoxes();
 
-        ThemeManager theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
+        var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
         ApplyTheme(theme?.CurrentThemeData);
         UpdateVisuals();
 
         // Suscribirse a cambios de tema para actualizar colores dinámicamente.
-        if (theme != null)
-        {
-            theme.OnThemeChanged += OnThemeChanged;
-        }
+        if (theme != null) theme.OnThemeChanged += OnThemeChanged;
     }
 
     public override void _ExitTree()
     {
-        ThemeManager theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
-        if (theme != null)
-        {
-            theme.OnThemeChanged -= OnThemeChanged;
-        }
+        var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
+        if (theme != null) theme.OnThemeChanged -= OnThemeChanged;
         base._ExitTree();
     }
 
@@ -108,9 +102,9 @@ public partial class PixelCell : Panel
     {
         // Pixel art puro: anti_aliasing = false, corner_radius = 0, bordes rectos de 2 px.
         _styleIdle = MakeStyleBox(Color.FromHtml("#EBF2F5"), Color.FromHtml("#A0BFC7"), 2);
-        _styleFound = MakeStyleBox(Color.FromHtml("#099C92"), Color.FromHtml("#06706a"), 3);
+        _styleFound = MakeStyleBox(Color.FromHtml("#099C92"), Color.FromHtml("#101010"), 2);
         _styleSelected = MakeStyleBox(Color.FromHtml("#099C92"), Color.FromHtml("#101010"), 2);
-        _styleHint = MakeStyleBox(Color.FromHtml("#EBF2F5"), Color.FromHtml("#8a4600"), 3);
+        _styleHint = MakeStyleBox(PixelStyles.PistaAcento, PixelStyles.PistaBorde, 2);
     }
 
     private static StyleBoxFlat MakeStyleBox(Color bg, Color border, int borderWidth)
@@ -120,7 +114,7 @@ public partial class PixelCell : Panel
             BgColor = bg,
             BorderColor = border,
             AntiAliasing = false,
-            CornerDetail = 1,
+            CornerDetail = 1
         };
         box.SetBorderWidthAll(borderWidth);
         box.SetCornerRadiusAll(0);
@@ -135,7 +129,9 @@ public partial class PixelCell : Panel
         _styleIdle.BorderColor = theme.CellIdleBorderColor;
 
         _styleFound.BgColor = theme.CellFoundBackgroundColor;
-        _styleFound.BorderColor = theme.FooterStrikethroughColor;
+        _styleFound.BorderColor = theme.CellFoundTextColor == Color.FromHtml("#FFFFFF")
+            ? Color.FromHtml("#101010")
+            : theme.CellFoundTextColor;
 
         _styleSelected.BgColor = theme.CellFoundBackgroundColor;
         _styleSelected.BorderColor = theme.CellIdleTextColor;
@@ -150,14 +146,20 @@ public partial class PixelCell : Panel
             PixelCellState.Found => _styleFound,
             PixelCellState.Selected => _styleSelected,
             PixelCellState.Hint => _styleHint,
-            _ => _styleIdle,
+            _ => _styleIdle
         });
 
         if (_label == null) return;
 
-        bool whiteText = State is PixelCellState.Found or PixelCellState.Selected;
-        _label.AddThemeColorOverride("font_color", whiteText ? Colors.White : Color.FromHtml("#101010"));
-        _label.AddThemeColorOverride("font_outline_color", Colors.White);
+        // MODULACIÓN ABSOLUTA: Forzamos opacidad total para evitar transparencias heredadas
+        // de contenedores padres o configuraciones de tema que puedan causar efectos "fantasma".
+        _label.Modulate = Colors.White;
+
+        var whiteText = State is PixelCellState.Found or PixelCellState.Selected or PixelCellState.Hint;
+        // Ya no se añade font_outline_color para evitar bordes blancos que ensucian la tipografía.
+        // El texto se renderiza opaco y sólido sin contornos adicionales.
+        // _label.AddThemeColorOverride("font_outline_color", Colors.White); // ELIMINADO
+        _label.AddThemeColorOverride("font_color", whiteText ? Color.FromHtml("#FFFFFF") : Color.FromHtml("#101010"));
         _label.AddThemeConstantOverride("outline_size", 0);
     }
 
@@ -167,7 +169,7 @@ public partial class PixelCell : Panel
         {
             MouseFilter = MouseFilterEnum.Ignore,
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
         };
         AddChild(label);
         label.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
@@ -181,5 +183,5 @@ public enum PixelCellState
     Idle,
     Selected,
     Found,
-    Hint,
+    Hint
 }

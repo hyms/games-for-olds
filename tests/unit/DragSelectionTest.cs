@@ -3,8 +3,8 @@ using Godot;
 using static GdUnit4.Assertions;
 
 /// <summary>
-/// Fase 3 §3.2 — Lógica de la selección por arrastre. Bloqueo de dirección,
-/// ajuste a la línea dominante, límites del tablero, cancelación y ruta recta.
+///     Fase 3 §3.2 — Lógica de la selección por arrastre. Bloqueo de dirección,
+///     ajuste a la línea dominante, límites del tablero, cancelación y ruta recta.
 /// </summary>
 [TestSuite]
 [RequireGodotRuntime]
@@ -16,7 +16,7 @@ public class DragSelectionTest
         var drag = new DragSelection();
         AssertBool(drag.Begin(new Vector2I(0, 0))).IsTrue();
         AssertBool(drag.Update(new Vector2I(3, 0), 8, 8)).IsTrue();
-        AssertBool(drag.TryComplete(out Vector2I start, out Vector2I end)).IsTrue();
+        AssertBool(drag.TryComplete(out var start, out var end)).IsTrue();
 
         AssertCoord(start, 0, 0);
         AssertCoord(end, 3, 0);
@@ -30,7 +30,7 @@ public class DragSelectionTest
         drag.Begin(new Vector2I(1, 1));
         drag.Update(new Vector2I(4, 4), 8, 8);
 
-        AssertBool(drag.TryComplete(out _, out Vector2I end)).IsTrue();
+        AssertBool(drag.TryComplete(out _, out var end)).IsTrue();
         AssertCoord(end, 4, 4);
     }
 
@@ -40,19 +40,19 @@ public class DragSelectionTest
         var drag = new DragSelection();
         drag.Begin(new Vector2I(0, 0));
         drag.Update(new Vector2I(1, 3), 8, 8); // casi vertical
-        AssertBool(drag.TryComplete(out _, out Vector2I verticalEnd)).IsTrue();
+        AssertBool(drag.TryComplete(out _, out var verticalEnd)).IsTrue();
         AssertCoord(verticalEnd, 0, 3);
 
         var other = new DragSelection();
         other.Begin(new Vector2I(0, 0));
         other.Update(new Vector2I(3, 1), 8, 8); // casi horizontal
-        AssertBool(other.TryComplete(out _, out Vector2I horizontalEnd)).IsTrue();
+        AssertBool(other.TryComplete(out _, out var horizontalEnd)).IsTrue();
         AssertCoord(horizontalEnd, 3, 0);
 
         var diagonal = new DragSelection();
         diagonal.Begin(new Vector2I(0, 0));
         diagonal.Update(new Vector2I(3, 2), 8, 8); // zona diagonal
-        AssertBool(diagonal.TryComplete(out _, out Vector2I diagonalEnd)).IsTrue();
+        AssertBool(diagonal.TryComplete(out _, out var diagonalEnd)).IsTrue();
         AssertCoord(diagonalEnd, 3, 3);
     }
 
@@ -64,7 +64,7 @@ public class DragSelectionTest
         drag.Update(new Vector2I(0, 2), 8, 8);
         drag.Update(new Vector2I(5, 2), 8, 8); // zigzag horizontal
 
-        AssertBool(drag.TryComplete(out _, out Vector2I end)).IsTrue();
+        AssertBool(drag.TryComplete(out _, out var end)).IsTrue();
         AssertCoord(end, 0, 2);
     }
 
@@ -74,7 +74,7 @@ public class DragSelectionTest
         var drag = new DragSelection();
         drag.Begin(new Vector2I(6, 6));
         drag.Update(new Vector2I(9, 9), 8, 8);
-        AssertBool(drag.TryComplete(out _, out Vector2I end)).IsTrue();
+        AssertBool(drag.TryComplete(out _, out var end)).IsTrue();
         AssertCoord(end, 7, 7);
 
         AssertInt(DragSelection.MaxSteps(new Vector2I(0, 0), new Vector2I(-1, 0), 8, 8)).IsEqual(0);
