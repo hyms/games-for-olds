@@ -102,44 +102,44 @@ public static class PixelStyles
         return MakeBox(Placa, Borde, 2, Radius);
     }
 
-    /// <summary>Panel del título principal: fondo azul claro, borde de pixel art y sombra dura.</summary>
+    /// <summary>Panel del título principal: banner teal medio (#6C95A1, plantilla wathersoup.jpg), borde pixel 3px y sombra dura.</summary>
     public static StyleBoxFlat TitlePanel()
     {
-        var box = MakeBox(PlacaHeader, Tinta, 3, Radius);
+        var box = MakeBox(Color.FromHtml("#6C95A1"), PlacaHeader, 3, Radius);
         box.ContentMarginLeft = 12.0f;
         box.ContentMarginRight = 12.0f;
-        box.ContentMarginTop = 8.0f;
-        box.ContentMarginBottom = 8.0f;
+        box.ContentMarginTop = 10.0f;
+        box.ContentMarginBottom = 10.0f;
         return box;
     }
 
-    /// <summary>Panel de subtítulo secundario: fondo turquesa medio, borde píxel 2px y esquinas cuadradas.</summary>
+    /// <summary>Banda de subtítulo: fondo claro #D2E1E6 bajo el banner (plantilla wathersoup.jpg) con borde pixel 2px y esquinas cuadradas.</summary>
     public static StyleBoxFlat SubtitlePanel()
     {
         var box = new StyleBoxFlat
         {
-            BgColor = Color.FromHtml("#6C95A1"),
-            BorderColor = Color.FromHtml("#A0BFC7"),
+            BgColor = Color.FromHtml("#D2E1E6"),
+            BorderColor = PlacaHeader,
             AntiAliasing = false,
             CornerDetail = 1
         };
         box.SetBorderWidthAll(2);
         box.SetCornerRadiusAll(0);
-        box.ContentMarginLeft = 12.0f;
-        box.ContentMarginRight = 12.0f;
-        box.ContentMarginTop = 2.0f;
-        box.ContentMarginBottom = 2.0f;
+        box.ContentMarginLeft = 14.0f;
+        box.ContentMarginRight = 14.0f;
+        box.ContentMarginTop = 4.0f;
+        box.ContentMarginBottom = 4.0f;
         return box;
     }
 
-    /// <summary>Panel inferior de palabras: placa ancha con marco de pixel art.</summary>
+    /// <summary>Panel inferior de palabras: placa ancha con marco retro de pixel art de 3px.</summary>
     public static StyleBoxFlat WordPanel()
     {
-        var box = MakeBox(Placa, Tinta, 2, Radius);
+        var box = MakeBox(Placa, Tinta, 3, Radius);
         box.ContentMarginLeft = 10.0f;
         box.ContentMarginRight = 10.0f;
-        box.ContentMarginTop = 6.0f;
-        box.ContentMarginBottom = 6.0f;
+        box.ContentMarginTop = 8.0f;
+        box.ContentMarginBottom = 8.0f;
         return box;
     }
 

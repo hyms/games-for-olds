@@ -35,7 +35,7 @@ public sealed class WordSearchHud
         }
 
         var level = DifficultyCatalog.LevelNumberFor(config.Id);
-        _difficulty.Text = $"{config.DisplayName.ToUpperInvariant()} - NIVEL {level}";
+        _difficulty.Text = $"{config.DisplayName.ToUpperInvariant()} · NIVEL {level}";
     }
 
     /// <summary>Refresca contador, lista y aviso de victoria desde el estado.</summary>

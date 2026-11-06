@@ -54,11 +54,11 @@ theme_override_constants/separation = 6
 
 [node name="Header" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 0
+theme_override_constants/separation = 4
 
 [node name="TitlePanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/Header"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 
 [node name="Title" type="Label" parent="MarginContainer/VBoxContainer/Header/TitlePanel"]
@@ -71,29 +71,22 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.305882, 0.376471, 0.466667, 1)
 theme_override_constants/outline_size = 4
 theme_override_fonts/font = ExtResource("6_press")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 22
 
-[node name="SubtitleCenter" type="CenterContainer" parent="MarginContainer/VBoxContainer/Header"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="SubtitlePanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/Header/SubtitleCenter"]
+[node name="SubtitlePanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/Header"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 22)
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
-size_flags_horizontal = 4
 
-[node name="DifficultyLabel" type="Label" parent="MarginContainer/VBoxContainer/Header/SubtitleCenter/SubtitlePanel"]
+[node name="DifficultyLabel" type="Label" parent="MarginContainer/VBoxContainer/Header/SubtitlePanel"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "FÁCIL - NIVEL 1"
+text = "FÁCIL · NIVEL 1"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.627451, 0.749020, 0.780392, 1)
-theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_constants/outline_size = 1
+theme_override_colors/font_color = Color(0.305882, 0.376471, 0.466667, 1)
 theme_override_fonts/font = ExtResource("6_press")
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 11
 
 [node name="NavRow" type="Control" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 56)
@@ -187,16 +180,16 @@ mouse_filter = 2
 
 [node name="WordPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 size_flags_vertical = 1
 
 [node name="WordMargin" type="MarginContainer" parent="MarginContainer/VBoxContainer/WordPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 4
-theme_override_constants/margin_top = 4
+theme_override_constants/margin_top = 2
 theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_bottom = 2
 
 [node name="WordList" type="RichTextLabel" parent="MarginContainer/VBoxContainer/WordPanel/WordMargin"]
 unique_name_in_owner = true
