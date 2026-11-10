@@ -2,7 +2,7 @@
 
 > **Documento SDD maestro (global)** de UI/UX, componentes base, tipografía, paleta y herencia visual.  
 > **Versión:** 1.0 · **Estado:** Vigente · **Última actualización:** 2026-11-10  
-> **Alcance:** normas universales de la aplicación. Las métricas, layouts y comportamientos específicos de cada minijuego se definen en su documento de dirección de arte y **heredan** de este maestro.
+> **Alcance:** normas universales de la aplicación (estándares UI globales, componentes base universales, **matriz inmutable de paleta global** y **Master Index** de direcciones de arte por minijuego). Las métricas, layouts y comportamientos específicos de cada minijuego se definen en su documento de dirección de arte y **heredan** de este maestro.
 
 ---
 
@@ -99,7 +99,7 @@ Los minijuegos pueden **componer** estos patrones y ajustar métricas locales, p
 
 ## 7. Regla de herencia visual (obligatoria)
 
-1. **Heredan de este global (inmutable por minijuego):** valores de la **matriz de paleta global (§4)**, semántica de estados de color, **tokens tipográficos y sus roles (§6)**, y el lenguaje base de **relieve/estados de botones y componentes**.
+1. **Heredan de este global (inmutable por minijuego):** **colores base y valores de la matriz de paleta global (§4)**, semántica de estados de color, **estilos/relieve base de botones y componentes**, y **tokens tipográficos y sus roles (§6)** (fuentes heredadas). Ningún minijuego redefine estos tokens globales.
 2. **Puede definir cada minijuego:** layout, métricas, espaciados, tamaños de grilla/celdas, comportamiento de controles (p. ej. zoom), contenido de HUD/footer, animaciones/partículas y copy visual, siempre dentro de las reglas globales de accesibilidad y presentación.
 3. **Overrides permitidos (acotados):** ajustes métricos o de composición necesarios para fidelidad a la referencia del minijuego (p. ej. radio/relieve local, alturas de panel), **sin** sustituir ni redefinir tokens globales. Toda excepción debe indicarse en el documento del minijuego con justificación y verificación visual.
 

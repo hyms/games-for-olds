@@ -34,23 +34,23 @@
 ## 3. Reglas de grilla y métricas del tablero
 
 ### 3.1 Baseline estático de referencia (fidelidad visual)
-Para alineación con `wathersoup.jpg`, la grilla de referencia se documenta como:
+**Estándar estático de grilla (referencia/baseline):** para alineación 1:1 con `wathersoup.jpg`, la grilla visible de referencia se documenta como:
 - **Matriz visible:** $8 \times 8$ letras.
 - **Celda:** $30 \times 30$ px.
 - **Separación (gap):** $6$ px entre celdas.
 
-> **Nota de autoridad métrica:** este baseline es el objetivo visual de referencia. La implementación debe evitar clipping y mantener legibilidad/alineación de hit-testing en el `BoardArea` disponible.
+> **Nota de autoridad métrica:** este baseline es el objetivo visual de referencia (p. ej. dificultad Fácil). La implementación debe evitar clipping y mantener legibilidad/alineación de hit-testing en el `BoardArea` disponible (política **target→fit** cuando el área útil no permita el tamaño objetivo exacto). Verificar medidas finales contra `wathersoup.jpg` en editor/dispositivo.
 
 ### 3.2 Variantes por dificultad (datos) y comportamiento de ajuste
 | Dificultad | Grilla (datos) | Palabras objetivo | Direcciones / categorías | Estado métrico |
 |---|---|---:|---|---|
-| Fácil | $8 \times 8$ | 5 | H/V directas · 1 categoría | Objetivo: baseline 30×30, gap 6; **ajuste al área disponible si es necesario (target→fit, sin clipping)** |
+| Fácil | $8 \times 8$ | 5 | H/V directas · 1 categoría | **Baseline:** $30\times30$ px, gap $6$ px; **ajuste al área disponible si es necesario (target→fit, sin clipping)** |
 | Medio | $10 \times 10$ | 8 | + diagonales descendentes · 1 | Objetivo de referencia por definir vs `wathersoup.jpg`; **runtime actual: fit-to-area** |
 | Difícil | $12 \times 12$ | 12 | 8 direcciones · 2 | Objetivo de referencia por definir vs `wathersoup.jpg`; **runtime actual: fit-to-area** |
 | Maestro | $15 \times 15$ | 20 | 8 direcciones · 4 | Objetivo de referencia por definir vs `wathersoup.jpg`; **runtime actual: fit-to-area** |
 
 - **Fuente de datos:** `resources/difficulties/{facil,medio,dificil,maestro}.tres`, `DifficultyConfig.cs`/`DifficultyCatalog.cs`.
-- **Runtime actual (implementación):** `WordGridFactory.ComputeLayout` calcula `cellSize = max(MinCellSize, floor(fit))` con `gap = WordSearchVisuals.CellGap` (6.0) centrando la grilla en `BoardArea` (`WordGridContainer` aplica posición/tamaño y deriva tamaño de fuente). **No** existe hoy una métrica fija 30×30 por dificultad en código; cualquier discrepancia con el baseline debe resolverse como trabajo de alineación visual explícito (ver `minigames/word_search/WordSearchVisuals.cs`).
+- **Runtime actual (implementación):** `WordGridFactory.ComputeLayout` calcula `cellSize = max(MinCellSize, floor(fit))` con `gap = WordSearchVisuals.CellGap` (6.0) centrando la grilla en `BoardArea` (`WordGridContainer` aplica posición/tamaño y deriva tamaño de fuente). **No** existe hoy una métrica fija $30\times30$ por dificultad en código; cualquier discrepancia con el baseline debe resolverse como trabajo de alineación visual explícito (ver `minigames/word_search/WordSearchVisuals.cs`).
 - **Criterios de aceptación visual:** cero clipping horizontal/vertical, celdas centradas, espaciado uniforme, y **hit-testing/centros de trazo exactamente alineados** a la geometría renderizada.
 
 ---
@@ -58,7 +58,7 @@ Para alineación con `wathersoup.jpg`, la grilla de referencia se documenta como
 ## 4. Controles de zoom y accesibilidad
 
 - **Objetivo de interacción:** zoom de tablero accesible y no dependiente de un único gesto.
-- **Controles esperados:** botones **`+`** / **`−`** para ampliar/reducir y control de **centrar/restablecer** vista (alternativa sin gestos finos), además de soporte de pellizco (pinch) cuando esté disponible.
+- **Controles requeridos (UX):** botones **`+`** / **`−`** para ampliar/reducir y control de **centrar/restablecer** vista (alternativa sin gestos finos), además de soporte de pellizco (pinch) cuando esté disponible.
 - **Parámetros de referencia (visual/comportamiento):** rango $1.0\times$–$2.5\times$, paso incremental acorde a referencia/implementación, y reposición al iniciar/reiniciar partida si así lo define la UX del minijuego.
 - **Estado actual:** los límites/paso de zoom están definidos en `WordSearchVisuals` (`MinZoom/MaxZoom/ZoomStep`); la presencia y disposición final de los controles `+ / −` y centrar en la UI deben verificarse contra escena/implementación y `wathersoup.jpg` durante la alineación.
 - **Regla:** el zoom no debe romper la selección por arrastre ni perder el tablero fuera de límites visibles.
@@ -68,9 +68,9 @@ Para alineación con `wathersoup.jpg`, la grilla de referencia se documenta como
 ## 5. Footer / WordsPanel (dimensiones y visibilidad)
 
 - **Componente:** `%WordPanel` (PanelContainer) con `%WordList` (`RichTextLabel`, BBCode) — presentación orquestada por `WordSearchHud` y estilos de `PixelStyles.WordPanel()` aplicados en `WordSearchMain.ApplyTheme`.
-- **Altura mínima objetivo:** **~70 px efectivos** para garantizar visibilidad estable del panel en 360×640 y evitar que el `BoardArea` lo comprima o desplace fuera de pantalla.
-- **Estado actual (a alinear):** `custom_minimum_size.y` de `WordPanel` es 48 y el layout depende de `fit_content`/márgenes internos; puede ser insuficiente con 12–20 palabras o mayor inset superior. La implementación de alineación debe asegurar una banda inferior **no colapsable** y compatible con safe area.
-- **Contenido:** palabras en flujo continuo separadas por ` | `; pendientes visibles y encontradas tachadas/coloreadas mediante tokens globales (`FooterTextColor`, `FooterStrikethroughColor` / acento de encontrado según tema). Legible con 5, 8, 12 y 20 palabras.
+- **Altura mínima objetivo (requerida):** **~70 px mínimos efectivos** para garantizar visibilidad estable del panel en 360×640 y evitar que el `BoardArea` lo comprima o desplace fuera de pantalla. El panel debe comportarse como banda inferior **no colapsable** y compatible con safe area.
+- **Estado actual (a alinear):** `custom_minimum_size.y` de `WordPanel` es 48 y el layout depende de `fit_content`/márgenes internos; puede ser insuficiente con 12–20 palabras o mayor inset superior.
+- **Contenido:** palabras en flujo continuo separadas por ` | `; pendientes visibles y encontradas tachadas/coloreadas mediante **tokens globales** (`FooterTextColor`, `FooterStrikethroughColor` / acento de encontrado según tema). Legible con 5, 8, 12 y 20 palabras.
 - **Restricción:** el footer no debe solaparse con el tablero ni quedar oculto por gestos/notch; `scroll` solo si lo exige la referencia (preferir ajuste de altura/padding/flujo).
 
 ---
@@ -97,8 +97,8 @@ Para alineación con `wathersoup.jpg`, la grilla de referencia se documenta como
 ## 8. Partículas y celebración (confeti)
 
 - **Disparador:** al completar la última palabra del tablero (victoria de partida).
-- **Comportamiento de referencia (spec):** detener cronómetro al completar; activar lluvia de confeti pixel art y, tras **~300 ms**, mostrar modal de victoria (`LevelCompleteModal`/`%WinModal`) con tiempo, puntaje y acciones.
-- **Estilo:** partículas cuadradas tipo pixel (p. ej. 4×4 o 6×6 px lógicos) con paleta derivada de tokens globales/acento; sin suavizado, rendimiento adecuado en gama baja.
+- **Comportamiento de referencia (spec):** detener cronómetro al completar; activar lluvia de confeti pixel art y, tras **~300 ms**, mostrar modal de victoria (`%WinModal`) con tiempo, puntaje y acciones.
+- **Estilo:** partículas **cuadradas tipo pixel** (p. ej. 4×4 o 6×6 px lógicos, sin suavizado) con colores derivados **exclusivamente de tokens de la paleta global aprobada** (p. ej. acentos/estados como `Turquesa`/`CellFound*`, `Amarillo`, `Cian`, `CeldaSeleccion`, `TextLight` según composición), con rendimiento adecuado en gama baja. **No** introducir colores fuera de la matriz global.
 - **Estado actual:** la lógica de finalización y modal existe; el emisor de confeti dedicado debe verificarse/implementarse según esta especificación y `wathersoup.jpg` (si no está presente, tratar como brecha de alineación visual).
 
 ---
