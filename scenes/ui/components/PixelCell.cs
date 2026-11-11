@@ -1,3 +1,4 @@
+#nullable enable
 using ClasicosMenteActiva.core;
 using Godot;
 
@@ -5,183 +6,159 @@ namespace ClasicosMenteActiva.scenes.ui.components;
 
 /// <summary>
 ///     Celda reutilizable en pixel art puro para grillas de juego (Sopa de Letras,
-///     Tangram, lógica). Sin anti-aliasing, sin bordes redondeados orgánicos:
-///     <see cref="StyleBoxFlat" /> con <c>corner_radius = 0</c> y bordes rectos de
-///     2 píxeles. Se suscribe a <see cref="ThemeManager.OnThemeChanged" /> para
-///     actualizar sus colores cuando el tema cambia globalmente.
+///     Tangram, lógica). Reposo y pista elevan el bisel; pulsada, seleccionada y
+///     encontrada lo hunden, como un botón físico presionado. El relleno, el borde
+///     y los colores de texto proceden de <see cref="PixelCellStyle.For" />, y el
+///     bisel de 1 px lo comparte con los botones mediante
+///     <see cref="PixelReliefPainter" />. Alpha absoluto en todo momento
+///     (<c>Alpha = 1.0</c>, docs/art_direction.md §2).
+///     Se suscribe a <see cref="ThemeManager.OnThemeChanged" /> para temas dinámicos.
 /// </summary>
 [Tool]
 public partial class PixelCell : Panel
 {
-    private Label _label;
-    private StyleBoxFlat _styleFound;
-    private StyleBoxFlat _styleHint;
-    private StyleBoxFlat _styleIdle;
-    private StyleBoxFlat _styleSelected;
+	private readonly PixelCellVisual[] _visuals = new PixelCellVisual[5];
+	private ThemeData _theme = new();
+	private bool _visualsReady;
 
-    /// <summary>Carácter mostrado en la celda.</summary>
-    public char Letter { get; protected set; } = ' ';
+	protected Label? _label;
+	private Timer _hintTimer;
 
-    /// <summary>Estado visual actual.</summary>
-    public PixelCellState State { get; protected set; } = PixelCellState.Idle;
+	public char Letter { get; protected set; } = ' ';
+	public PixelCellState State { get; protected set; } = PixelCellState.Idle;
+	public bool IsFound { get; protected set; }
+	public Vector2I Coords { get; protected set; }
+	public bool IsPressed { get; private set; }
 
-    /// <summary>¿La celda pertenece a una palabra ya encontrada?</summary>
-    public bool IsFound { get; protected set; }
+	/// <summary>Estilo y color de texto ya resueltos para <see cref="State" />.</summary>
+	protected PixelCellVisual CurrentVisual
+	{
+		get
+		{
+			if (!_visualsReady) BuildVisuals();
+			return _visuals[(int)State];
+		}
+	}
 
-    /// <summary>Coordenadas de la celda en la grilla.</summary>
-    public Vector2I Coords { get; protected set; }
+	public override void _Ready()
+	{
+		MouseFilter = MouseFilterEnum.Ignore;
+		ClipContents = false;
+		var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
+		ApplyTheme(theme?.CurrentThemeData);
+		UpdateVisuals();
+		if (theme != null) theme.OnThemeChanged += OnThemeChanged;
+	}
 
-    public override void _Ready()
-    {
-        MouseFilter = MouseFilterEnum.Ignore;
-        ClipContents = false;
+	public override void _ExitTree()
+	{
+		var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
+		if (theme != null) theme.OnThemeChanged -= OnThemeChanged;
+		base._ExitTree();
+	}
 
-        BuildStyleBoxes();
+	private void OnThemeChanged(ThemeData themeData) => ApplyTheme(themeData);
 
-        var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
-        ApplyTheme(theme?.CurrentThemeData);
-        UpdateVisuals();
+	public virtual void Setup(Vector2I coords, char letter, int fontSize)
+	{
+		Coords = coords;
+		Letter = letter;
+		_label ??= CreateLabel();
+		if (_label != null) _label.Text = letter.ToString();
+		if (_label != null) _label.AddThemeFontSizeOverride("font_size", fontSize);
+		if (PixelStyles.CellFont != null && _label != null)
+			_label.AddThemeFontOverride("font", PixelStyles.CellFont);
+		RestoreBaseState();
+	}
 
-        // Suscribirse a cambios de tema para actualizar colores dinámicamente.
-        if (theme != null) theme.OnThemeChanged += OnThemeChanged;
-    }
+	public void MarkFound()
+	{
+		IsFound = true;
+		State = PixelCellState.Found;
+		IsPressed = false;
+		UpdateVisuals();
+	}
 
-    public override void _ExitTree()
-    {
-        var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
-        if (theme != null) theme.OnThemeChanged -= OnThemeChanged;
-        base._ExitTree();
-    }
+	public void SetState(PixelCellState state)
+	{
+		State = state;
+		IsPressed = state is PixelCellState.Pressed or PixelCellState.Selected;
+		UpdateVisuals();
+	}
 
-    private void OnThemeChanged(ThemeData themeData)
-    {
-        ApplyTheme(themeData);
-    }
+	public void RestoreBaseState()
+	{
+		IsPressed = false;
+		State = IsFound ? PixelCellState.Found : PixelCellState.Idle;
+		UpdateVisuals();
+	}
 
-    /// <summary>Configura la celda antes de añadirla a la escena.</summary>
-    public void Setup(Vector2I coords, char letter, int fontSize)
-    {
-        Coords = coords;
-        Letter = letter;
+	public void FlashHint(float durationSeconds = WordSearchVisuals.HintFlashSeconds)
+	{
+		State = PixelCellState.Hint;
+		IsPressed = false;
+		UpdateVisuals();
+		if (_hintTimer == null)
+		{
+			_hintTimer = new Timer { Name = "HintFlash", WaitTime = durationSeconds, OneShot = true, Autostart = false };
+			_hintTimer.Timeout += () => { RestoreBaseState(); _hintTimer = null; };
+			AddChild(_hintTimer);
+		}
+		else
+		{
+			_hintTimer.Stop();
+			_hintTimer.WaitTime = durationSeconds;
+		}
+		_hintTimer.Start();
+	}
 
-        _label ??= CreateLabel();
-        _label.Text = letter.ToString();
-        _label.AddThemeFontSizeOverride("font_size", fontSize);
-        UpdateVisuals();
-    }
+	public void SetFontSize(int size) => _label?.AddThemeFontSizeOverride("font_size", size);
 
-    /// <summary>Marca la celda como encontrada (prevalece el estado Found).</summary>
-    public void MarkFound()
-    {
-        IsFound = true;
-        State = PixelCellState.Found;
-        UpdateVisuals();
-    }
+	public override void _Draw()
+	{
+		if (Size.X <= 0 || Size.Y <= 0) return;
+		var visual = CurrentVisual;
+		if (visual.DrawRelief)
+			PixelReliefPainter.Draw(this, Size, visual.Raised,
+				WordSearchVisuals.ReliefHighlightWidth, WordSearchVisuals.ReliefShadowWidth);
+	}
 
-    /// <summary>Cambia el estado visual (Idle / Selected / Hint).</summary>
-    public void SetState(PixelCellState state)
-    {
-        State = state;
-        UpdateVisuals();
-    }
+	private void BuildVisuals()
+	{
+		for (var i = 0; i < _visuals.Length; i++)
+			_visuals[i] = PixelCellStyle.For((PixelCellState)i, _theme);
+		_visualsReady = true;
+	}
 
-    /// <summary>Vuelve al estado base (Found si pertenece a una palabra, si no Idle).</summary>
-    public void RestoreBaseState()
-    {
-        State = IsFound ? PixelCellState.Found : PixelCellState.Idle;
-        UpdateVisuals();
-    }
+	private void ApplyTheme(ThemeData theme)
+	{
+		_theme = theme ?? new ThemeData();
+		_visualsReady = false;
+		UpdateVisuals();
+	}
 
-    /// <summary>Ajusta el tamaño de la letra.</summary>
-    public void SetFontSize(int size)
-    {
-        _label?.AddThemeFontSizeOverride("font_size", size);
-    }
+	protected void UpdateVisuals()
+	{
+		IsPressed = State is PixelCellState.Pressed or PixelCellState.Selected;
+		var visual = CurrentVisual;
+		AddThemeStyleboxOverride("panel", visual.Style);
 
-    private void BuildStyleBoxes()
-    {
-        // Pixel art puro: anti_aliasing = false, corner_radius = 0, bordes rectos de 2 px.
-        _styleIdle = MakeStyleBox(Color.FromHtml("#EBF2F5"), Color.FromHtml("#A0BFC7"), 2);
-        _styleFound = MakeStyleBox(Color.FromHtml("#099C92"), Color.FromHtml("#101010"), 2);
-        _styleSelected = MakeStyleBox(Color.FromHtml("#099C92"), Color.FromHtml("#101010"), 2);
-        _styleHint = MakeStyleBox(PixelStyles.PistaAcento, PixelStyles.PistaBorde, 2);
-    }
+		if (_label != null)
+		{
+			Modulate = Colors.White;
+			_label.Modulate = Colors.White;
+			_label.AddThemeColorOverride("font_color", visual.TextColor);
+			_label.AddThemeConstantOverride("outline_size", 0);
+		}
 
-    private static StyleBoxFlat MakeStyleBox(Color bg, Color border, int borderWidth)
-    {
-        var box = new StyleBoxFlat
-        {
-            BgColor = bg,
-            BorderColor = border,
-            AntiAliasing = false,
-            CornerDetail = 1
-        };
-        box.SetBorderWidthAll(borderWidth);
-        box.SetCornerRadiusAll(0);
-        return box;
-    }
+		QueueRedraw();
+	}
 
-    private void ApplyTheme(ThemeData theme)
-    {
-        if (theme == null) return;
-
-        _styleIdle.BgColor = theme.CellIdleBackgroundColor;
-        _styleIdle.BorderColor = theme.CellIdleBorderColor;
-
-        _styleFound.BgColor = theme.CellFoundBackgroundColor;
-        _styleFound.BorderColor = theme.CellFoundTextColor == Color.FromHtml("#FFFFFF")
-            ? Color.FromHtml("#101010")
-            : theme.CellFoundTextColor;
-
-        _styleSelected.BgColor = theme.CellFoundBackgroundColor;
-        _styleSelected.BorderColor = theme.CellIdleTextColor;
-
-        UpdateVisuals();
-    }
-
-    private void UpdateVisuals()
-    {
-        AddThemeStyleboxOverride("panel", State switch
-        {
-            PixelCellState.Found => _styleFound,
-            PixelCellState.Selected => _styleSelected,
-            PixelCellState.Hint => _styleHint,
-            _ => _styleIdle
-        });
-
-        if (_label == null) return;
-
-        // MODULACIÓN ABSOLUTA: Forzamos opacidad total para evitar transparencias heredadas
-        // de contenedores padres o configuraciones de tema que puedan causar efectos "fantasma".
-        _label.Modulate = Colors.White;
-
-        var whiteText = State is PixelCellState.Found or PixelCellState.Selected or PixelCellState.Hint;
-        // Ya no se añade font_outline_color para evitar bordes blancos que ensucian la tipografía.
-        // El texto se renderiza opaco y sólido sin contornos adicionales.
-        // _label.AddThemeColorOverride("font_outline_color", Colors.White); // ELIMINADO
-        _label.AddThemeColorOverride("font_color", whiteText ? Color.FromHtml("#FFFFFF") : Color.FromHtml("#101010"));
-        _label.AddThemeConstantOverride("outline_size", 0);
-    }
-
-    private Label CreateLabel()
-    {
-        var label = new Label
-        {
-            MouseFilter = MouseFilterEnum.Ignore,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        };
-        AddChild(label);
-        label.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        return label;
-    }
-}
-
-/// <summary>Estados visuales de una celda de píxel.</summary>
-public enum PixelCellState
-{
-    Idle,
-    Selected,
-    Found,
-    Hint
+	private Label CreateLabel()
+	{
+		var label = new Label { MouseFilter = MouseFilterEnum.Ignore, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+		AddChild(label);
+		label.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+		return label;
+	}
 }

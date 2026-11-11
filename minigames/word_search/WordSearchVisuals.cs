@@ -7,22 +7,52 @@
 public static class WordSearchVisuals
 {
     // --- Tablero -------------------------------------------------------------
-    /// <summary>Separación entre celdas (docs/art_direction.md §3, 41:6 escala).</summary>
-    public const float CellGap = 6.0f;
+    /// <summary>
+    ///     Lado de celda y separación FIJOS por tamaño de tablero, tomados de la
+    ///     plantilla retro (<c>docs/word_search/wathersoup.jpg</c>). Son el máximo
+    ///     por dificultad: <see cref="WordGridFactory" /> solo los reduce lo justo
+    ///     para que la grilla entre entera en el área disponible, de modo que no
+    ///     exista recorte vertical ni horizontal en ningún viewport.
+    /// </summary>
+    /// <param name="rows">Filas del tablero.</param>
+    /// <param name="columns">Columnas del tablero.</param>
+    /// <returns>Tamaño de celda y separación en píxeles enteros.</returns>
+    public static (int CellSize, int Gap) BoardMetricsFor(int rows, int columns)
+    {
+        var side = System.Math.Max(rows, columns);
+        return side switch
+        {
+            <= 8 => (36, 8),   // Fácil    · 8 × 8
+            <= 10 => (30, 6),  // Medio    · 10 × 10
+            <= 12 => (24, 6),  // Difícil  · 12 × 12
+            _ => (20, 4),      // Maestro  · 15 × 15
+        };
+    }
 
-    /// <summary>Tamaño mínimo de celda antes del zoom (≥24 para visibilidad).</summary>
-    public const int MinCellSize = 24;
+    /// <summary>Luz del bisel elevado de celda: 1 px arriba/izquierda (plantilla retro).</summary>
+    public const int ReliefHighlightWidth = 1;
 
-    /// <summary>Tamaño de letra mentre el contenedor aún no tiene tamaño.</summary>
+    /// <summary>Sombra dura del bisel elevado de celda: 2 px abajo/derecha (plantilla retro).</summary>
+    public const int ReliefShadowWidth = 2;
+
+    /// <summary>
+    ///     Piso de seguridad del lado de celda. Con <see cref="BoardMetricsFor" />
+    ///     ningún nivel del juego lo alcanza en 360 × 640; existe para que un
+    ///     viewport excepcionalmente estrecho no produzca celdas de 0 px.
+    /// </summary>
+    public const int MinCellSize = 16;
+
+    /// <summary>Tamaño de letra mientras el contenedor aún no tiene tamaño.</summary>
     public const int DefaultCellFontSize = 20;
 
-    /// <summary>Proporción del lado de celda que ocupa la letra.</summary>
-    public const float CellFontRatio = 0.52f;
+    /// <summary>Proporción del lado de celda que ocupa la letra (cap-height ≈ celda).</summary>
+    public const float CellFontRatio = 0.92f;
 
     /// <summary>Límites del tamaño de letra de una celda en píxeles.</summary>
     public const int MinCellFontSize = 10;
 
-    public const int MaxCellFontSize = 24;
+    /// <summary>Máximo tamaño de fuente por celda (soporta escalado a grandes grillas).</summary>
+    public const int MaxCellFontSize = 48;
 
     // --- Feedback ------------------------------------------------------------
     /// <summary>Duración del resaltado de pista (spec §4.2, 1.5 s).</summary>

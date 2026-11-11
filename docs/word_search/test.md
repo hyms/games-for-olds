@@ -1,55 +1,52 @@
-# 🧪 Plan de Pruebas y TDD — Sopa de Letras
+# 🧪 Plan de Pruebas y TDD — Sopa de Letras (cobertura ≥ 60%)
 
 > **Documento SDD de pruebas específicas para el minijuego Sopa de Letras.**
-> Cobertura de pruebas unitarias, de integración, algorítmicas y de usabilidad para adultos mayores (40+).
+> Roadmap y suite de verificación para alcanzar **≥ 60 % de cobertura de pruebas**
+> antes de la liberación en producción. Cubre lógica del núcleo, estado y progresión,
+> e interacción UI/entrada, con integración en el entorno de pruebas headless de CI.
 
 ---
 
-## 1. Estrategia de Testing (GdUnit4Net)
+## 1. Objetivo y criterio de aceptación (coverage target)
 
-Siguiendo el enfoque TDD, el desarrollo del generador de tableros, selección de palabras y validación de categorías se realiza mediante pruebas unitarias automatizadas ejecutadas sin la interfaz gráfica. Los tests son clases `[TestSuite]` de **GdUnit4Net** en `tests/unit/`.
+| Índice | Objetivo | Umbral | Cómo se mide |
+|--------|----------|--------|--------------|
+| **CA-01** | Cobertura de línea/rama en `ClasicosMenteActiva.minigames.word_search` | ≥ 60 % | `dotnet test --collect:"XPlat Code Coverage"` |
+| **CA-02** | Cobertura de línea/rama en `ClasicosMenteActiva.core` (SaveManager, DifficultyConfig) | ≥ 60 % | `dotnet test --collect:"XPlat Code Coverage"` |
+| **CA-03** | Cada requisito del `spec.md` con al menos una prueba trazable (ID `UT-WS` / `IT-WS` / `ST-WS` / `VT-WS` / `CORE-SAVE`) | 100 % | Matriz de trazabilidad §7 |
+| **CA-04** | Cero pruebas fallando en ejecución headless de CI | 0 fallos | `dotnet test` devuelve código de salida distinto de cero si falla |
+
+**Resultado esperado:** con CA-01 y CA-02 cumplidas, el minijuego se considera listo para producción respecto a calidad de pruebas (puerta de calidad de la Fase 9).
 
 ---
 
-## 2. Pruebas Unitarias Algorítmicas (Core Logic)
+## 2. Marco de pruebas y entorno headless
 
-### 2.1 Generador de Tableros (`WordSearchGeneratorTest.cs`)
+### 2.1 Framework
 
-```csharp
-// Ejemplo de estructura de prueba GdUnit4Net para el generador
-using GdUnit4;
-using Godot;
-using static GdUnit4.Assertions;
+El proyecto estandarizó en **GdUnit4Net** (C#, ejecutable con `dotnet test` y el adaptador VSTest), que es el equivalente de **GUT / Godot Unit Test** para código C#. No se utiliza GDScript para las pruebas del minijuego.
 
-[TestSuite]
-[RequireGodotRuntime]
-public class WordSearchGeneratorTest
-{
-    private WordSearchGenerator _generator;
+Paquetes NuGet (`ClasicosMenteActiva2D.csproj`): `gdUnit4.api` 5.1.0-rc6, `gdUnit4.test.adapter` 3.2.0, `gdUnit4.analyzers` 1.1.0, `Microsoft.NET.Test.Sdk`.
 
-    [BeforeTest]
-    public void BeforeTest() => _generator = new WordSearchGenerator();
+Atributos y convenciones:
 
-    [TestCase]
-    public void EasyDifficultyDimensionsAndDirections()
-    {
-        var config = DifficultyConfig.Easy(); // 8×8, 5 palabras, solo horiz./vert.
-        GenerationResult result = _generator.Generate(config, new[] { "PERRO", "GATO", "MESA", "SILLA", "LIMA" });
+| Atributo / clase | Uso |
+|------------------|-----|
+| `[TestSuite]` | Marca la clase que contiene pruebas |
+| `[RequireGodotRuntime]` | Obligatorio cuando el prueba toca objetos de Godot (nodos, recursos, escenas) |
+| `[TestCase]` | Cada caso de prueba individual |
+| `[BeforeTest]` / `[AfterTest]` | Inicialización y limpieza por caso (rutas `user://test_*` aisladas) |
+| `ISceneRunner` | Carga escenas reales (`WordSearchMain.tscn`) para pruebas de integración |
+| `Utils.CreateRng(seed)` / `seed ≥ 0` | Barajado determinista en pruebas del generador |
 
-        AssertInt(result.Grid.GetLength(0)).IsEqual(8);
-        AssertInt(result.Grid.GetLength(1)).IsEqual(8);
-        AssertInt(result.PlacedCount).IsGreaterEqual(4); // tolerancia del 80 %
-    }
+### 2.2 Estructura de carpetas
 
-    [TestCase]
-    public void OverlapSharesTheSameLetter()
-    {
-        // Al solapar, las palabras deben compartir exactamente la misma letra.
-        var grid = _generator.CreateEmptyGrid(10, 10);
-        AssertBool(_generator.TryPlaceWord("CASA", new Vector2I(0, 0), new Vector2I(1, 0), grid)).IsTrue();
-    }
-}
-```
+| Carpeta | Contenido | Convención |
+|---------|-----------|------------|
+| `tests/unit/` | Pruebas puras de lógica y recursos, sin escenas visuales | `*Test.cs`, clase con `[TestSuite]`, cabecera con los IDs cubiertos |
+| `tests/integration/` | Pruebas con escenas (`SceneRunner`) | `*Test.cs`, clase con `[TestSuite]`, simulación de input emulado |
+
+Cada fichero de prueba debe documentar en su cabecera qué IDs de este documento cubre.
 
 ### 2.2 Lista de Chequeo de Pruebas Unitarias
 

@@ -23,8 +23,6 @@ public partial class WordCell : PixelCell
 {
     private static Font _pixelFont;
 
-    private Label _label;
-
     /// <summary>Palabra que marcó la celda por última vez (vacío si no se ha encontrado).</summary>
     public string FoundBy { get; private set; } = string.Empty;
 
@@ -51,10 +49,11 @@ public partial class WordCell : PixelCell
         MouseFilter = MouseFilterEnum.Ignore;
         ClipContents = false;
 
-        _label ??= CreateLabel();
-        _label.Text = letter.ToString();
-        _label.AddThemeFontSizeOverride("font_size", Mathf.Max(WordSearchVisuals.MinCellFontSize, fontSize));
-        if (PixelFont != null) _label.AddThemeFontOverride("font", PixelFont);
+        // Reutiliza el Label creado por PixelCell (sin duplicar).
+        base.Setup(coords, letter, fontSize);
+        // Sobreescribe fuente específica del juego después de que base lo haya configurado.
+        if (_label != null && PixelFont != null)
+            _label.AddThemeFontOverride("font", PixelFont);
 
         RestoreBaseState();
     }
@@ -84,10 +83,14 @@ public partial class WordCell : PixelCell
         UpdateVisuals();
     }
 
-    /// <summary>Ajusta el tamaño de la letra al tamaño de la celda.</summary>
+    /// <summary>Ajusta el tamaño de la letra al tamaño de la celda (delegado a base).</summary>
     public new void SetFontSize(int size)
     {
-        _label?.AddThemeFontSizeOverride("font_size", Mathf.Max(WordSearchVisuals.MinCellFontSize, size));
+        // Delega a PixelCell para mantener un único punto de control de fuente.
+        base.SetFontSize(size);
+        // Aplica la fuente específica del juego si existe.
+        if (_label != null && PixelFont != null)
+            _label.AddThemeFontOverride("font", PixelFont);
     }
 
     /// <summary>Vuelve al estado permanente: encontrada si pertenece a una palabra, si no reposo.</summary>
@@ -99,28 +102,16 @@ public partial class WordCell : PixelCell
         UpdateVisuals();
     }
 
-    private Label CreateLabel()
+    private new void UpdateVisuals()
     {
-        var label = new Label
-        {
-            MouseFilter = MouseFilterEnum.Ignore,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        };
-        AddChild(label);
-        label.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        return label;
-    }
+        // Propagar al estilo base (StyleBox + relieve 3D + opacidad absoluta).
+        base.UpdateVisuals();
 
-    private void UpdateVisuals()
-    {
-        // Los StyleBox de PixelCell ya aplican los colores del tema activo.
-        // Solo se ajusta el color de la letra y el contorno.
-        var whiteText = WordState is WordCellState.Found or WordCellState.Selected or WordCellState.Hint;
-        _label.AddThemeColorOverride(
-            "font_color",
-            whiteText ? Colors.White : Color.FromHtml("#101010"));
+        if (_label == null) return;
 
+        // El color de la letra sale de la misma fábrica que el relleno, de modo
+        // que cada estado del tema mantiene el contraste WCAG (docs §2).
+        _label.AddThemeColorOverride("font_color", CurrentVisual.TextColor);
         _label.AddThemeColorOverride("font_outline_color", Colors.White);
         _label.AddThemeConstantOverride("outline_size", 0);
     }

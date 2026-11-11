@@ -16,7 +16,7 @@ Para mantener la jerarquía visual y la coherencia pixel art, se utilizan tres f
 
 2. **`VCR_OSD_Mono.ttf`**: HUD de control, cronómetro retro (`00:50`), contador de progreso (`1/5 Palabras`), botones de interfaz (`Atrás`, `Pausa`, `Pistas`) y mensajes estilo pantalla CRT/arcade.
 
-3. **`PixelOperator.ttf`** (o `PixelOperatorMono.ttf`): Celdas del tablero (`PixelCell`), matriz de letras y lista de palabras pendientes en el panel inferior (`PixelFooterPanel`), garantizando máxima legibilidad en píxel art.
+3. **`PixelOperator.ttf`** (o `PixelOperatorMono.ttf`): Celdas del tablero (`PixelCell`), matriz de letras y lista de palabras pendientes en el panel inferior (`WordsPanel`), garantizando máxima legibilidad en píxel art.
 
 ## 2. Directrices Visuales y Regla de Oro (Pixel Art Puro)
 
@@ -38,7 +38,20 @@ Para mantener la jerarquía visual y la coherencia pixel art, se utilizan tres f
 
   * **Subtítulo / Banners Secundarios:** `#6C95A1`
 
-  * **Pista / Ayuda Activa:** Fondo `#F9881E` (Naranja retro), Borde `#8A4600`, Texto `#FFFFFF`.
+  * **Pista / Ayuda Activa:** Fondo `#F9881E` (Naranja retro), Borde `#8A4600`, Texto `#101010` (contraste 6,9:1).
+
+### 2.1 Botones del HUD y Modales (PixelButton)
+
+Todos los botones del minijuego usan `BigButton : PixelButton` y la fábrica `PixelButtonStyle.For(...)`; las escenas no declaran fuentes, tamaños ni colores propios.
+
+* **Variantes:** `Hud` (Atrás/Pausa, VCR OSD Mono 16 px), `Action` (botones de modales, VCR 18 px), `Menu` (selector de dificultad y menú principal, Atkinson 20 px).
+
+* **Geometría:** borde exterior de 2 px, bisel interior de 1 px, `CornerRadius = 0`, `AntiAliasing = false`, alfa 1.0 y sombra dura solo en reposo/foco.
+
+* **Estados:** reposo elevado; hover y pulsado invierten el bisel (hundido); el pulsado además baja el contenido 2 px sin cambiar la altura total; foco es un anillo exterior de 2 px; deshabilitado es plano en `Arena` con texto `#101010`.
+
+* **Contraste:** cada estado calcula el texto/icono con `PixelStyles.TextColor(fill)`; el tema clásico entrega #101010 sobre #A0BFC7 y blanco sobre #477987 (≥ 4,5:1).
+
 
 ## 3. Especificación de los 4 Niveles de Dificultad
 

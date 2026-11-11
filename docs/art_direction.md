@@ -54,11 +54,32 @@ Todos los minijuegos deben reutilizar los siguientes componentes prefabricados:
 
 | Componente | Ruta de la Escena | Descripción y Función Visual |
 |---|---|---|
-| **PixelButton** | `res://scenes/ui/components/PixelButton.tscn` | Botón táctil universal ($48 \times 48\text{ px}$ mínimo) con borde de píxel de 2 px y animación Tween de pulsación (*press depth effect*). |
+| **PixelButton** | `res://scenes/ui/components/PixelButton.cs` | Botón táctil universal (`BigButton.tscn` lo hereda). Borde de píxel de 2 px, bisel duro de 1 px y hundimiento de 2 px al pulsar. Estilos centralizados en `core/ui/PixelButtonStyle.cs`. |
 | **PixelBanner** | `res://scenes/ui/components/PixelBanner.tscn` | Panel de título o sub-banner personalizable con marco estilo retro de 3 píxeles de grosor. |
-| **PixelCell** | `res://scenes/ui/components/PixelCell.tscn` | Celda interactiva reutilizable para Sopa de Letras, Tangram o grillas de lógica con estados `Idle`, `Hover/Selected` y `Completed`. |
+| **PixelCell** | `res://scenes/ui/components/PixelCell.cs` | Celda interactiva reutilizable para Sopa de Letras, Tangram o grillas de lógica con estados `Idle`, `Hover/Selected` y `Completed`. Estilos en `core/ui/PixelCellStyle.cs`. |
 | **PixelHeaderHUD** | `res://scenes/ui/components/PixelHeaderHUD.tscn` | Barra de navegación superior estandarizada (Atrás, Pausa, Cronómetro y Progreso). |
-| **PixelFooterPanel** | `res://scenes/ui/components/PixelFooterPanel.tscn` | Panel contenedor inferior para lista de palabras u objetivos con divisores pixelados (`|`). |
+| **WordsPanel** | `res://minigames/word_search/WordsPanel.cs` | Panel inferior de la Sopa de Letras: lista de palabras con divisores pixelados (`\|`), tachado turquesa y confeti. Marco de 2 px, sombra dura, esquinas rectas y márgenes internos de 12/8 px. |
+
+### 3.1 Botones con relieve 3D
+
+Todos los botones derivan de `PixelButton` y comparten una única fábrica, `PixelButtonStyle.For(variant, state, theme)`. No se permiten estilos locales por escena.
+
+| Variante | Uso | Tipografía | Tamaño | Márgenes (X/Y) |
+|---|---|---|---|---|
+| `Hud` | Atrás / Pausa del minijuego | VCR OSD Mono | 16 px | 10 / 10 |
+| `Action` | Acciones de modales (Continuar, Pista…) | VCR OSD Mono | 18 px | 14 / 12 |
+| `Menu` | Menú principal y dificultad | Atkinson Hyperlegible | 20 px | 16 / 12 |
+
+| Estado | Relleno | Texto/icono | Relieve | Sombra dura | Contenido |
+|---|---|---|---|---|---|
+| Normal | `HeaderBannerColor` (#A0BFC7) | `TextColor(fill)` → #101010 | Elevado | Sí, (2,2) | Base |
+| Hover | `SubheaderBannerColor` (#477987) | Blanco | Hundido 1 px | No | Sin desplazar |
+| Pressed | `CellFoundBackgroundColor` oscurecido 30 % | Blanco | Hundido 1 px | No | +2 px abajo |
+| Focus | Anillo exterior oscuro, centro transparente | Igual que normal | Elevado | La del normal | Sin desplazar |
+| Disabled | `Arena` (#B0C2CC) | #101010 | Plano | No | Base |
+
+Reglas fijas: `CornerRadius = 0`, `AntiAliasing = false`, borde exterior de 2 px, bisel interior de 1 px (luz `#FFFFFF` arriba/izquierda, sombra `#535456` abajo/derecha), `Alpha = 1.0` y `icon_max_width = 16` (los PNG de 32 px son un 2× exacto). El desplazamiento del estado pulsado conserva la altura total: `top + 2`, `bottom − 2`.
+
 
 ---
 

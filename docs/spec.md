@@ -63,5 +63,5 @@ res://
 │       ├── WordSearchMain.tscn
 │       ├── WordSearchMain.cs
 │       ├── WordGridFactory.cs
-│       └── components/             # PixelCell, PixelFooterPanel
+│       └── components/             # WordsPanel, WordCell
 ```

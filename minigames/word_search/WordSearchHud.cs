@@ -5,21 +5,21 @@ using Godot;
 
 /// <summary>
 ///     HUD de la Sopa de Letras (solo presentación, plan Fase 3/5):
-///     contador, dificultad, footer de palabras y aviso de victoria.
-///     `WordSearchMain` le pasa los datos; no conoce reglas.
+///     contador, dificultad y aviso de victoria. La lista de palabras vive en
+///     <see cref="WordsPanel" />; esta clase solo aporta el formateo compartido
+///     (<see cref="BuildWordList" />). `WordSearchMain` le pasa los datos; no
+///     conoce reglas.
 /// </summary>
 public sealed class WordSearchHud
 {
     private readonly Label _counter;
     private readonly Label _difficulty;
     private readonly Label _victory;
-    private readonly RichTextLabel _wordList;
 
-    public WordSearchHud(Label counter, Label difficulty, RichTextLabel wordList, Label victory)
+    public WordSearchHud(Label counter, Label difficulty, Label victory)
     {
         _counter = counter;
         _difficulty = difficulty;
-        _wordList = wordList;
         _victory = victory;
     }
 
@@ -38,21 +38,10 @@ public sealed class WordSearchHud
         _difficulty.Text = $"{config.DisplayName.ToUpperInvariant()} · NIVEL {level}";
     }
 
-    /// <summary>Refresca contador, lista y aviso de victoria desde el estado.</summary>
-    public void Render(int found, int total, ICollection<string> pending, IReadOnlyList<string> foundOrder,
-        bool complete)
+    /// <summary>Refresca contador y aviso de victoria desde el estado.</summary>
+    public void Render(int found, int total, bool complete)
     {
         if (_counter != null) _counter.Text = $"{found}/{total} Palabras";
-        if (_wordList != null) _wordList.Text = BuildWordList(pending, foundOrder);
-        if (_victory != null) _victory.Visible = complete;
-    }
-
-    /// <summary>Refresca la lista de palabras aplicando el tema activo (colores y tachado).</summary>
-    public void RenderWithTheme(int found, int total, ICollection<string> pending, IReadOnlyList<string> foundOrder,
-        bool complete, ThemeData theme)
-    {
-        if (_counter != null) _counter.Text = $"{found}/{total} Palabras";
-        if (_wordList != null) _wordList.Text = BuildWordList(pending, foundOrder, theme);
         if (_victory != null) _victory.Visible = complete;
     }
 
@@ -75,7 +64,7 @@ public sealed class WordSearchHud
         var text = new StringBuilder();
         foreach (var word in pending)
         {
-            AppendSeparator(text);
+            if (text.Length > 0) text.Append(" | ");
             text.Append(word);
         }
 
@@ -83,7 +72,7 @@ public sealed class WordSearchHud
         var color = strikeColor.ToHtml(false);
         foreach (var word in found)
         {
-            AppendSeparator(text);
+            if (text.Length > 0) text.Append(" | ");
             text.Append("[color=#");
             text.Append(color);
             text.Append("][s]");
@@ -94,8 +83,4 @@ public sealed class WordSearchHud
         return text.ToString();
     }
 
-    private static void AppendSeparator(StringBuilder text)
-    {
-        if (text.Length > 0) text.Append(" | ");
-    }
 }

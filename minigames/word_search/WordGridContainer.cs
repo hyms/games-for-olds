@@ -23,6 +23,7 @@ public partial class WordGridContainer : Control
     private readonly DragSelection _selection = new();
 
     private WordCell[,] _cells;
+    private float _gap;
     private Timer _hintTimer;
     private string _hintWord = string.Empty;
     private Tween _invalidTween;
@@ -35,6 +36,9 @@ public partial class WordGridContainer : Control
     public int Columns { get; private set; }
 
     public float CellSize { get; private set; }
+
+    /// <summary>Separación entre celdas del layout actual (la fija <see cref="WordGridFactory" />).</summary>
+    public float CellGap => _gap;
 
     public bool IsSelecting => _selection.IsActive;
 
@@ -125,14 +129,14 @@ public partial class WordGridContainer : Control
     /// <summary>Centro de una celda en coordenadas locales del contenedor.</summary>
     public Vector2 GetCellCenter(Vector2I coord)
     {
-        var step = CellSize + WordSearchVisuals.CellGap;
+        var step = CellSize + _gap;
         return _origin + new Vector2(coord.X * step + CellSize / 2.0f, coord.Y * step + CellSize / 2.0f);
     }
 
     /// <summary>Rectángulo de una celda en coordenadas locales.</summary>
     public Rect2 GetCellRect(Vector2I coord)
     {
-        var step = CellSize + WordSearchVisuals.CellGap;
+        var step = CellSize + _gap;
         return new Rect2(_origin + new Vector2(coord.X * step, coord.Y * step), new Vector2(CellSize, CellSize));
     }
 
@@ -145,7 +149,7 @@ public partial class WordGridContainer : Control
         var point = localPosition - _origin;
         if (point.X < 0 || point.Y < 0) return false;
 
-        var step = CellSize + WordSearchVisuals.CellGap;
+        var step = CellSize + _gap;
         var column = Mathf.FloorToInt(point.X / step);
         var row = Mathf.FloorToInt(point.Y / step);
         if (column < 0 || row < 0 || column >= Columns || row >= Rows) return false;
@@ -351,6 +355,8 @@ public partial class WordGridContainer : Control
         var layout = WordGridFactory.ComputeLayout(Rows, Columns, Size);
         CellSize = layout.CellSize;
         if (CellSize <= 0) return;
+
+        _gap = layout.Gap;
         _origin = layout.Origin;
 
         var fontSize = Mathf.Clamp(

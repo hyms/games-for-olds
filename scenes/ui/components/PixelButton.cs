@@ -4,104 +4,110 @@ using Godot;
 namespace ClasicosMenteActiva.scenes.ui.components;
 
 /// <summary>
-///     Botón táctil universal en pixel art puro. Sin anti-aliasing, sin bordes
-///     redondeados: <see cref="StyleBoxFlat" /> con <c>corner_radius = 0</c> y
-///     borde recto de 2 píxeles. Soporta temas mediante
-///     <see cref="ThemeManager.OnThemeChanged" />.
+///     Botón táctil universal en pixel art puro. Comparte con las celdas el bisel
+///     de <see cref="PixelReliefPainter" />: reposo y foco elevados, hover y pulsado
+///     hundidos, contenido 2 px más abajo al pulsar y sin sombra dura en esos
+///     estados. Los estilos, fuentes y colores proceden de
+///     <see cref="PixelButtonStyle.For" />, nunca de valores locales.
+///     Se suscribe a <see cref="ThemeManager.OnThemeChanged" /> para refrescar la paleta.
 /// </summary>
-[Tool]
 public partial class PixelButton : Button
 {
-    private StyleBoxFlat _styleDisabled;
-    private StyleBoxFlat _styleFocus;
-    private StyleBoxFlat _styleHover;
-    private StyleBoxFlat _styleNormal;
-    private StyleBoxFlat _stylePressed;
+	private readonly StyleBoxFlat[] _styles = new StyleBoxFlat[5];
+	private readonly Color[] _textColors = new Color[5];
+	private ThemeData _theme = new();
+	private BaseButton.DrawMode _lastDrawMode = (BaseButton.DrawMode)(-1);
 
-    public override void _Ready()
-    {
-        MouseFilter = MouseFilterEnum.Stop;
-        BuildStyleBoxes();
+	/// <summary>Contexto visual del botón (HUD, acción de modal o menú).</summary>
+	[Export]
+	public PixelButtonVariant ButtonVariant { get; set; } = PixelButtonVariant.Menu;
 
-        var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
-        ApplyTheme(theme?.CurrentThemeData);
-        UpdateVisuals();
-    }
+	public override void _Ready()
+	{
+		MouseFilter = MouseFilterEnum.Stop;
+		AddThemeConstantOverride("icon_max_width", PixelStyles.ButtonIconSize);
 
-    private void BuildStyleBoxes()
-    {
-        // Pixel art puro: anti_aliasing = false, corner_radius = 0, bordes rectos de 2 px.
-        _styleNormal = MakeStyleBox(Color.FromHtml("#A0BFC7"), Color.FromHtml("#101010"), 2);
-        _styleHover = MakeStyleBox(Color.FromHtml("#477987"), Color.FromHtml("#101010"), 3);
-        _stylePressed = MakeStyleBox(Color.FromHtml("#099C92"), Color.FromHtml("#FFFFFF"), 3);
-        _styleFocus = MakeFocusRing();
-        _styleDisabled = MakeStyleBox(Color.FromHtml("#4A4A4A"), Color.FromHtml("#101010"), 2);
+		var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
+		ApplyTheme(theme?.CurrentThemeData);
+		if (theme != null) theme.OnThemeChanged += OnThemeChanged;
+	}
 
-        _stylePressed.ShadowSize = 0;
-        _styleDisabled.ShadowSize = 0;
-    }
+	public override void _Process(double delta)
+	{
+		// El bisel debe invertirse en cuanto cambia el estado de dibujo, sin esperar
+		// a que otro evento provoque un redraw.
+		var mode = GetDrawMode();
+		if (mode == _lastDrawMode) return;
+		_lastDrawMode = mode;
+		QueueRedraw();
+	}
 
-    private static StyleBoxFlat MakeStyleBox(Color bg, Color border, int borderWidth)
-    {
-        var box = new StyleBoxFlat
-        {
-            BgColor = bg,
-            BorderColor = border,
-            AntiAliasing = false,
-            CornerDetail = 1
-        };
-        box.SetBorderWidthAll(borderWidth);
-        box.SetCornerRadiusAll(0);
-        return box;
-    }
+	public override void _ExitTree()
+	{
+		var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
+		if (theme != null) theme.OnThemeChanged -= OnThemeChanged;
+		base._ExitTree();
+	}
 
-    private static StyleBoxFlat MakeFocusRing()
-    {
-        var ring = new StyleBoxFlat
-        {
-            BgColor = new Color(0, 0, 0, 0),
-            BorderColor = Color.FromHtml("#101010"),
-            DrawCenter = false,
-            AntiAliasing = false,
-            CornerDetail = 1
-        };
-        ring.SetBorderWidthAll(3);
-        ring.SetCornerRadiusAll(0);
-        ring.SetExpandMarginAll(3);
-        return ring;
-    }
+	public override void _Draw()
+	{
+		if (Size.X <= 0 || Size.Y <= 0) return;
+		var mode = GetDrawMode();
+		if (mode == BaseButton.DrawMode.Disabled) return;
 
-    private void ApplyTheme(ThemeData theme)
-    {
-        if (theme == null) return;
+		var raised = mode is BaseButton.DrawMode.Normal;
+		PixelReliefPainter.Draw(this, Size, raised);
+	}
 
-        _styleNormal.BgColor = theme.HeaderBannerColor;
-        _styleNormal.BorderColor = theme.CellIdleTextColor;
+	private void OnThemeChanged(ThemeData themeData) => ApplyTheme(themeData);
 
-        _styleHover.BgColor = theme.SubheaderBannerColor;
-        _styleHover.BorderColor = theme.CellIdleTextColor;
+	private void ApplyTheme(ThemeData theme)
+	{
+		_theme = theme ?? new ThemeData();
 
-        _stylePressed.BgColor = theme.CellFoundBackgroundColor;
-        _stylePressed.BorderColor = theme.CellFoundTextColor;
+		for (var i = 0; i < _styles.Length; i++)
+		{
+			var visual = PixelButtonStyle.For(ButtonVariant, (PixelButtonState)i, _theme);
+			_styles[i] = visual.Style;
+			_textColors[i] = visual.TextColor;
+		}
 
-        _styleDisabled.BgColor = Color.FromHtml("#4A4A4A");
-        _styleDisabled.BorderColor = theme.CellIdleTextColor;
+		UpdateVisuals();
+	}
 
-        UpdateVisuals();
-    }
+	private void UpdateVisuals()
+	{
+		var normal = _styles[(int)PixelButtonState.Normal];
+		var hover = _styles[(int)PixelButtonState.Hover];
+		var pressed = _styles[(int)PixelButtonState.Pressed];
+		var focus = _styles[(int)PixelButtonState.Focus];
+		var disabled = _styles[(int)PixelButtonState.Disabled];
 
-    private void UpdateVisuals()
-    {
-        AddThemeStyleboxOverride("normal", _styleNormal);
-        AddThemeStyleboxOverride("hover", _styleHover);
-        AddThemeStyleboxOverride("pressed", _stylePressed);
-        AddThemeStyleboxOverride("focus", _styleFocus);
-        AddThemeStyleboxOverride("disabled", _styleDisabled);
+		AddThemeStyleboxOverride("normal", normal);
+		AddThemeStyleboxOverride("hover", hover);
+		AddThemeStyleboxOverride("pressed", pressed);
+		AddThemeStyleboxOverride("hover_pressed", pressed);
+		AddThemeStyleboxOverride("focus", focus);
+		AddThemeStyleboxOverride("disabled", disabled);
 
-        AddThemeColorOverride("font_color", Colors.White);
-        AddThemeColorOverride("font_hover_color", Colors.White);
-        AddThemeColorOverride("font_pressed_color", Colors.White);
-        AddThemeColorOverride("font_focus_color", Colors.White);
-        AddThemeColorOverride("font_disabled_color", Color.FromHtml("#8A8A8A"));
-    }
+		var metrics = PixelButtonStyle.MetricsFor(ButtonVariant);
+		if (metrics.Font != null) AddThemeFontOverride("font", metrics.Font);
+		AddThemeFontSizeOverride("font_size", metrics.FontSize);
+		AddThemeConstantOverride("h_separation", metrics.HSeparation);
+
+		AddThemeColorOverride("font_color", _textColors[(int)PixelButtonState.Normal]);
+		AddThemeColorOverride("font_hover_color", _textColors[(int)PixelButtonState.Hover]);
+		AddThemeColorOverride("font_pressed_color", _textColors[(int)PixelButtonState.Pressed]);
+		AddThemeColorOverride("font_focus_color", _textColors[(int)PixelButtonState.Focus]);
+		AddThemeColorOverride("font_disabled_color", _textColors[(int)PixelButtonState.Disabled]);
+
+		AddThemeColorOverride("icon_normal_color", _textColors[(int)PixelButtonState.Normal]);
+		AddThemeColorOverride("icon_hover_color", _textColors[(int)PixelButtonState.Hover]);
+		AddThemeColorOverride("icon_pressed_color", _textColors[(int)PixelButtonState.Pressed]);
+		AddThemeColorOverride("icon_focus_color", _textColors[(int)PixelButtonState.Focus]);
+		AddThemeColorOverride("icon_disabled_color", _textColors[(int)PixelButtonState.Disabled]);
+
+		_lastDrawMode = GetDrawMode();
+		QueueRedraw();
+	}
 }

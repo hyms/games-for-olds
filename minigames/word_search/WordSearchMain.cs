@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ClasicosMenteActiva.core;
+using ClasicosMenteActiva.minigames.word_search;
 using Godot;
 
 /// <summary>
@@ -35,6 +36,7 @@ public partial class WordSearchMain : BaseMinigame
     private BigButton _btnReset;
 
     private WordSearchHud _hud;
+    private WordsPanel _wordsPanel;
     private Label _winScore;
     private Label _winTime;
     private int _hintUses = MaxHints;
@@ -69,7 +71,6 @@ public partial class WordSearchMain : BaseMinigame
         _hud = new WordSearchHud(
             WordsCounter,
             DifficultyLabel,
-            GetNode<RichTextLabel>("%WordList"),
             GetNodeOrNull<Label>("%VictoryLabel"));
 
         WireButtons();
@@ -79,6 +80,10 @@ public partial class WordSearchMain : BaseMinigame
         _boardArea.AddChild(Board);
         Board.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
 
+        // Panel de palabras: componente WordsPanel de la escena (marco retro,
+        // tachado dinámico y confeti).
+        _wordsPanel = GetNodeOrNull<WordsPanel>("%WordsPanel");
+
         StartFromSession();
     }
 
@@ -87,8 +92,6 @@ public partial class WordSearchMain : BaseMinigame
     {
         base.ApplyTheme(themeData);
 
-        if (GetNodeOrNull<PanelContainer>("%WordPanel") is PanelContainer wordPanel)
-            wordPanel.AddThemeStyleboxOverride("panel", PixelStyles.WordPanel());
         if (GetNodeOrNull<PanelContainer>("%PauseModal") is PanelContainer pauseModal)
             pauseModal.AddThemeStyleboxOverride("panel", PixelStyles.ModalBackdrop());
         if (GetNodeOrNull<PanelContainer>("%PauseCard") is PanelContainer pauseCard)
@@ -200,6 +203,12 @@ public partial class WordSearchMain : BaseMinigame
         _foundOrder.Add(word);
         Board.MarkFound(path, word);
         RenderHud();
+
+        // Confeti p\u00edxel directamente sobre la palabra encontrada en el footer.
+        var startCell = Board.GetCell(start);
+        if (startCell != null)
+            _wordsPanel?.TriggerConfetti(startCell.GlobalPosition);
+
         if (_pending.Count == 0) CompleteGame();
     }
 
@@ -266,7 +275,8 @@ public partial class WordSearchMain : BaseMinigame
             (orderedPending[i], orderedPending[j]) = (orderedPending[j], orderedPending[i]);
         }
 
-        _hud.RenderWithTheme(WordsFound, TotalWords, orderedPending, FoundWords, IsCompleted, ThemeMgr?.CurrentThemeData);
+        _hud.Render(WordsFound, TotalWords, IsCompleted);
+        _wordsPanel?.SetWords(orderedPending, FoundWords, ThemeMgr?.CurrentThemeData);
         UpdateClock();
     }
 

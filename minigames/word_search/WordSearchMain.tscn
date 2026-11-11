@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" path="res://assets/icons/pause.png" id="5_pause"]
 [ext_resource type="FontFile" path="res://assets/fonts/PressStart2P.ttf" id="6_press"]
 [ext_resource type="FontFile" path="res://assets/fonts/VCR_OSD_Mono.ttf" id="8_vcr"]
-[ext_resource type="FontFile" path="res://assets/fonts/PixelOperator.ttf" id="9_pixel"]
+[ext_resource type="Script" uid="uid://dq4klv01b0mpb" path="res://minigames/word_search/WordsPanel.cs" id="9_words"]
 [ext_resource type="Script" path="res://core/SafeAreaManager.cs" id="10_safearea"]
 
 [node name="WordSearchMain" type="Control"]
@@ -54,11 +54,11 @@ theme_override_constants/separation = 6
 
 [node name="Header" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 8
 
 [node name="TitlePanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/Header"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 
 [node name="Title" type="Label" parent="MarginContainer/VBoxContainer/Header/TitlePanel"]
@@ -69,13 +69,13 @@ horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.305882, 0.376471, 0.466667, 1)
-theme_override_constants/outline_size = 4
+theme_override_constants/outline_size = 2
 theme_override_fonts/font = ExtResource("6_press")
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 24
 
 [node name="SubtitlePanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/Header"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 26)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 
 [node name="DifficultyLabel" type="Label" parent="MarginContainer/VBoxContainer/Header/SubtitlePanel"]
@@ -84,15 +84,16 @@ layout_mode = 2
 text = "FÁCIL · NIVEL 1"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.305882, 0.376471, 0.466667, 1)
+theme_override_colors/font_color = Color(0.290196, 0.478431, 0.533333, 1)
 theme_override_fonts/font = ExtResource("6_press")
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 
 [node name="NavRow" type="Control" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 
 [node name="BtnBack" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 0
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 4
@@ -105,9 +106,6 @@ grow_vertical = 2
 tooltip_text = "Volver al selector de dificultad"
 icon = ExtResource("4_back")
 expand_icon = false
-icon_max_width = 20
-theme_override_fonts/font = ExtResource("8_vcr")
-theme_override_font_sizes/font_size = 16
 text = "Atrás"
 
 [node name="CenterInfo" type="VBoxContainer" parent="MarginContainer/VBoxContainer/NavRow"]
@@ -135,7 +133,7 @@ mouse_filter = 2
 text = "00:00"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.305882, 0.376471, 0.466667, 1)
+theme_override_colors/font_color = Color(0.290196, 0.478431, 0.533333, 1)
 theme_override_fonts/font = ExtResource("8_vcr")
 theme_override_font_sizes/font_size = 18
 
@@ -147,11 +145,12 @@ mouse_filter = 2
 text = "0/5 Palabras"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.305882, 0.376471, 0.466667, 1)
+theme_override_colors/font_color = Color(0.290196, 0.478431, 0.533333, 1)
 theme_override_fonts/font = ExtResource("8_vcr")
 theme_override_font_sizes/font_size = 15
 
 [node name="BtnPause" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 0
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 6
@@ -167,42 +166,23 @@ grow_vertical = 2
 tooltip_text = "Pausar la partida"
 icon = ExtResource("5_pause")
 expand_icon = false
-icon_max_width = 18
-theme_override_fonts/font = ExtResource("8_vcr")
-theme_override_font_sizes/font_size = 16
 text = "Pausa"
 
 [node name="BoardArea" type="Control" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 200)
+theme_override_constants/margin_top = 8
 mouse_filter = 2
 
-[node name="WordPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+[node name="WordsPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
-size_flags_vertical = 1
-
-[node name="WordMargin" type="MarginContainer" parent="MarginContainer/VBoxContainer/WordPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 4
-theme_override_constants/margin_top = 2
-theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 2
-
-[node name="WordList" type="RichTextLabel" parent="MarginContainer/VBoxContainer/WordPanel/WordMargin"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 28)
-layout_mode = 2
-bbcode_enabled = true
-fit_content = true
-scroll_active = false
-horizontal_scroll_mode = 0
-theme_override_colors/default_color = Color(0.305882, 0.376471, 0.466667, 1)
-theme_override_constants/line_separation = 2
-theme_override_fonts/normal_font = ExtResource("9_pixel")
-theme_override_font_sizes/normal_font_size = 18
+size_flags_vertical = 0
+theme_override_constants/margin_top = 8
+script = ExtResource("9_words")
 
 [node name="VictoryLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 visible = false
@@ -242,44 +222,40 @@ layout_mode = 2
 text = "PAUSA"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.305882, 0.376471, 0.466667, 1)
+theme_override_colors/font_color = Color(0.290196, 0.478431, 0.533333, 1)
 theme_override_fonts/font = ExtResource("6_press")
 theme_override_font_sizes/font_size = 16
 
 [node name="BtnResume" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("8_vcr")
-theme_override_font_sizes/font_size = 18
 text = "Continuar"
 
 [node name="BtnHint" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("8_vcr")
-theme_override_font_sizes/font_size = 18
 text = "Pista (3)"
 
 [node name="BtnReset" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("8_vcr")
-theme_override_font_sizes/font_size = 18
 text = "Reiniciar partida"
 
 [node name="BtnPauseMenu" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("8_vcr")
-theme_override_font_sizes/font_size = 18
 text = "Salir al menú principal"
 
 [node name="WinModal" type="PanelContainer" parent="."]
@@ -313,7 +289,7 @@ layout_mode = 2
 text = "¡Victoria!"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.305882, 0.376471, 0.466667, 1)
+theme_override_colors/font_color = Color(0.290196, 0.478431, 0.533333, 1)
 theme_override_fonts/font = ExtResource("6_press")
 theme_override_font_sizes/font_size = 18
 
@@ -323,7 +299,7 @@ layout_mode = 2
 text = "Puntaje: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.305882, 0.376471, 0.466667, 1)
+theme_override_colors/font_color = Color(0.290196, 0.478431, 0.533333, 1)
 theme_override_fonts/font = ExtResource("8_vcr")
 theme_override_font_sizes/font_size = 20
 
@@ -333,24 +309,22 @@ layout_mode = 2
 text = "Tiempo: 00:00"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.305882, 0.376471, 0.466667, 1)
+theme_override_colors/font_color = Color(0.290196, 0.478431, 0.533333, 1)
 theme_override_fonts/font = ExtResource("8_vcr")
 theme_override_font_sizes/font_size = 18
 
 [node name="BtnNextGame" parent="WinModal/Center/WinCard/VBox" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("8_vcr")
-theme_override_font_sizes/font_size = 18
 text = "Siguiente partida"
 
 [node name="BtnWinMenu" parent="WinModal/Center/WinCard/VBox" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("8_vcr")
-theme_override_font_sizes/font_size = 18
 text = "Menú principal"

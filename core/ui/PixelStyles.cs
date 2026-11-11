@@ -16,6 +16,7 @@ public static class PixelStyles
     public static readonly Color Fondo = new("#ffffff"); // Fondo global limpio (lineamiento UI)
     public static readonly Color Arena = new("#b0c2cc"); // Borde fino de celdas y fondos suaves
     public static readonly Color Celda = new("#fffcfb"); // Relleno claro de celdas y texto sobre oscuros
+    public static readonly Color CeldaIdle = new("#EBF2F5"); // Fondo de celda en reposo (spec §2.1)
     public static readonly Color Placa = new("#efefee"); // Interior de placas y modales
     public static readonly Color PlacaHeader = new("#a0bfc7"); // Panel de título (lineamiento UI)
     public static readonly Color Tinta = new("#4e6077"); // Letras y texto sobre claros
@@ -23,9 +24,20 @@ public static class PixelStyles
     public static readonly Color Sombra = new("#8a9aaa"); // Sombra dura decorativa
     public static readonly Color TextDark = new("#101010"); // Tinta de texto oscuro sobre claros
     public static readonly Color TextLight = new("#ffffff"); // Texto blanco puro sobre oscuros
+    public static readonly Color BiselClaro = new("#ffffff"); // Luz del bisel 3D (arriba/izquierda)
+    public static readonly Color BiselOscuro = new("#535456"); // Sombra del bisel 3D (abajo/derecha)
 
-    // --- Acentos -------------------------------------------------------------
-    public static readonly Color Amarillo = new("#fdc109");
+    // --- Medidas compartidas de botones --------------------------------------
+    /// <summary>Lado mostrado de los iconos de botón (32 px de arte = 2× exacto).</summary>
+    public const int ButtonIconSize = 16;
+
+    // --- Colores de cabecera específicos (wathersoup.jpg) ---------------------
+    public static readonly Color TitleFill = new("#6C929D");
+    public static readonly Color TitleBorder = new("#68838B");
+    public static readonly Color TitleOutline = new("#2B5666");
+    public static readonly Color TitleTopHighlight = new("#B0C2C6");
+    public static readonly Color TitleReliefMid = new("#94B3B8");
+    public static readonly Color TitleReliefLight = new("#D3ECF0");
     public static readonly Color Turquesa = new("#099c92"); // Acento de celdas seleccionadas/encontradas
     public static readonly Color Cian = new("#08d0df");
 
@@ -47,6 +59,27 @@ public static class PixelStyles
         return (light + 0.05f) / (dark + 0.05f);
     }
 
+    /// <summary>Fuente PixelOperator para celdas del tablero (spec §1.3).</summary>
+    public static Font CellFont { get; private set; }
+
+    /// <summary>Fuente VCR OSD Mono para HUD, cronómetro y acciones (spec §1.2).</summary>
+    public static Font HudFont { get; private set; }
+
+    /// <summary>Fuente Atkinson Hyperlegible para menús y textos accesibles.</summary>
+    public static Font UiFont { get; private set; }
+
+    static PixelStyles()
+    {
+        CellFont = LoadFont("res://assets/fonts/PixelOperator.ttf");
+        HudFont = LoadFont("res://assets/fonts/VCR_OSD_Mono.ttf");
+        UiFont = LoadFont("res://assets/fonts/AtkinsonHyperlegible-Regular.ttf");
+    }
+
+    private static Font LoadFont(string path)
+    {
+        return ResourceLoader.Exists(path) ? GD.Load<Font>(path) : null;
+    }
+
     /// <summary>Color de texto legible sobre un relleno: blanco, tinta o tinta oscura.</summary>
     public static Color TextColor(Color fill)
     {
@@ -66,34 +99,11 @@ public static class PixelStyles
         return best;
     }
 
-    /// <summary>Borde legible sobre un relleno: tinta si alcanza 3:1, si no tinta oscura.</summary>
+    /// <summary>Borde legible sobre un relleno: tinta si alcanza 3:1, si no un tono oscuro o claro según el fondo.</summary>
     public static Color BorderColor(Color fill)
     {
-        return ContrastRatio(Tinta, fill) >= 3.0f ? Tinta : TextDark;
-    }
-
-    /// <summary>Celda en reposo: fondo claro con borde fino azul grisáceo y sombra dura.</summary>
-    public static StyleBoxFlat CellNormal()
-    {
-        return MakeBox(Celda, Arena, 2, Radius);
-    }
-
-    /// <summary>Celda seleccionada (trazo en curso): acento turquesa con letras blancas.</summary>
-    public static StyleBoxFlat CellSelected()
-    {
-        return MakeBox(Turquesa, Tinta, 2, Radius, false);
-    }
-
-    /// <summary>Celda encontrada: acento turquesa con letras blancas y borde definido.</summary>
-    public static StyleBoxFlat CellFound()
-    {
-        return MakeBox(Turquesa, EncontradaBorde, 3, Radius, false);
-    }
-
-    /// <summary>Celda resaltada por pista: fondo naranja retro, borde naranja oscuro (spec §4.2).</summary>
-    public static StyleBoxFlat CellHint()
-    {
-        return MakeBox(PistaAcento, PistaBorde, 3, Radius, false);
+        if (ContrastRatio(Tinta, fill) >= 3.0f) return Tinta;
+        return ContrastRatio(TextDark, fill) >= 3.0f ? TextDark : TextLight;
     }
 
     /// <summary>Placa de encabezado o modal.</summary>
@@ -102,24 +112,38 @@ public static class PixelStyles
         return MakeBox(Placa, Borde, 2, Radius);
     }
 
-    /// <summary>Panel del título principal: banner teal medio (#6C95A1, plantilla wathersoup.jpg), borde pixel 3px y sombra dura.</summary>
+    /// <summary>Panel del título principal: banner teal medio (#6C929D, plantilla wathersoup.jpg), borde pixel 2px.</summary>
     public static StyleBoxFlat TitlePanel()
     {
-        var box = MakeBox(Color.FromHtml("#6C95A1"), PlacaHeader, 3, Radius);
-        box.ContentMarginLeft = 12.0f;
-        box.ContentMarginRight = 12.0f;
+        var box = new StyleBoxFlat
+        {
+            BgColor = TitleFill,
+            BorderColor = TitleBorder,
+            AntiAliasing = false,
+            CornerDetail = 2
+        };
+        box.SetBorderWidthAll(2);
+        // 1px top highlight: reduce top border width for "lit-from-above" effect
+        box.BorderWidthTop = 1;
+        // Hard retro drop shadow: 2px offset down-right in dark teal
+        box.ShadowSize = 2;
+        box.ShadowColor = Tinta;
+        box.ShadowOffset = new Vector2(2, 2);
+        // Generous content margins for the taller 72px banner
+        box.ContentMarginLeft = 16.0f;
+        box.ContentMarginRight = 16.0f;
         box.ContentMarginTop = 10.0f;
         box.ContentMarginBottom = 10.0f;
         return box;
     }
 
-    /// <summary>Banda de subtítulo: fondo claro #D2E1E6 bajo el banner (plantilla wathersoup.jpg) con borde pixel 2px y esquinas cuadradas.</summary>
+    /// <summary>Banda de subtítulo: fondo claro #D2E1E8 bajo el banner (plantilla wathersoup.jpg) con borde pixel 2px.</summary>
     public static StyleBoxFlat SubtitlePanel()
     {
         var box = new StyleBoxFlat
         {
-            BgColor = Color.FromHtml("#D2E1E6"),
-            BorderColor = PlacaHeader,
+            BgColor = Color.FromHtml("#B8D4DC"),
+            BorderColor = TitleBorder,
             AntiAliasing = false,
             CornerDetail = 1
         };
@@ -127,17 +151,17 @@ public static class PixelStyles
         box.SetCornerRadiusAll(0);
         box.ContentMarginLeft = 14.0f;
         box.ContentMarginRight = 14.0f;
-        box.ContentMarginTop = 4.0f;
-        box.ContentMarginBottom = 4.0f;
+        box.ContentMarginTop = 2.0f;
+        box.ContentMarginBottom = 2.0f;
         return box;
     }
 
-    /// <summary>Panel inferior de palabras: placa ancha con marco retro de pixel art de 3px.</summary>
+    /// <summary>Panel inferior de palabras: placa ancha con marco retro de pixel art de 2px.</summary>
     public static StyleBoxFlat WordPanel()
     {
-        var box = MakeBox(Placa, Tinta, 3, Radius);
-        box.ContentMarginLeft = 10.0f;
-        box.ContentMarginRight = 10.0f;
+        var box = MakeBox(Placa, Tinta, 2, Radius);
+        box.ContentMarginLeft = 12.0f;
+        box.ContentMarginRight = 12.0f;
         box.ContentMarginTop = 8.0f;
         box.ContentMarginBottom = 8.0f;
         return box;
@@ -164,53 +188,6 @@ public static class PixelStyles
     public static StyleBoxFlat Pill()
     {
         return MakeBox(Arena, BorderColor(Arena), 2, 999, false);
-    }
-
-    /// <summary>Botón de 56×56 con el color de familia indicado.</summary>
-    public static StyleBoxFlat Button(Color? fill = null)
-    {
-        var background = fill ?? Arena;
-        var box = MakeBox(background, BorderColor(background), 2, Radius);
-        box.ContentMarginLeft = 16.0f;
-        box.ContentMarginRight = 16.0f;
-        box.ContentMarginTop = 12.0f;
-        box.ContentMarginBottom = 12.0f;
-        return box;
-    }
-
-    /// <summary>Estado presionado: sin sombra y borde más grueso (cambio de forma).</summary>
-    public static StyleBoxFlat ButtonPressed(Color? fill = null)
-    {
-        var box = Button(fill);
-        box.SetBorderWidthAll(3);
-        box.ShadowSize = 0;
-        return box;
-    }
-
-    /// <summary>
-    ///     Estado foco: anillo exterior oscuro de 3 px dibujado fuera del botón
-    ///     (sin relleno). Cambia la forma, no solo el color.
-    /// </summary>
-    public static StyleBoxFlat ButtonFocus()
-    {
-        StyleBoxFlat ring = new()
-        {
-            BgColor = Placa,
-            BorderColor = Tinta,
-            DrawCenter = false,
-            AntiAliasing = false,
-            CornerDetail = 2
-        };
-        ring.SetBorderWidthAll(3);
-        ring.SetCornerRadiusAll(Radius + 3);
-        ring.SetExpandMarginAll(3);
-        return ring;
-    }
-
-    /// <summary>Estado deshabilitado: plano con borde, sin sombra.</summary>
-    public static StyleBoxFlat ButtonDisabled()
-    {
-        return MakeBox(Arena, Borde, 2, Radius, false);
     }
 
     private static StyleBoxFlat MakeBox(Color bg, Color border, int borderWidth, int radius, bool shadow = true)

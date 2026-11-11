@@ -38,7 +38,7 @@ El proyecto sigue una arquitectura modular orientada a componentes y dominios de
 - **Jerarquía Tipográfica Oficial:**
   - `PressStart2P.ttf`: Títulos principales y banners de cabecera (`PixelBanner`).
   - `VCR_OSD_Mono.ttf`: HUD de control, cronómetro (`00:50`), contadores, menú de pausa y botones (`PixelButton`).
-  - `PixelOperator.ttf`: Celdas del tablero (`PixelCell`) y lista de palabras pendientes en el panel inferior (`PixelFooterPanel`).
+  - `PixelOperator.ttf`: Celdas del tablero (`PixelCell`) y lista de palabras pendientes en el panel inferior (`WordsPanel`).
 
 ---
 
@@ -64,9 +64,7 @@ res://
 │   │
 │   └── minigames/
 │       └── word_search/          # Módulo específico del minijuego Sopa de Letras
-│           ├── components/       # Componentes exclusivos de la Sopa de Letras
-│           │   ├── PixelCell.cs / .tscn        # Celdas individuales de la grilla
-│           │   └── PixelFooterPanel.cs / .tscn # Lista inferior de palabras y tachados
+│           ├── WordsPanel.cs     # Panel inferior: palabras pendientes y tachados
 │           ├── WordSearchMain.cs # Coordinador principal de lógica y eventos
 │           ├── WordGridFactory.cs# Factoría de construcción de tableros
 │           └── strategies/       # Algoritmos de colocación de palabras

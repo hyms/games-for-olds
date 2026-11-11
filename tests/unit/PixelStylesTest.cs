@@ -18,7 +18,7 @@ public class PixelStylesTest
 
     private static readonly string[] Families =
     {
-        "AMARILLO", "TURQUESA", "CIAN",
+        "TURQUESA", "CIAN",
         "CELDA", "PLACA", "ARENA", "CELDA_SELECCION"
     };
 
@@ -26,7 +26,6 @@ public class PixelStylesTest
     {
         return family switch
         {
-            "AMARILLO" => PixelStyles.Amarillo,
             "TURQUESA" => PixelStyles.Turquesa,
             "CIAN" => PixelStyles.Cian,
             "CELDA" => PixelStyles.Celda,
@@ -123,48 +122,6 @@ public class PixelStylesTest
     }
 
     [TestCase]
-    public void EstilosDelTableroUsanRadioYBordeEsperados()
-    {
-        var normal = PixelStyles.CellNormal();
-        AssertInt(normal.CornerRadiusTopLeft).IsEqual(PixelStyles.Radius);
-        AssertInt(normal.BorderWidthLeft).IsEqual(2);
-        AssertBool(normal.BgColor.IsEqualApprox(PixelStyles.Celda)).IsTrue();
-        AssertBool(normal.BorderColor.IsEqualApprox(PixelStyles.Arena)).IsTrue();
-
-        var selected = PixelStyles.CellSelected();
-        AssertBool(selected.BgColor.IsEqualApprox(PixelStyles.Turquesa)).IsTrue();
-        AssertBool(selected.BorderColor.IsEqualApprox(PixelStyles.Tinta)).IsTrue();
-
-        var found = PixelStyles.CellFound();
-        AssertInt(found.BorderWidthLeft).IsEqual(3);
-        AssertBool(found.BgColor.IsEqualApprox(PixelStyles.Turquesa)).IsTrue();
-        AssertBool(found.BgColor.IsEqualApprox(normal.BgColor)).IsFalse();
-        AssertBool(Ratio(PixelStyles.TextLight, found.BgColor) >= 3.0f)
-            .OverrideFailureMessage(
-                $"letras blancas sobre encontrada: {Ratio(PixelStyles.TextLight, found.BgColor):0.00}:1")
-            .IsTrue();
-        AssertBool(Ratio(found.BgColor, PixelStyles.Fondo) >= 3.0f)
-            .OverrideFailureMessage($"celda encontrada vs fondo: {Ratio(found.BgColor, PixelStyles.Fondo):0.00}:1")
-            .IsTrue();
-
-        AssertInt(PixelStyles.CellHint().BorderWidthLeft).IsEqual(3);
-    }
-
-    [TestCase]
-    public void FocoYPresionadoCambianFormaNoSoloColor()
-    {
-        var focus = PixelStyles.ButtonFocus();
-        AssertInt(focus.BorderWidthLeft).IsGreaterEqual(3);
-        AssertFloat(focus.ExpandMarginLeft).IsGreaterEqual(3.0f);
-        AssertBool(focus.DrawCenter).IsFalse();
-        AssertBool(Ratio(focus.BorderColor, PixelStyles.Arena) >= 3.0f).IsTrue();
-
-        var pressed = PixelStyles.ButtonPressed();
-        AssertInt(pressed.BorderWidthLeft).IsEqual(3);
-        AssertInt(pressed.ShadowSize).IsEqual(0);
-    }
-
-    [TestCase]
     public void TemaGlobalCumpleContrasteYTipografia()
     {
         var theme = GD.Load<Theme>(ThemePath);
@@ -173,6 +130,8 @@ public class PixelStylesTest
         var normal = theme.GetStylebox("normal", "Button") as StyleBoxFlat;
         var fontColor = theme.GetColor("font_color", "Button");
         AssertBool(Ratio(fontColor, normal.BgColor) >= 4.5f).IsTrue();
+        AssertInt(normal.CornerRadiusTopLeft).IsEqual(PixelStyles.Radius);
+        AssertInt(normal.BorderWidthLeft).IsEqual(PixelReliefPainter.BorderWidth);
 
         var disabled = theme.GetStylebox("disabled", "Button") as StyleBoxFlat;
         var disabledColor = theme.GetColor("font_disabled_color", "Button");
