@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using ClasicosMenteActiva.minigames.word_search;
 using Godot;
 
+namespace ClasicosMenteActiva.minigames.word_search;
+
 /// <summary>
-///     Tablero de la Sopa de Letras (patrón Composite · spec §6 · plan Fase 3 §3.1).
+///     Tablero de la Sopa de Letras (spec §6 · plan Fase 3 §3.1).
 ///     Crea y coloca las <see cref="WordCell" />, gestiona la selección por arrastre
 ///     (con bloqueo de dirección y ajuste a la línea dominante) y emite
 ///     <c>word_selected(inicio, fin)</c> al soltar.
+///     El diseño de la grilla usa métricas fijas de <see cref="WordSearchVisuals" />
+///     sin capas de fábrica ni estructuras intermediarias (YAGNI · V1 baseline).
 /// </summary>
 public partial class WordGridContainer : Control
 {
@@ -20,10 +22,8 @@ public partial class WordGridContainer : Control
     [Signal]
     public delegate void ZoomChangedEventHandler(float zoom);
 
-    private readonly BoardInputHandler _input = new();
     private readonly List<Vector2I> _invalidCells = new();
     private readonly List<Vector2I> _preview = new();
-
     private readonly DragSelection _selection = new();
 
     private WordCell[,] _cells;
@@ -33,10 +33,8 @@ public partial class WordGridContainer : Control
     private Tween _invalidTween;
     private char[,] _letters;
     private Vector2 _origin;
-    private WordTraceOverlay _trace;
 
     // --- Zoom (Fase 4) -------------------------------------------------------
-    /// <summary>Factor de zoom actual (1.0 = sin zoom, hasta <see cref="WordSearchVisuals.MaxZoom" />).</summary>
     private float _zoom = WordSearchVisuals.MinZoom;
 
     public int Rows { get; private set; }
@@ -45,7 +43,7 @@ public partial class WordGridContainer : Control
 
     public float CellSize { get; private set; }
 
-    /// <summary>Separación entre celdas del layout actual (la fija <see cref="WordGridFactory" />).</summary>
+    /// <summary>Separación entre celdas; fija por dificultad (ver BoardMetricsFor).</summary>
     public float CellGap => _gap;
 
     public bool IsSelecting => _selection.IsActive;
@@ -58,10 +56,6 @@ public partial class WordGridContainer : Control
 
     public override void _Ready()
     {
-        // MouseFilter.Stop captura todos los eventos táctiles dentro del área del
-        // contenedor. Es necesario en Android para que el arrastre (InputEventScreenTouch
-        // + InputEventScreenDrag) se entregue de forma confiable y no se pierda entre
-        // nodos hijos.
         MouseFilter = MouseFilterEnum.Stop;
         EnsureTrace();
         EnsureHintTimer();
@@ -75,17 +69,35 @@ public partial class WordGridContainer : Control
         _input.SelectionCanceled += OnInputCanceled;
     }
 
+    private void EnsureTrace()
+    {
+        // Trace overlay no se destruye entre partidas; vive en el contenedor.
+        if (_cells == null || Rows == 0 || Columns == 0) return;
+        var existing = FindChild("Trace", true, false);
+        if (existing != null) return;
+        _trace = new WordTraceOverlay { Name = "Trace" };
+        AddChild(_trace);
+        _trace.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+    }
+
+    private void EnsureHintTimer()
+    {
+        if (_hintTimer != null && IsInstanceValid(_hintTimer)) return;
+
+        _hintTimer = new Timer { Name = "HintTimer", OneShot = true, WaitTime = WordSearchVisuals.HintFlashSeconds };
+        _hintTimer.Timeout += RestoreHint;
+        AddChild(_hintTimer);
+    }
+
     public override void _Notification(int what)
     {
         if (what == NotificationResized) UpdateLayout();
     }
 
     /// <summary>
-    ///     Aplica un factor de zoom al tablero (centrado en el tablero). El zoom
-    ///     amplía el área lógica de la grilla sin alterar la geometría de
-    ///     hit-testing: las coordenadas de entrada llegan en espacio local
-    ///     (no escalado), así que <see cref="TryGetCell" /> /
-    ///     <see cref="GetCellCenter" /> no cambian.
+    ///     Aplica factor de zoom al tablero (centrado en pivot). El zoom amplía el
+    ///     área lógica sin alterar hit-testing: las coordenadas de entrada llegan en
+    ///     espacio local (no escalado), así que TryGetCell / GetCellCenter no cambian.
     /// </summary>
     public void SetZoom(float factor)
     {
@@ -106,37 +118,42 @@ public partial class WordGridContainer : Control
     /// <summary>Reduce el zoom en un paso (hasta el mínimo).</summary>
     public void ZoomOut() => SetZoom(_zoom - WordSearchVisuals.ZoomStep);
 
-    /// <summary>Monta el tablero con el resultado generado (la reemplaza si ya había una).</summary>
+    /// <summary>
+    ///     Monta el tablero con el resultado generado (lo reemplaza si ya había una).
+    ///     Fíjala geometría usando BoardMetricsFor y coloca celdas directamente;
+    ///     no usa WordGridFactory ni WordGridLayout (YAGNI).
+    /// </summary>
     public void Setup(GenerationResult result)
     {
         if (result == null) return;
 
         CancelSelection();
         KillInvalidTween();
-        EnsureTrace();
 
         Result = result;
         Rows = result.Rows;
         Columns = result.Columns;
         _letters = result.Grid;
 
-        // Asegurar que el contenedor capture todo el input táctil después de
-        // reconstruir el tablero (Setup se llama dinámicamente por cada partida).
         MouseFilter = MouseFilterEnum.Stop;
 
-        foreach (var child in GetChildren())
+        // Reconstruir la grilla: crear celdas y posicionarlas con métricas directas.
+        _cells = new WordCell[Rows, Columns];
+        for (var y = 0; y < Rows; y++)
         {
-            // El trazo y el temporizador de pistas sobreviven a cada partida.
-            if (child == _trace || child == _hintTimer) continue;
-
-            RemoveChild(child);
-            child.QueueFree();
+            for (var x = 0; x < Columns; x++)
+            {
+                var coord = new Vector2I(x, y);
+                var cell = new WordCell();
+                cell.Setup(coord, result.GetLetter(coord), WordSearchVisuals.DefaultCellFontSize);
+                _cells[y, x] = cell;
+                AddChild(cell);
+            }
         }
 
-        _cells = WordGridFactory.CreateCells(result, WordSearchVisuals.DefaultCellFontSize);
-        for (var y = 0; y < Rows; y++)
-        for (var x = 0; x < Columns; x++)
-            if (_cells[y, x] != null) AddChild(_cells[y, x]);
+        // Geometría de la grilla: calcular tamaño de celda y separación desde
+        // BoardMetricsFor y centrar la grilla en el contenedor disponible.
+        ComputeGridLayout();
 
         // Cada partida empieza sin zoom (spec §4: reposición al iniciar/reiniciar).
         _zoom = WordSearchVisuals.MinZoom;
@@ -144,6 +161,42 @@ public partial class WordGridContainer : Control
         PivotOffset = PivotOffset.Center;
 
         UpdateLayout();
+    }
+
+    private void ComputeGridLayout()
+    {
+        // Usar directamente BoardMetricsFor para la baseline V1 (30×30 celdas, 6 px gap).
+        var (preferredCellSize, gap) = WordSearchVisuals.BoardMetricsFor(Rows, Columns);
+
+        // Ajustar al tamaño disponible: reducir solo lo justo para que quepa el tablero entero.
+        var step = preferredCellSize + gap;
+        var totalWidth = preferredCellSize * Columns + gap * (Columns - 1);
+        var totalHeight = preferredCellSize * Rows + gap * (Rows - 1);
+        var originX = Mathf.Floor((Size.X - totalWidth) / 2.0f);
+        var originY = Mathf.Floor((Size.Y - totalHeight) / 2.0f);
+        _origin = new Vector2(originX, originY);
+        _gap = gap;
+        CellSize = preferredCellSize;
+
+        // Aplicar tamaño y posición a cada celda.
+        for (var y = 0; y < Rows; y++)
+        {
+            for (var x = 0; x < Columns; x++)
+            {
+                var cell = _cells[y, x];
+                if (cell == null) continue;
+                var cellStep = CellSize + _gap;
+                cell.Position = _origin + new Vector2(x * cellStep, y * cellStep);
+                cell.Size = new Vector2(CellSize, CellSize);
+
+                // Tamaño de fuente proporcional al ancho de la celda.
+                var fontSize = Mathf.Clamp(
+                    Mathf.RoundToInt(CellSize * WordSearchVisuals.CellFontRatio),
+                    WordSearchVisuals.MinCellFontSize,
+                    WordSearchVisuals.MaxCellFontSize);
+                cell.SetFontSize(fontSize);
+            }
+        }
     }
 
     /// <summary>Celda en una coordenada; null si está fuera del tablero.</summary>
@@ -213,8 +266,6 @@ public partial class WordGridContainer : Control
     {
         if (!IsValidCell(coord)) return;
 
-        // Si una selección previa quedó atrapada (p. ej. se perdió el Touch.Release
-        // en Android), cancelarla antes de iniciar una nueva.
         if (_selection.IsActive) CancelSelection();
 
         KillInvalidTween();
@@ -277,7 +328,7 @@ public partial class WordGridContainer : Control
         ClearPreview();
     }
 
-    /// <summary>Destella una selección inválida durante <paramref name="seconds" /> sin penalizar, respetando opacidad absoluta.</summary>
+    /// <summary>Resalta temporalmente la palabra indicada (pista, 1.5 s según spec §4.2).</summary>
     public void FlashInvalid(IReadOnlyList<Vector2I> cells, float seconds = WordSearchVisuals.InvalidFlashSeconds)
     {
         if (cells == null || cells.Count == 0) return;
@@ -322,135 +373,12 @@ public partial class WordGridContainer : Control
         _hintTimer.Start();
     }
 
-    private void EnsureHintTimer()
-    {
-        if (_hintTimer != null && IsInstanceValid(_hintTimer)) return;
-
-        _hintTimer = new Timer { Name = "HintTimer", OneShot = true, WaitTime = WordSearchVisuals.HintFlashSeconds };
-        _hintTimer.Timeout += RestoreHint;
-        AddChild(_hintTimer);
-    }
-
-    private void RestoreHint()
-    {
-        if (string.IsNullOrEmpty(_hintWord)) return;
-
-        var placement = FindPlacement(_hintWord);
-        _hintWord = string.Empty;
-        if (placement == null) return;
-
-        foreach (var coord in placement.Cells) GetCell(coord)?.RestoreBaseState();
-    }
-
     private WordPlacement FindPlacement(string word)
     {
         return Result?.Placements.FirstOrDefault(p => p.Word.Equals(word, StringComparison.OrdinalIgnoreCase));
     }
 
-    // --- Entrada -------------------------------------------------------------
-
-    public override void _GuiInput(InputEvent @event)
-    {
-        if (_input.Process(@event)) AcceptEvent();
-    }
-
-    private void OnInputBegan(Vector2 localPosition)
-    {
-        BeginSelection(localPosition);
-    }
-
-    private void OnInputUpdated(Vector2 localPosition)
-    {
-        UpdateSelection(localPosition);
-    }
-
-    private void OnInputEnded(Vector2 localPosition)
-    {
-        // Touch.Release sin selección activa: limpiar estados visuales
-        // residuales por si el estado quedó atrapado en Android.
-        if (!_selection.IsActive)
-            ClearPreview();
-        else
-            EndSelection(localPosition);
-    }
-
-    private void OnInputCanceled()
-    {
-        CancelSelection();
-    }
-
     // --- Interno -------------------------------------------------------------
-
-    private void EnsureTrace()
-    {
-        if (_trace != null && IsInstanceValid(_trace)) return;
-
-        _trace = new WordTraceOverlay { Name = "Trace" };
-        AddChild(_trace);
-        _trace.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-    }
-
-    private void UpdateLayout()
-    {
-        if (_cells == null || Rows == 0 || Columns == 0 || Size.X <= 0 || Size.Y <= 0) return;
-
-        // La geometría de la grilla se calcula contra el tamaño REAL del
-        // contenedor (no escalado), de modo que _origin / CellSize / _gap
-        // conviven en el mismo espacio que la entrada de usuario. El zoom se
-        // aplica después, puramente visual, y el hit-testing no cambia (SRP ·
-        // spec §4: el zoom no debe romper la selección por arrastre).
-        var layout = WordGridFactory.ComputeLayout(Rows, Columns, Size);
-        CellSize = layout.CellSize;
-        if (CellSize <= 0) return;
-
-        _gap = layout.Gap;
-        _origin = layout.Origin;
-
-        var fontSize = Mathf.Clamp(
-            Mathf.RoundToInt(CellSize * WordSearchVisuals.CellFontRatio),
-            WordSearchVisuals.MinCellFontSize,
-            WordSearchVisuals.MaxCellFontSize);
-
-        WordGridFactory.PositionCells(_cells, layout, fontSize);
-
-        // Zoom: escalar el contenedor sobre su centro (PivotOffset.Center).
-        // Como _origin ya centra la grilla en Size, el tablero se magnifica
-        // centrado sin necesidad de Offset. La entrada llega en espacio local
-        // (no escalado), así que TryGetCell / GetCellCenter siguen válidos.
-        PivotOffset = PivotOffset.Center;
-        Scale = new Vector2(_zoom, _zoom);
-    }
-
-    private void ShowPreview()
-    {
-        ClearPreview();
-        if (!_selection.IsActive) return;
-
-        var path = WordPath.Build(_selection.Start, _selection.End);
-        if (path.Count == 0) path.Add(_selection.Start);
-
-        foreach (var coord in path)
-        {
-            var cell = GetCell(coord);
-            if (cell == null) continue;
-
-            _preview.Add(coord);
-            cell.SetState(WordCellState.Selected);
-        }
-
-        if (_selection.IsDirectionLocked && _selection.End != _selection.Start)
-            _trace.ShowTrace(GetCellCenter(_selection.Start), GetCellCenter(_selection.End));
-        else
-            _trace.HideTrace();
-    }
-
-    private void ClearPreview()
-    {
-        foreach (var coord in _preview) GetCell(coord)?.RestoreBaseState();
-
-        _preview.Clear();
-        _trace?.HideTrace();
-    }
 
     private void RestoreInvalid()
     {
@@ -472,5 +400,43 @@ public partial class WordGridContainer : Control
 
         _invalidTween = null;
         if (_invalidCells.Count > 0) RestoreInvalid();
+    }
+
+    // --- Input -------------------------------------------------------------
+
+    public override void _GuiInput(InputEvent @event)
+    {
+        if (_input.Process(@event)) AcceptEvent();
+    }
+
+    private void OnInputBegan(Vector2 localPosition)
+    {
+        BeginSelection(localPosition);
+    }
+
+    private void OnInputUpdated(Vector2 localPosition)
+    {
+        UpdateSelection(localPosition);
+    }
+
+    private void OnInputEnded(Vector2 localPosition)
+    {
+        if (!_selection.IsActive)
+            ClearPreview();
+        else
+            EndSelection(localPosition);
+    }
+
+    private void OnInputCanceled()
+    {
+        CancelSelection();
+    }
+
+    private void ClearPreview()
+    {
+        foreach (var coord in _preview) GetCell(coord)?.RestoreBaseState();
+
+        _preview.Clear();
+        _trace?.HideTrace();
     }
 }

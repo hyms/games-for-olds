@@ -9,10 +9,9 @@ public static class WordSearchVisuals
     // --- Tablero -------------------------------------------------------------
     /// <summary>
     ///     Lado de celda y separación FIJOS por tamaño de tablero, tomados de la
-    ///     plantilla retro (<c>docs/word_search/wathersoup.jpg</c>). Son el máximo
-    ///     por dificultad: <see cref="WordGridFactory" /> solo los reduce lo justo
-    ///     para que la grilla entre entera en el área disponible, de modo que no
-    ///     exista recorte vertical ni horizontal en ningún viewport.
+    ///     plantilla retro (<c>docs/word_search/wathersoup.jpg</c>). Para V1 el
+    ///     baseline es 8×8 con celdas de 30×30 px y separación de 6 px; las demás
+    ///    tallas se conservan pero sin ramas de escalado innecesarias.
     /// </summary>
     /// <param name="rows">Filas del tablero.</param>
     /// <param name="columns">Columnas del tablero.</param>
@@ -22,10 +21,10 @@ public static class WordSearchVisuals
         var side = System.Math.Max(rows, columns);
         return side switch
         {
-            <= 8 => (30, 6),   // Fácil    · 8 × 8  (baseline wathersoup.jpg: 30×30 px cells, 6 px gap)
-            <= 10 => (30, 6),  // Medio    · 10 × 10
-            <= 12 => (24, 6),  // Difícil  · 12 × 12
-            _ => (20, 4)       // Maestro  · 15 × 15
+            <= 8 => (30, 6),
+            <= 10 => (30, 6),
+            <= 12 => (24, 6),
+            _ => (20, 4)
         };
     }
 
@@ -64,13 +63,8 @@ public static class WordSearchVisuals
     /// <summary>Grosor del trazo de arrastre en píxeles.</summary>
     public const float TraceWidth = 6.0f;
 
-    /// <summary>Opacidad de la línea del trazo (opacidad absoluta, regla de oro pixel art).</summary>
-    public const float TraceAlpha = 1.0f;
-
-    /// <summary>Radio y opacidad de los nodos de los extremos del trazo.</summary>
+    /// <summary>Radio de los nodos de los extremos del trazo.</summary>
     public const float TraceDotRadius = 5.0f;
-
-    public const float TraceDotAlpha = 1.0f;
 
     // --- Zoom (Fase 4) -------------------------------------------------------
     /// <summary>Factor zoom mínimo sin distorsión.</summary>
@@ -79,14 +73,8 @@ public static class WordSearchVisuals
     /// <summary>Factor zoom máximo con dos dedos.</summary>
     public const float MaxZoom = 2.5f;
 
-    /// <summary>Incremento de zoom al pinchar (factor por pincel).</summary>
+    /// <summary>Incremento de zoom al pinchar.</summary>
     public const float ZoomStep = 1.2f;
-
-    /// <summary>Margen lateral escalado (docs/art_direction.md §3, 19px base).</summary>
-    public const float BoardMargin = 19.0f;
-
-    /// <summary>Factor que escala el margen lateral por nivel dificultad.</summary>
-    public const int MarginScalePerLevel = 1;
 
     // --- Selector de dificultad ---------------------------------------------
     /// <summary>Alto mínimo de cada botón de nivel (objetivo táctil, spec §3).</summary>
