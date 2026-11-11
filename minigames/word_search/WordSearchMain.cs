@@ -34,11 +34,15 @@ public partial class WordSearchMain : BaseMinigame
     private BigButton _btnNextGame;
     private BigButton _btnPauseMenu;
     private BigButton _btnReset;
+    private BigButton _btnZoomIn;
+    private BigButton _btnZoomOut;
 
     private WordSearchHud _hud;
     private WordsPanel _wordsPanel;
     private Label _winScore;
     private Label _winTime;
+    private Label _pauseTitle;
+    private Label _winTitle;
     private int _hintUses = MaxHints;
 
     public DifficultyConfig Config { get; private set; }
@@ -67,11 +71,16 @@ public partial class WordSearchMain : BaseMinigame
         _btnReset = GetNode<BigButton>("%BtnReset");
         _btnNextGame = GetNode<BigButton>("%BtnNextGame");
         _btnPauseMenu = GetNode<BigButton>("%BtnPauseMenu");
+        _btnZoomIn = GetNodeOrNull<BigButton>("%BtnZoomIn");
+        _btnZoomOut = GetNodeOrNull<BigButton>("%BtnZoomOut");
 
         _hud = new WordSearchHud(
             WordsCounter,
             DifficultyLabel,
             GetNodeOrNull<Label>("%VictoryLabel"));
+
+        _pauseTitle = GetNodeOrNull<Label>("%PauseTitle");
+        _winTitle = GetNodeOrNull<Label>("%WinTitle");
 
         WireButtons();
 
@@ -101,6 +110,25 @@ public partial class WordSearchMain : BaseMinigame
         if (GetNodeOrNull<PanelContainer>("%WinCard") is PanelContainer winCard)
             winCard.AddThemeStyleboxOverride("panel", PixelStyles.ModalCard());
 
+        // Los colores de texto de subtítulo, HUD y modales salen de los tokens
+        // del tema (docs/art_direction.md §4): SubheaderBannerColor para texto
+        // secundario sobre fondos claros. Se aplican aquí, no en la escena, para
+        // que un cambio de tema los refresque al instante (SRP · DRY).
+        if (DifficultyLabel != null)
+            DifficultyLabel.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
+        if (TimeLabel != null)
+            TimeLabel.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
+        if (WordsCounter != null)
+            WordsCounter.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
+        if (_pauseTitle != null)
+            _pauseTitle.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
+        if (_winTitle != null)
+            _winTitle.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
+        if (_winScore != null)
+            _winScore.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
+        if (_winTime != null)
+            _winTime.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
+
         RenderHud();
     }
 
@@ -116,6 +144,10 @@ public partial class WordSearchMain : BaseMinigame
         _btnReset.Pressed += StartNewGame;
         _btnNextGame.Pressed += StartNewGame;
         _btnPauseMenu.Pressed += GoToMainMenu;
+
+        // Zoom del tablero: botones + / − en la NavRow (spec §4).
+        if (_btnZoomIn != null) _btnZoomIn.Pressed += () => Board?.ZoomIn();
+        if (_btnZoomOut != null) _btnZoomOut.Pressed += () => Board?.ZoomOut();
     }
 
     /// <summary>Carga el nivel elegido, sortea las palabras y genera el tablero.</summary>
@@ -200,19 +232,17 @@ public partial class WordSearchMain : BaseMinigame
             return;
         }
 
-        _foundOrder.Add(word);
+_foundOrder.Add(word);
         Board.MarkFound(path, word);
         RenderHud();
 
-        // Confeti p\u00edxel directamente sobre la palabra encontrada en el footer.
-        var startCell = Board.GetCell(start);
-        if (startCell != null)
-            _wordsPanel?.TriggerConfetti(startCell.GlobalPosition);
-
+        // Palabra encontrada: animación sutil de celda (pop) y tachado en el
+        // footer. El confeti de victoria se dispara AL COMPLETAR el tablero
+        // (spec §4.3), no por palabra.
         if (_pending.Count == 0) CompleteGame();
     }
 
-    private void CompleteGame()
+private void CompleteGame()
     {
         if (_completed) return;
 
@@ -234,11 +264,41 @@ public partial class WordSearchMain : BaseMinigame
 
         if (_winTime != null) _winTime.Text = $"Tiempo: {FormatSeconds(secondsElapsed)}";
 
-        if (WinModal != null)
+        // Confeti de victoria: estallido de partículas pixel art sobre el centro
+        // del tablero (spec §4.3). El emisor vive en WordsPanel; la posición se
+        // convierte a locales del panel. El modal se muestra 300 ms después,
+        // como exige la spec, para que el confeti sea visible antes del bloqueo.
+        _wordsPanel?.EmitConfettiAt(GetBoardCenter());
+
+        var timer = new Timer
         {
-            WinModal.Visible = true;
-            _btnNextGame.GrabFocus();
-        }
+            Name = "VictoryModalTimer",
+            OneShot = true,
+            WaitTime = 0.3f
+        };
+        timer.Timeout += () =>
+        {
+            if (WinModal != null)
+            {
+                WinModal.Visible = true;
+                _btnNextGame.GrabFocus();
+            }
+            timer.QueueFree();
+        };
+        AddChild(timer);
+        timer.Start();
+    }
+
+    /// <summary>
+    ///     Centro del tablero en coordenadas globales, punto de origen del confeti
+    ///     de victoria. Se calcula desde el <see cref="WordGridContainer" /> para
+    ///     que el zoom no desplace el estallido.
+    /// </summary>
+    private Vector2 GetBoardCenter()
+    {
+        if (Board == null) return Vector2.Zero;
+        var localCenter = Board.Size / 2.0f;
+        return Board.GlobalPosition + localCenter;
     }
 
     private int CalculateScore(int secondsElapsed)

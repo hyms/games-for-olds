@@ -41,4 +41,11 @@ public sealed class ThemeData
 
     /// <summary>Color del tachado de palabras encontradas en el footer.</summary>
     public Color FooterStrikethroughColor { get; init; } = Color.FromHtml("#099C92");
+
+    /// <summary>
+    ///     Color cálido de confeti/celebración (coral). Usado en el estallido de
+    ///     partículas de victoria de la Sopa de Letras (docs/art_direction.md §4,
+    ///     token agregado v0.5.0 de forma aditiva). No altera ningún token existente.
+    /// </summary>
+    public Color CelebrationRed { get; init; } = Color.FromHtml("#B45252");
 }

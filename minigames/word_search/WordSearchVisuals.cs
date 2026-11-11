@@ -22,10 +22,10 @@ public static class WordSearchVisuals
         var side = System.Math.Max(rows, columns);
         return side switch
         {
-            <= 8 => (36, 8),   // Fácil    · 8 × 8
+            <= 8 => (30, 6),   // Fácil    · 8 × 8  (baseline wathersoup.jpg: 30×30 px cells, 6 px gap)
             <= 10 => (30, 6),  // Medio    · 10 × 10
             <= 12 => (24, 6),  // Difícil  · 12 × 12
-            _ => (20, 4),      // Maestro  · 15 × 15
+            _ => (20, 4)       // Maestro  · 15 × 15
         };
     }
 

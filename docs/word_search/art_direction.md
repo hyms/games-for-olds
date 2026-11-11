@@ -101,6 +101,35 @@
 - **Estilo:** partículas **cuadradas tipo pixel** (p. ej. 4×4 o 6×6 px lógicos, sin suavizado) con colores derivados **exclusivamente de tokens de la paleta global aprobada** (p. ej. acentos/estados como `Turquesa`/`CellFound*`, `Amarillo`, `Cian`, `CeldaSeleccion`, `TextLight` según composición), con rendimiento adecuado en gama baja. **No** introducir colores fuera de la matriz global.
 - **Estado actual:** la lógica de finalización y modal existe; el emisor de confeti dedicado debe verificarse/implementarse según esta especificación y `wathersoup.jpg` (si no está presente, tratar como brecha de alineación visual).
 
+### 8.1 Paleta de confeti (v0.5.0)
+
+El estallido de victoria usa **cuatro** tokens de la paleta global, combinados en una `ColorRamp` del `CpuParticles2D`:
+
+| Token | Hex | Rol en el confeti |
+|---|---|---|
+| `Turquesa` / `CellFoundBackgroundColor` | `#099C92` | Color principal del estallido (acentos fríos) |
+| `Amarillo` | `#FDC109` | Acento cálido intermedio |
+| `Cian` | `#08D0DF` | Acento frío claro |
+| `CelebrationRed` | `#B45252` | Acento cálido coral (**token agregado v0.5.0**, ver [`../art_direction.md`](../art_direction.md) §4) |
+
+**Restricción:** los colores del confeti **proceden exclusivamente de esta tabla**. No se permiten valores hex ad hoc. El emisor vive en `core/ui/PixelConfettiEmitter.cs` y consume los tokens vía `ThemeData`/`PixelStyles`.
+
+**Regla de disparo:** confeti **solo en victoria** (al completar el tablero). Al encontrar una palabra individual no se dispara confeti: esa palabra recibe animación sutil de celda (`WordCell` pop) y tachado en el footer (`~~PALABRA~~` con `FooterStrikethroughColor`), tal como hace el sistema actual.
+
+### 8.2 Revisión de paleta local (v0.5.0, Opción 1)
+
+Durante la alineación V1 se evaluó una propuesta de matriz de colores alternativa (`#68c2d3` título / `#ede19e` subtítulo / `#a77b5b` botones / `#f2f0e5` panel / confeti `#ede19e`+`#a2dcc7`+`#b45252`). **Se rechazó como desviación** por contradecir la herencia visual obligatoria (`agents.md` y [`../art_direction.md`](../art_direction.md) §7): los minijuegos **no pueden redefinir** los tokens globales de paleta, tipografía ni relieve base.
+
+| Elemento propuesto | Decisión final (Opción 1) | Token canónico usado |
+|---|---|---|
+| Título | `#6C929D` (override local en `PixelStyles.TitlePanel()`) | `HeaderBannerColor` #A0BFC7 no se toca |
+| Subtítulo | `SubheaderBannerColor` #477987 | canonical |
+| Botones | `HeaderBannerColor` #A0BFC7 (normal) / #477987 (hover) | `PixelButtonStyle.FillFor` |
+| Panel de palabras | `Placa` #EFEFEE | `PixelStyles.WordPanel()` |
+| Confeti | `Turquesa` #099C92 + `Amarillo` #FDC109 + `Cian` #08D0DF + `CelebrationRed` #B45252 | tokens globales + 1 agregado |
+
+La única extensión aprobada a la matriz global es `CelebrationRed` (#B45252), agregada de forma **aditiva** en v0.5.0 (SemVer MINOR) sin alterar ningún token existente.
+
 ---
 
 ## 9. Referencias

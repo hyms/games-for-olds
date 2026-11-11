@@ -16,6 +16,10 @@ public partial class WordGridContainer : Control
     [Signal]
     public delegate void WordSelectedEventHandler(Vector2I start, Vector2I end);
 
+    /// <summary>Se emite cuando cambia el factor de zoom (valor nuevo, 1.0–2.5).</summary>
+    [Signal]
+    public delegate void ZoomChangedEventHandler(float zoom);
+
     private readonly BoardInputHandler _input = new();
     private readonly List<Vector2I> _invalidCells = new();
     private readonly List<Vector2I> _preview = new();
@@ -31,6 +35,10 @@ public partial class WordGridContainer : Control
     private Vector2 _origin;
     private WordTraceOverlay _trace;
 
+    // --- Zoom (Fase 4) -------------------------------------------------------
+    /// <summary>Factor de zoom actual (1.0 = sin zoom, hasta <see cref="WordSearchVisuals.MaxZoom" />).</summary>
+    private float _zoom = WordSearchVisuals.MinZoom;
+
     public int Rows { get; private set; }
 
     public int Columns { get; private set; }
@@ -41,6 +49,9 @@ public partial class WordGridContainer : Control
     public float CellGap => _gap;
 
     public bool IsSelecting => _selection.IsActive;
+
+    /// <summary>Factor de zoom actual del tablero (1.0–2.5).</summary>
+    public float Zoom => _zoom;
 
     /// <summary>Último resultado de generación (para leer palabras).</summary>
     public GenerationResult Result { get; private set; }
@@ -68,6 +79,32 @@ public partial class WordGridContainer : Control
     {
         if (what == NotificationResized) UpdateLayout();
     }
+
+    /// <summary>
+    ///     Aplica un factor de zoom al tablero (centrado en el tablero). El zoom
+    ///     amplía el área lógica de la grilla sin alterar la geometría de
+    ///     hit-testing: las coordenadas de entrada llegan en espacio local
+    ///     (no escalado), así que <see cref="TryGetCell" /> /
+    ///     <see cref="GetCellCenter" /> no cambian.
+    /// </summary>
+    public void SetZoom(float factor)
+    {
+        var target = Mathf.Clamp(factor, WordSearchVisuals.MinZoom, WordSearchVisuals.MaxZoom);
+        if (Mathf.IsEqualApprox(_zoom, target)) return;
+
+        _zoom = target;
+        UpdateLayout();
+        EmitSignal(SignalName.ZoomChanged, _zoom);
+    }
+
+    /// <summary>Restablece el zoom a 1.0 (vista normal).</summary>
+    public void ResetZoom() => SetZoom(WordSearchVisuals.MinZoom);
+
+    /// <summary>Incrementa el zoom en un paso (hasta el máximo).</summary>
+    public void ZoomIn() => SetZoom(_zoom + WordSearchVisuals.ZoomStep);
+
+    /// <summary>Reduce el zoom en un paso (hasta el mínimo).</summary>
+    public void ZoomOut() => SetZoom(_zoom - WordSearchVisuals.ZoomStep);
 
     /// <summary>Monta el tablero con el resultado generado (la reemplaza si ya había una).</summary>
     public void Setup(GenerationResult result)
@@ -100,6 +137,11 @@ public partial class WordGridContainer : Control
         for (var y = 0; y < Rows; y++)
         for (var x = 0; x < Columns; x++)
             if (_cells[y, x] != null) AddChild(_cells[y, x]);
+
+        // Cada partida empieza sin zoom (spec §4: reposición al iniciar/reiniciar).
+        _zoom = WordSearchVisuals.MinZoom;
+        Scale = Vector2.One;
+        PivotOffset = PivotOffset.Center;
 
         UpdateLayout();
     }
@@ -352,6 +394,11 @@ public partial class WordGridContainer : Control
     {
         if (_cells == null || Rows == 0 || Columns == 0 || Size.X <= 0 || Size.Y <= 0) return;
 
+        // La geometría de la grilla se calcula contra el tamaño REAL del
+        // contenedor (no escalado), de modo que _origin / CellSize / _gap
+        // conviven en el mismo espacio que la entrada de usuario. El zoom se
+        // aplica después, puramente visual, y el hit-testing no cambia (SRP ·
+        // spec §4: el zoom no debe romper la selección por arrastre).
         var layout = WordGridFactory.ComputeLayout(Rows, Columns, Size);
         CellSize = layout.CellSize;
         if (CellSize <= 0) return;
@@ -365,6 +412,13 @@ public partial class WordGridContainer : Control
             WordSearchVisuals.MaxCellFontSize);
 
         WordGridFactory.PositionCells(_cells, layout, fontSize);
+
+        // Zoom: escalar el contenedor sobre su centro (PivotOffset.Center).
+        // Como _origin ya centra la grilla en Size, el tablero se magnifica
+        // centrado sin necesidad de Offset. La entrada llega en espacio local
+        // (no escalado), así que TryGetCell / GetCellCenter siguen válidos.
+        PivotOffset = PivotOffset.Center;
+        Scale = new Vector2(_zoom, _zoom);
     }
 
     private void ShowPreview()

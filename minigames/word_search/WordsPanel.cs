@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ClasicosMenteActiva.core;
+using ClasicosMenteActiva.core.ui;
 using Godot;
 
 namespace ClasicosMenteActiva.minigames.word_search;
@@ -8,14 +9,15 @@ namespace ClasicosMenteActiva.minigames.word_search;
 ///     Panel inferior de la Sopa de Letras: placa retro con marco de píxel de
 ///     2 px que muestra las palabras pendientes y las encontradas separadas por
 ///     <c> | </c>. Las encontradas se tachan (<c>[s]PALABRA[/s]</c>) en el color
-///     turquesa del tema y, al completar una palabra, se dispara confeti píxel
-///     (<see cref="PixelConfettiEmitter" />) sobre el punto indicado.
+///     del tema. El confeti de victoria se dispara vía
+///     <see cref="PixelConfettiEmitter" /> (componente base en
+///     <c>core/ui/</c>); este panel solo orquesta su posición local.
 /// </summary>
 /// <remarks>
 ///     El marco, el radio y la sombra dura provienen de
 ///     <see cref="PixelStyles.WordPanel" />; el tema solo aporta la paleta
 ///     (fondo y borde) para conservar la legibilidad en modo oscuro.
-///     El <see cref="RichTextLabel" /> usa <c>FitContent = false</c> y ajusta la
+///     El <see cref="RichLabels" /> usa <c>FitContent = false</c> y ajusta la
 ///     altura mínima del panel al alto real del texto para que las listas de
 ///     varias líneas nunca se recorten.
 /// </remarks>
@@ -144,15 +146,20 @@ public partial class WordsPanel : PanelContainer
         return text.ToString();
     }
 
-    /// <summary>Dispara confeti píxel sobre una posición global (p. ej. una celda).</summary>
-    public void TriggerConfetti(Vector2 globalPosition)
-    {
-        if (_confetti == null) return;
+    /// <summary>
+///     Dispara el estallido de confeti de victoria sobre una posición global
+///     (p. ej. el centro del tablero). Se llama únicamente al completar el
+///     tablero (spec §4.3); las palabras individuales encontradas no disparan
+///     confeti, solo animación de celda y tachado en el footer.
+/// </summary>
+public void EmitConfettiAt(Vector2 globalPosition)
+{
+    if (_confetti == null) return;
 
-        // CpuParticles2D usa coordenadas locales del panel.
-        var localPosition = GetGlobalTransform().AffineInverse() * globalPosition;
-        _confetti.EmitAt(localPosition);
-    }
+    // CpuParticles2D usa coordenadas locales del panel.
+    var localPosition = GetGlobalTransform().AffineInverse() * globalPosition;
+    _confetti.EmitAt(localPosition);
+}
 
     /// <summary>
     ///     Ajusta la altura mínima del panel al alto real del texto (más los
@@ -197,30 +204,5 @@ public partial class WordsPanel : PanelContainer
         label.AddThemeColorOverride("default_color", PixelStyles.Tinta);
         label.AddThemeConstantOverride("line_separation", LineSeparation);
         return label;
-    }
-}
-
-/// <summary>Emisor de confeti píxel basado en <see cref="CpuParticles2D" />.</summary>
-public partial class PixelConfettiEmitter : CpuParticles2D
-{
-    public override void _Ready()
-    {
-        base._Ready();
-
-        Lifetime = 0.6f;
-        Amount = 30;
-        OneShot = true;
-        Explosiveness = 1.0f;
-        SpeedScale = 1.0f;
-        Gravity = new Vector2(0, 30);
-        Color = PixelStyles.Turquesa;
-        Emitting = false;
-    }
-
-    public void EmitAt(Vector2 position)
-    {
-        Position = position;
-        Amount = 30;
-        Restart();
     }
 }

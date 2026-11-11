@@ -71,7 +71,8 @@ public partial class ThemeManager : Node
                 CellFoundBackgroundColor = Color.FromHtml("#099C92"),
                 CellFoundTextColor = Color.FromHtml("#FFFFFF"),
                 FooterTextColor = Color.FromHtml("#477987"),
-                FooterStrikethroughColor = Color.FromHtml("#099C92")
+                FooterStrikethroughColor = Color.FromHtml("#099C92"),
+                CelebrationRed = Color.FromHtml("#B45252")
             },
             "dark_contrast" => new ThemeData
             {
@@ -85,7 +86,8 @@ public partial class ThemeManager : Node
                 CellFoundBackgroundColor = Color.FromHtml("#099C92"),
                 CellFoundTextColor = Color.FromHtml("#FFFFFF"),
                 FooterTextColor = Color.FromHtml("#B0B0B0"),
-                FooterStrikethroughColor = Color.FromHtml("#099C92")
+                FooterStrikethroughColor = Color.FromHtml("#099C92"),
+                CelebrationRed = Color.FromHtml("#B45252")
             },
             _ => new ThemeData { ThemeId = themeId }
         };

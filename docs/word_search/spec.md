@@ -117,6 +117,10 @@ Todos los botones del minijuego usan `BigButton : PixelButton` y la fábrica `Pi
 
 * Transcurridos 300 ms, un modal elástico (`LevelCompleteModal`) muestra el tiempo total, pistas usadas y el progreso hacia las 20 victorias.
 
+* **Paleta de confeti (v0.5.0):** los colores proceden **exclusivamente de tokens de la paleta global** — `Turquesa` (#099C92), `Amarillo` (#FDC109), `Cian` (#08D0DF) y `CelebrationRed` (#B45252, token agregado en v0.5.0). No se usan valores hex ad hoc. Ver [`docs/word_search/art_direction.md`](art_direction.md) §8.1.
+
+* **Regla de disparo:** confeti **solo en victoria**. Las palabras individuales encontradas reciben animación sutil de celda y tachado en el footer (`~~PALABRA~~`), no confeti.
+
 ## 5. Arquitectura de Software y Patrones de Diseño (C# / Godot 4)
 
 La arquitectura sigue estrictamente los principios **SOLID**, **KISS**, **YAGNI**, **DRY** y **Bajo Acoplamiento**:

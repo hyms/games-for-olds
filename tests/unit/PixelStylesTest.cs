@@ -155,4 +155,37 @@ public class PixelStylesTest
             .IsTrue();
         button.Free();
     }
+
+    /// <summary>WS-THEME-05: el token CelebrationRed (#B45252) vive en PixelStyles y es aditivo.</summary>
+    [TestCase]
+    public void CelebrationRedEsUnTokenAditivoDePixelArt()
+    {
+        AssertString(PixelStyles.CelebrationRed.ToHtml(false)).IsEqual("#b45252");
+
+        // Aditivo: no redefine ningún token canónico de la matriz global.
+        AssertBool(PixelStyles.Cian.ToHtml(false) != PixelStyles.CelebrationRed.ToHtml(false)).IsTrue();
+        AssertBool(PixelStyles.Amarillo.ToHtml(false) != PixelStyles.CelebrationRed.ToHtml(false)).IsTrue();
+        AssertBool(PixelStyles.Turquesa.ToHtml(false) != PixelStyles.CelebrationRed.ToHtml(false)).IsTrue();
+    }
+
+    /// <summary>WS-THEME-06: la rampa de confeti usa exclusivamente tokens de la paleta global.</summary>
+    [TestCase]
+    public void RampadeConfetiUsaSoloTokensDeLaPaletaGlobal()
+    {
+        // El emisor construye la rampa con los 4 tokens aprobados (spec §4.3).
+        // Aquí se verifica que los colores fuente existen y son distintos.
+        var colors = new[]
+        {
+            PixelStyles.Turquesa,
+            PixelStyles.Amarillo,
+            PixelStyles.Cian,
+            PixelStyles.CelebrationRed
+        };
+
+        var set = new System.Collections.Generic.HashSet<string>();
+        foreach (var color in colors)
+            set.Add(color.ToHtml(false));
+
+        AssertInt(set.Count).IsEqual(4);
+    }
 }

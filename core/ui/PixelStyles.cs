@@ -38,8 +38,10 @@ public static class PixelStyles
     public static readonly Color TitleTopHighlight = new("#B0C2C6");
     public static readonly Color TitleReliefMid = new("#94B3B8");
     public static readonly Color TitleReliefLight = new("#D3ECF0");
-    public static readonly Color Turquesa = new("#099c92"); // Acento de celdas seleccionadas/encontradas
+public static readonly Color Turquesa = new("#099c92"); // Acento de celdas seleccionadas/encontradas
     public static readonly Color Cian = new("#08d0df");
+    public static readonly Color Amarillo = new("#fdc109"); // Acento cálido (confeti/celebración)
+    public static readonly Color CelebrationRed = new("#b45252"); // Coral cálido de confeti/celebración (token agregado v0.5.0)
 
     // --- Estados del tablero -------------------------------------------------
     public static readonly Color CeldaSeleccion = new("#6095fb");

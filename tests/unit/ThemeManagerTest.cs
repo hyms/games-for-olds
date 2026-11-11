@@ -89,6 +89,22 @@ public class ThemeManagerTest
         return save;
     }
 
+    /// <summary>WS-THEME-04: el token CelebrationRed (#B45252) existe en los temas y es aditivo.</summary>
+    [TestCase]
+    public void CelebrationRedExisteEnLosTemasYEsAditivo()
+    {
+        var classic = _theme.GetThemeData("classic");
+        var dark = _theme.GetThemeData("dark_contrast");
+
+        AssertString(classic.CelebrationRed.ToHtml(false)).IsEqual("#b45252");
+        AssertString(dark.CelebrationRed.ToHtml(false)).IsEqual("#b45252");
+
+        // Aditivo: no altera ningún token existente de la matriz canónica.
+        AssertString(classic.HeaderBannerColor.ToHtml(false)).IsEqual("#a0bfc7");
+        AssertString(classic.CellFoundBackgroundColor.ToHtml(false)).IsEqual("#099c92");
+        AssertString(classic.FooterStrikethroughColor.ToHtml(false)).IsEqual("#099c92");
+    }
+
     private static void SetPath(SaveManager save, string fieldName, string godotPath)
     {
         typeof(SaveManager)
