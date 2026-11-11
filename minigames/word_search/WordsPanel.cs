@@ -78,7 +78,8 @@ public partial class WordsPanel : PanelContainer
 
         if (_stylePanel != null)
         {
-            _stylePanel.BgColor = theme.CellIdleBackgroundColor;
+            // El fondo del panel permanece en Placa (#efefee) de forma canónica;
+            // solo el borde se actualiza con el tema.
             _stylePanel.BorderColor = theme.CellIdleBorderColor;
             AddThemeStyleboxOverride("panel", _stylePanel);
         }
@@ -110,40 +111,9 @@ public partial class WordsPanel : PanelContainer
         if (theme != null) _theme = theme;
 
         // Construir texto con formato explícito de color alto contraste.
-        var text = BuildWordListWithFormatting(pending, found, _theme);
+        var text = WordSearchHud.BuildWordList(pending, found, _theme);
         _wordList.Text = text;
         QueueHeightSync();
-    }
-
-    private static string BuildWordListWithFormatting(ICollection<string> pending,
-        IReadOnlyList<string> found, ThemeData theme)
-    {
-        var text = new System.Text.StringBuilder();
-        var textColor = PixelStyles.TextColor(theme?.CellIdleBackgroundColor ?? Color.FromHtml("#EBF2F5"));
-        var strikeColor = theme?.FooterStrikethroughColor ?? PixelStyles.Turquesa;
-        var strikeHex = strikeColor.ToHtml(false);
-
-        foreach (var word in pending)
-        {
-            if (text.Length > 0) text.Append(" | ");
-            text.Append("[color=#");
-            text.Append(textColor.ToHtml(false));
-            text.Append("]");
-            text.Append(word);
-            text.Append("[/color]");
-        }
-
-        foreach (var word in found)
-        {
-            if (text.Length > 0) text.Append(" | ");
-            text.Append("[color=#");
-            text.Append(strikeHex);
-            text.Append("][s]");
-            text.Append(word);
-            text.Append("[/s][/color]");
-        }
-
-        return text.ToString();
     }
 
     /// <summary>
