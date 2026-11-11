@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using ClasicosMenteActiva.core.ui;
 using Godot;
 
 namespace ClasicosMenteActiva.core;
@@ -27,6 +28,7 @@ public abstract partial class BaseMinigame : Control
 
     protected PanelContainer PauseModal { get; private set; }
     protected PanelContainer WinModal { get; private set; }
+    protected CompletionModal CompletionModal { get; private set; }
     protected PanelContainer TitlePanel { get; private set; }
     protected PanelContainer SubtitlePanel { get; private set; }
 
@@ -51,6 +53,7 @@ public abstract partial class BaseMinigame : Control
         BtnWinMenu = GetNodeOrNull<BigButton>("%BtnWinMenu");
         PauseModal = GetNodeOrNull<PanelContainer>("%PauseModal");
         WinModal = GetNodeOrNull<PanelContainer>("%WinModal");
+        CompletionModal = GetNodeOrNull<CompletionModal>("%WinModal");
 
         WireSharedButtons();
         CreateClockTimer();

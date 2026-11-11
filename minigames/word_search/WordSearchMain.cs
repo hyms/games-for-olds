@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ClasicosMenteActiva.core;
+using ClasicosMenteActiva.core.ui;
 using ClasicosMenteActiva.minigames.word_search;
 using Godot;
 
@@ -46,6 +47,7 @@ public partial class WordSearchMain : BaseMinigame
     private Label _pauseTitle;
     private Label _winTitle;
     private int _hintUses = MaxHints;
+    private CompletionModal _completionModal;
 
     public DifficultyConfig Config { get; private set; }
 
@@ -85,6 +87,8 @@ public partial class WordSearchMain : BaseMinigame
 
         _pauseTitle = GetNodeOrNull<Label>("%PauseTitle");
         _winTitle = GetNodeOrNull<Label>("%WinTitle");
+
+        _completionModal = GetNode<CompletionModal>("%WinModal");
 
         WireButtons();
 
@@ -150,6 +154,10 @@ public partial class WordSearchMain : BaseMinigame
         _btnNextGame.Pressed += StartNewGame;
         _btnPauseMenu.Pressed += GoToMainMenu;
         if (_btnPause != null) _btnPause.Pressed += OpenPause;
+
+        // Confetti de victoria: el modal emite ConfettiRequested; el controlador
+        // lo conecta al emisor de WordsPanel (desacoplado del componente modal).
+        _completionModal.ConfettiRequested += pos => _wordsPanel?.EmitConfettiAt(pos);
 
         // Zoom del tablero: botones + / − en la NavRow (spec §4).
         if (_btnZoomIn != null) _btnZoomIn.Pressed += () => Board?.ZoomIn();
@@ -266,16 +274,12 @@ private void CompleteGame()
                    ?? GetNodeOrNull<SaveManager>("/root/SaveManager");
         save?.RegisterResult("word_search", Config.Id, true, secondsElapsed, score);
 
-        if (_winScore != null) _winScore.Text = $"Puntaje: {score}";
+        // Confeti de victoria inmediato: se lanza antes del modal para que sea
+        // visible antes del bloqueo (spec §4.3). El componente modal emite
+        // ConfettiRequested; el controlador lo conecta al emisor de WordsPanel.
+        _completionModal.EmitConfetti(GetBoardCenter());
 
-        if (_winTime != null) _winTime.Text = $"Tiempo: {FormatSeconds(secondsElapsed)}";
-
-        // Confeti de victoria: estallido de partículas pixel art sobre el centro
-        // del tablero (spec §4.3). El emisor vive en WordsPanel; la posición se
-        // convierte a locales del panel. El modal se muestra 300 ms después,
-        // como exige la spec, para que el confeti sea visible antes del bloqueo.
-        _wordsPanel?.EmitConfettiAt(GetBoardCenter());
-
+        // El modal se muestra ~300 ms después (spec §4.3).
         var timer = new Timer
         {
             Name = "VictoryModalTimer",
@@ -284,11 +288,13 @@ private void CompleteGame()
         };
         timer.Timeout += () =>
         {
-            if (WinModal != null)
-            {
-                WinModal.Visible = true;
-                _btnNextGame.GrabFocus();
-            }
+            _completionModal.Show(
+                CompletionModal.CompletionState.Victory,
+                "¡Victoria!", "",
+                $"Puntaje: {score}",
+                $"Tiempo: {FormatSeconds(secondsElapsed)}",
+                onRetry: StartNewGame,
+                onQuit: GoToMainMenu);
             timer.QueueFree();
         };
         AddChild(timer);

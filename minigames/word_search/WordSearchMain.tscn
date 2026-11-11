@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Theme" uid="uid://bq7knk8x6g1mh" path="res://core/AccessibleTheme.tres" id="1_theme"]
 [ext_resource type="Script" path="res://minigames/word_search/WordSearchMain.cs" id="2_script"]
@@ -8,6 +8,7 @@
 [ext_resource type="FontFile" path="res://assets/fonts/PressStart2P.ttf" id="6_press"]
 [ext_resource type="FontFile" path="res://assets/fonts/VCR_OSD_Mono.ttf" id="8_vcr"]
 [ext_resource type="Script" uid="uid://dq4klv01b0mpb" path="res://minigames/word_search/WordsPanel.cs" id="9_words"]
+[ext_resource type="Script" path="res://core/ui/CompletionModal.cs" id="11_completion"]
 [ext_resource type="Script" path="res://core/SafeAreaManager.cs" id="10_safearea"]
 
 [node name="WordSearchMain" type="Control"]
@@ -265,7 +266,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Salir al menú principal"
 
-[node name="WinModal" type="PanelContainer" parent="."]
+[node name="WinModal" type="PanelContainer" parent="." script=ExtResource("11_completion")]
 unique_name_in_owner = true
 visible = false
 z_index = 11
@@ -298,6 +299,15 @@ horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_fonts/font = ExtResource("6_press")
 theme_override_font_sizes/font_size = 18
+
+[node name="WinMessage" type="Label" parent="WinModal/Center/WinCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_fonts/font = ExtResource("8_vcr")
+theme_override_font_sizes/font_size = 14
 
 [node name="WinScore" type="Label" parent="WinModal/Center/WinCard/VBox"]
 unique_name_in_owner = true
