@@ -241,6 +241,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Pista (3)"
 
+[node name="BtnHelp" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 1
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Ayuda"
+
 [node name="BtnReset" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 1
 unique_name_in_owner = true

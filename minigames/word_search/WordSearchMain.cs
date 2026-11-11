@@ -31,6 +31,7 @@ public partial class WordSearchMain : BaseMinigame
 
     private Control _boardArea;
     private BigButton _btnHint;
+    private BigButton _btnHelp;
     private BigButton _btnNextGame;
     private BigButton _btnPauseMenu;
     private BigButton _btnPause;
@@ -69,6 +70,7 @@ public partial class WordSearchMain : BaseMinigame
         _winScore = GetNodeOrNull<Label>("%WinScore");
         _winTime = GetNodeOrNull<Label>("%WinTime");
         _btnHint = GetNode<BigButton>("%BtnHint");
+        _btnHelp = GetNode<BigButton>("%BtnHelp");
         _btnReset = GetNode<BigButton>("%BtnReset");
         _btnNextGame = GetNode<BigButton>("%BtnNextGame");
         _btnPauseMenu = GetNode<BigButton>("%BtnPauseMenu");
@@ -143,6 +145,7 @@ public partial class WordSearchMain : BaseMinigame
     private void WireButtons()
     {
         _btnHint.Pressed += UseHint;
+        if (_btnHelp != null) _btnHelp.Pressed += UseHint;
         _btnReset.Pressed += StartNewGame;
         _btnNextGame.Pressed += StartNewGame;
         _btnPauseMenu.Pressed += GoToMainMenu;
