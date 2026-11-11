@@ -82,4 +82,13 @@ public static class WordSearchVisuals
 
     /// <summary>Tamaño de letra de los botones de nivel.</summary>
     public const int LevelButtonFontSize = 20;
+
+    /// <summary>Alto mínimo de cada tarjeta de nivel (objetivo táctil, spec §3).</summary>
+    public const int LevelCardMinHeight = 76;
+
+    /// <summary>Tamaño de fuente del nombre del nivel.</summary>
+    public const int LevelCardFontSize = 20;
+
+    /// <summary>Tamaño de fuente de las métricas secundarias (progreso, tablero).</summary>
+    public const int LevelCardSubFontSize = 14;
 }
