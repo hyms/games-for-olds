@@ -26,6 +26,7 @@ public partial class WordGridContainer : Control
     private readonly List<Vector2I> _preview = new();
     private readonly DragSelection _selection = new();
 
+    private WordTraceOverlay _trace;
     private WordCell[,] _cells;
     private float _gap;
     private Timer _hintTimer;
@@ -33,6 +34,7 @@ public partial class WordGridContainer : Control
     private Tween _invalidTween;
     private char[,] _letters;
     private Vector2 _origin;
+    private bool _isPressed;
 
     // --- Zoom (Fase 4) -------------------------------------------------------
     private float _zoom = WordSearchVisuals.MinZoom;
@@ -60,19 +62,11 @@ public partial class WordGridContainer : Control
         EnsureTrace();
         EnsureHintTimer();
         UpdateLayout();
-
-        // Conectar traductor de input (Composite: el contenedor orquesta, el handler
-        // solo traduce eventos a acciones).
-        _input.SelectionBegan += OnInputBegan;
-        _input.SelectionUpdated += OnInputUpdated;
-        _input.SelectionEnded += OnInputEnded;
-        _input.SelectionCanceled += OnInputCanceled;
     }
 
     private void EnsureTrace()
     {
         // Trace overlay no se destruye entre partidas; vive en el contenedor.
-        if (_cells == null || Rows == 0 || Columns == 0) return;
         var existing = FindChild("Trace", true, false);
         if (existing != null) return;
         _trace = new WordTraceOverlay { Name = "Trace" };
@@ -92,6 +86,17 @@ public partial class WordGridContainer : Control
     public override void _Notification(int what)
     {
         if (what == NotificationResized) UpdateLayout();
+    }
+
+    /// <summary>
+    ///     Recalcula la geometría de la grilla y vuelve a aplicar el zoom actual.
+    ///     Usado al cambiar el tamaño del contenedor (responsivo) y tras Setup().
+    /// </summary>
+    private void UpdateLayout()
+    {
+        ComputeGridLayout();
+        PivotOffset = PivotOffset.Center;
+        Scale = new Vector2(_zoom, _zoom);
     }
 
     /// <summary>
@@ -169,7 +174,6 @@ public partial class WordGridContainer : Control
         var (preferredCellSize, gap) = WordSearchVisuals.BoardMetricsFor(Rows, Columns);
 
         // Ajustar al tamaño disponible: reducir solo lo justo para que quepa el tablero entero.
-        var step = preferredCellSize + gap;
         var totalWidth = preferredCellSize * Columns + gap * (Columns - 1);
         var totalHeight = preferredCellSize * Rows + gap * (Rows - 1);
         var originX = Mathf.Floor((Size.X - totalWidth) / 2.0f);
@@ -328,7 +332,7 @@ public partial class WordGridContainer : Control
         ClearPreview();
     }
 
-    /// <summary>Resalta temporalmente la palabra indicada (pista, 1.5 s según spec §4.2).</summary>
+    /// <summary>Destella una selección inválida durante <paramref name="seconds" /> sin penalizar.</summary>
     public void FlashInvalid(IReadOnlyList<Vector2I> cells, float seconds = WordSearchVisuals.InvalidFlashSeconds)
     {
         if (cells == null || cells.Count == 0) return;
@@ -402,41 +406,96 @@ public partial class WordGridContainer : Control
         if (_invalidCells.Count > 0) RestoreInvalid();
     }
 
-    // --- Input -------------------------------------------------------------
-
-    public override void _GuiInput(InputEvent @event)
-    {
-        if (_input.Process(@event)) AcceptEvent();
-    }
-
-    private void OnInputBegan(Vector2 localPosition)
-    {
-        BeginSelection(localPosition);
-    }
-
-    private void OnInputUpdated(Vector2 localPosition)
-    {
-        UpdateSelection(localPosition);
-    }
-
-    private void OnInputEnded(Vector2 localPosition)
-    {
-        if (!_selection.IsActive)
-            ClearPreview();
-        else
-            EndSelection(localPosition);
-    }
-
-    private void OnInputCanceled()
-    {
-        CancelSelection();
-    }
-
     private void ClearPreview()
     {
         foreach (var coord in _preview) GetCell(coord)?.RestoreBaseState();
 
         _preview.Clear();
         _trace?.HideTrace();
+    }
+
+    private void ShowPreview()
+    {
+        ClearPreview();
+        if (!_selection.IsActive) return;
+
+        var path = WordPath.Build(_selection.Start, _selection.End);
+        if (path.Count == 0) path.Add(_selection.Start);
+
+        foreach (var coord in path)
+        {
+            var cell = GetCell(coord);
+            if (cell == null) continue;
+
+            _preview.Add(coord);
+            cell.SetState(WordCellState.Selected);
+        }
+
+        if (_selection.IsDirectionLocked && _selection.End != _selection.Start)
+            _trace.ShowTrace(GetCellCenter(_selection.Start), GetCellCenter(_selection.End));
+        else
+            _trace.HideTrace();
+    }
+
+    // --- Entrada directa (sin BoardInputHandler — YAGNI) ---------------------
+
+    public override void _GuiInput(InputEvent @event)
+    {
+        switch (@event)
+        {
+            case InputEventScreenTouch touch:
+                if (touch.Pressed)
+                {
+                    _isPressed = true;
+                    BeginSelection(touch.Position);
+                    AcceptEvent();
+                    return;
+                }
+
+                if (_isPressed)
+                {
+                    _isPressed = false;
+                    EndSelection(touch.Position);
+                    AcceptEvent();
+                    return;
+                }
+
+                // Release sin pressed previo: estado atrapado, limpiar.
+                CancelSelection();
+                AcceptEvent();
+                return;
+
+            case InputEventScreenDrag drag:
+                if (!_isPressed) return;
+                UpdateSelection(drag.Position);
+                AcceptEvent();
+                return;
+
+            case InputEventMouseButton { ButtonIndex: MouseButton.Left } button:
+                if (button.Pressed)
+                {
+                    _isPressed = true;
+                    BeginSelection(button.Position);
+                    AcceptEvent();
+                    return;
+                }
+
+                if (_isPressed)
+                {
+                    _isPressed = false;
+                    EndSelection(button.Position);
+                    AcceptEvent();
+                    return;
+                }
+
+                CancelSelection();
+                AcceptEvent();
+                return;
+
+            case InputEventMouseMotion motion when _isPressed:
+                UpdateSelection(motion.Position);
+                AcceptEvent();
+                return;
+        }
     }
 }
