@@ -33,6 +33,7 @@ public partial class WordSearchMain : BaseMinigame
     private BigButton _btnHint;
     private BigButton _btnNextGame;
     private BigButton _btnPauseMenu;
+    private BigButton _btnPause;
     private BigButton _btnReset;
     private BigButton _btnZoomIn;
     private BigButton _btnZoomOut;
@@ -71,6 +72,7 @@ public partial class WordSearchMain : BaseMinigame
         _btnReset = GetNode<BigButton>("%BtnReset");
         _btnNextGame = GetNode<BigButton>("%BtnNextGame");
         _btnPauseMenu = GetNode<BigButton>("%BtnPauseMenu");
+        _btnPause = GetNodeOrNull<BigButton>("%BtnPause");
         _btnZoomIn = GetNodeOrNull<BigButton>("%BtnZoomIn");
         _btnZoomOut = GetNodeOrNull<BigButton>("%BtnZoomOut");
 
@@ -144,6 +146,7 @@ public partial class WordSearchMain : BaseMinigame
         _btnReset.Pressed += StartNewGame;
         _btnNextGame.Pressed += StartNewGame;
         _btnPauseMenu.Pressed += GoToMainMenu;
+        if (_btnPause != null) _btnPause.Pressed += OpenPause;
 
         // Zoom del tablero: botones + / − en la NavRow (spec §4).
         if (_btnZoomIn != null) _btnZoomIn.Pressed += () => Board?.ZoomIn();
