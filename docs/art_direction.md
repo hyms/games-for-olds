@@ -1,101 +1,133 @@
-# Dirección de Arte — Clásicos Mente Activa 2D (v0.5)
+# Dirección de Arte Global — Clásicos Mente Activa 2D
 
-> **Documento SDD global de estilo visual, librería de componentes y temas dinámicos.**
-> Define las reglas de diseño para la UI en Pixel Art adaptada a dispositivos móviles con notch, pantallas OLED/LCD y soporte para personalización de colores global.
-
----
-
-## 1. Reglas Generales de Pantalla y Arte Retro
-
-* **Regla de Oro (Pixel Art Puro):** Todo elemento visual (UI, botones, iconos, contenedores, tipografías y efectos) debe dibujarse mediante sprites pixel art o `StyleBoxFlat` sin suavizado de bordes (*anti-aliasing* desactivado).
-* **Fondo Principal:** Base clara adaptable por tema (`#FFFFFF` por defecto).
-* **Safe Area (Notch Support):** Todo layout de escena debe envolverse en un `MarginContainer` con:
-  * `margin_top = 48`
-  * `margin_bottom = 16`
-  * `margin_left = 16`
-  * `margin_right = 16`
-* **Texturas y Filtros:** Texturas con `Texture Filter = Nearest` sin anti-aliasing ni mipmaps en importación y nodos de Godot.
+> **Documento SDD maestro (global)** de UI/UX, componentes base, tipografía, paleta y herencia visual.  
+> **Versión:** 1.0 · **Estado:** Vigente · **Última actualización:** 2026-11-10  
+> **Alcance:** normas universales de la aplicación (estándares UI globales, componentes base universales, **matriz inmutable de paleta global** y **Master Index** de direcciones de arte por minijuego). Las métricas, layouts y comportamientos específicos de cada minijuego se definen en su documento de dirección de arte y **heredan** de este maestro.
 
 ---
 
-## 2. Sistema de Temas Dinámicos de Color (ThemeManager Architecture)
+## 1. Propósito, alcance y autoridad
 
-Para permitir que el usuario cambie el aspecto visual de la aplicación completa (ej. Tema Clásico, Tema Noche / Dark, Tema Pastel, Tema Retro GameBoy), la paleta de colores se abstrae en recursos de datos y tokens globales.
-
-### 2.1 Estructura de Data Theme (`ThemeData.cs`)
-
-Cada tema es una clase pura o `Resource` que define los siguientes tokens de color:
-
-```csharp
-public class ThemeData
-{
-    public string ThemeId { get; set; } = "classic";
-    public Color BackgroundColor { get; set; } = Color.FromHtml("#FFFFFF");
-    public Color HeaderBannerColor { get; set; } = Color.FromHtml("#A0BFC7");
-    public Color SubheaderBannerColor { get; set; } = Color.FromHtml("#477987");
-    public Color CellIdleBackgroundColor { get; set; } = Color.FromHtml("#EBF2F5");
-    public Color CellIdleBorderColor { get; set; } = Color.FromHtml("#A0BFC7");
-    public Color CellIdleTextColor { get; set; } = Color.FromHtml("#101010");
-    public Color CellFoundBackgroundColor { get; set; } = Color.FromHtml("#099C92");
-    public Color CellFoundTextColor { get; set; } = Color.FromHtml("#FFFFFF");
-    public Color FooterTextColor { get; set; } = Color.FromHtml("#477987");
-    public Color FooterStrikethroughColor { get; set; } = Color.FromHtml("#099C92");
-}
-```
-
-### 2.2 Notificación Replay / Inyección de Temas
-El `ThemeManager.cs` (Autoload / Singleton) emite un evento `event Action<ThemeData> OnThemeChanged` al seleccionar una paleta nueva. Todas las celdas, botones y banners se suscriben para actualizar su `StyleBoxFlat` o `SelfModulate` en tiempo real.
+- Este documento es la **fuente de verdad global** para: reglas de presentación retro/pixel, accesibilidad visual base, componentes universales, **tokens tipográficos**, **matriz inmutable de paleta global** y política de **herencia visual**.
+- **No** define métricas de grilla, layouts de escena, reglas de puntuación ni comportamientos exclusivos de un minijuego (p. ej. tablero, zoom, footer o partículas concretas). Esos detalles viven en los documentos indexados en la [§8 Master Index](#8-master-index--direcciones-de-arte-por-minijuego).
+- En caso de conflicto, la precedencia es: **Matriz de paleta global (§4) y reglas de herencia (§7)** > este documento global > dirección de arte del minijuego > implementación puntual. Las desviaciones temporales deben documentarse explícitamente en el minijuego y resolverse sin redefinir tokens globales.
 
 ---
 
-## 3. Librería Reutilizable de Componentes Pixel Art (`res://scenes/ui/components/`)
+## 2. Reglas globales de pantalla y presentación (pixel art)
 
-Todos los minijuegos deben reutilizar los siguientes componentes prefabricados:
+- **Renderizado nítido:** sprites y UI con `Texture Filter = Nearest`, sin suavizado de bordes (*anti-aliasing*) ni mipmaps donde aplique. Para `StyleBoxFlat`/bordes, usar `AntiAliasing = false` salvo justificación documentada.
+- **Estilo retro consistente:** preferir geometría y sombreado “duros” (bordes/sombras en píxeles enteros, sin transparencias que generen efecto fantasma en estados activos/encontrados). Los estados críticos deben distinguirse por **forma/borde/icono además de color**.
+- **Fondo base de aplicación:** claro y adaptable por tema (token `BackgroundColor`, por defecto `#FFFFFF`).
+- **Safe Area / notch:** los layouts deben respetar el área segura del dispositivo. Patrón base recomendado: contenedor con márgenes seguros (p. ej. `MarginContainer` con top/bottom/left/right acordes al dispositivo; referencia histórica 48/16/16/16) y/o gestor de safe area (`core/SafeAreaManager.cs`) aplicando `max(mínimo configurado, inset del display)`.
+- **Accesibilidad base:** objetivos táctiles mínimos **≥ 56×56 px lógicos** para controles principales; contraste suficiente (WCAG: texto ≥ 4.5:1, indicadores/bordes ≥ 3:1 cuando aplique); no depender solo del color para comunicar estado.
 
-| Componente | Ruta de la Escena | Descripción y Función Visual |
+> **Nota de evolución:** si un minijuego requiere radios de esquina o relieve específicos para alinearse a una referencia visual, debe declararlo como **override métrico/estilístico de alcance local** en su propia dirección de arte, manteniendo intactos los valores de la paleta global y la legibilidad/accesibilidad.
+
+---
+
+## 3. Sistema de temas y aplicación de tokens
+
+- **`ThemeData` (`core/ThemeData.cs`)** define tokens de color consumibles por UI, celdas, banners y paneles. **`ThemeManager` (`core/ThemeManager.cs`)** es el punto central (autoload/singleton) que expone el tema activo y notifica cambios (`OnThemeChanged` / señales) para que los componentes actualicen estilos en tiempo real.
+- **`PixelStyles` (`core/ui/PixelStyles.cs`)** centraliza fábrica/utilidades de `StyleBoxFlat` y helpers de contraste para la línea visual pixel/retro del proyecto.
+- Los temas alternativos pueden **mapear** los tokens globales a variantes (p. ej. alto contraste/oscuro), pero **no deben contradecir el significado semántico** de los tokens (idle, found, hint, texto, etc.) ni redefinir la matriz canónica base fuera de un contrato de tema documentado.
+
+---
+
+## 4. Matriz inmutable de paleta global (autoridad canónica)
+
+**Inmutable:** los nombres, roles y valores hex de esta matriz son la referencia global. Los minijuegos **referencian** estos tokens; no los redefinen.
+
+| Token | Hex | Rol / uso | Fuente canónica |
+|---|---|---|---|
+| `BackgroundColor` / `Fondo` | `#FFFFFF` | Fondo principal de app/escenas (base clara) | `ThemeData`, `PixelStyles` |
+| `HeaderBannerColor` / `PlacaHeader` | `#A0BFC7` | Banner/cabecera, acentos de placa | `ThemeData`, `PixelStyles` |
+| `SubheaderBannerColor` | `#477987` | Sub-banners, texto secundario/footer en tema | `ThemeData` |
+| `CellIdleBackgroundColor` | `#EBF2F5` | Fondo de celda/grilla en reposo | `ThemeData` |
+| `CellIdleBorderColor` / `Arena` | `#A0BFC7` / `#B0C2CC` | Borde fino de celda/reposo y superficies suaves (*nota: variantes cercanas; usar el token del contexto UI/tema*) | `ThemeData`, `PixelStyles` |
+| `CellIdleTextColor` / `TextDark` | `#101010` | Texto oscuro base sobre claros / celda idle | `ThemeData`, `PixelStyles` |
+| `CellFoundBackgroundColor` / `Turquesa` | `#099C92` | Estado encontrado/selección-acierto (acento principal) | `ThemeData`, `PixelStyles` |
+| `CellFoundTextColor` / `TextLight` | `#FFFFFF` | Texto sobre acento/encontrado (alto contraste) | `ThemeData`, `PixelStyles` |
+| `FooterTextColor` | `#477987` | Texto del panel/lista inferior | `ThemeData` |
+| `FooterStrikethroughColor` | `#099C92` | Tachado/marca de palabra encontrada en footer | `ThemeData` |
+| `Tinta` | `#4E6077` | Texto/bordes principales sobre superficies claras | `PixelStyles` |
+| `Borde` | `#4E6077` | Borde visible de placas/celdas/botones | `PixelStyles` |
+| `Sombra` | `#8A9AAA` | Sombra dura decorativa (relieve) | `PixelStyles` |
+| `Celda` | `#FFFCFB` | Relleno claro de celdas/paneles claros | `PixelStyles` |
+| `Placa` | `#EFEFEE` | Interior de placas/modales | `PixelStyles` |
+| `CeldaSeleccion` | `#6095FB` | Selección/trazo en curso (según componente) | `PixelStyles` |
+| `Trazo` | `#2B56B8` | Línea/indicador de trazo | `PixelStyles` |
+| `EncontradaBorde` | `#06706A` | Borde de estado encontrado (contraste reforzado) | `PixelStyles` |
+| `PistaAcento` | `#F9881E` | Resaltado de pista/ayuda | `PixelStyles` |
+| `PistaBorde` | `#8A4600` | Borde de pista/ayuda | `PixelStyles` |
+| `Amarillo` | `#FDC109` | Acento secundario | `PixelStyles` |
+| `Cian` | `#08D0DF` | Acento secundario | `PixelStyles` |
+
+> **Deriva conocida:** existen diferencias históricas entre valores de tema y utilidades de estilo (p. ej. bordes de celda idle). Al implementar o refinar, consolidar contra la fuente canónica indicada y actualizar esta matriz si se aprueba un cambio global; los minijuegos deben seguir los **tokens**, no valores ad hoc.
+
+---
+
+## 5. Componentes base universales
+
+Componentes reutilizables (rutas orientativas en `res://scenes/ui/components/` y equivalentes en código):
+
+| Componente | Propósito | Guía visual global |
 |---|---|---|
-| **PixelButton** | `res://scenes/ui/components/PixelButton.cs` | Botón táctil universal (`BigButton.tscn` lo hereda). Borde de píxel de 2 px, bisel duro de 1 px y hundimiento de 2 px al pulsar. Estilos centralizados en `core/ui/PixelButtonStyle.cs`. |
-| **PixelBanner** | `res://scenes/ui/components/PixelBanner.tscn` | Panel de título o sub-banner personalizable con marco estilo retro de 3 píxeles de grosor. |
-| **PixelCell** | `res://scenes/ui/components/PixelCell.cs` | Celda interactiva reutilizable para Sopa de Letras, Tangram o grillas de lógica con estados `Idle`, `Hover/Selected` y `Completed`. Estilos en `core/ui/PixelCellStyle.cs`. |
-| **PixelHeaderHUD** | `res://scenes/ui/components/PixelHeaderHUD.tscn` | Barra de navegación superior estandarizada (Atrás, Pausa, Cronómetro y Progreso). |
-| **WordsPanel** | `res://minigames/word_search/WordsPanel.cs` | Panel inferior de la Sopa de Letras: lista de palabras con divisores pixelados (`\|`), tachado turquesa y confeti. Marco de 2 px, sombra dura, esquinas rectas y márgenes internos de 12/8 px. |
+| **Botón (pixel/BigButton)** | Acción táctil principal/secundaria | ≥ 56×56 px, estados normal/hover/pressed/disabled/focus claros, relieve/press “pixel” consistente; foco visible por forma/borde |
+| **Banner/Placa (`PixelBanner`, placas)** | Títulos, cabeceras, tarjetas | Superficies con borde/relieve legible usando tokens de placa/borde/sombra |
+| **Celda (`PixelCell`)** | Unidad de grilla interactiva | Estados idle/selected/found/hint derivados de tokens; legibilidad y contraste prioritarios |
+| **HUD/Header (`PixelHeaderHUD`)** | Navegación, estado, progreso, tiempo | Jerarquía clara, controles accesibles, sin saturar el área segura |
+| **Footer/Panel (`PixelFooterPanel`)** | Listas/objetivos/palabras | Contenido legible, separadores claros, respeto de safe area inferior |
+| **Modales (backdrop + card)** | Pausa, confirmación, victoria | Bloqueo de fondo sólido, tarjeta legible, acciones con targets accesibles, foco contenido |
 
-### 3.1 Botones con relieve 3D
-
-Todos los botones derivan de `PixelButton` y comparten una única fábrica, `PixelButtonStyle.For(variant, state, theme)`. No se permiten estilos locales por escena.
-
-| Variante | Uso | Tipografía | Tamaño | Márgenes (X/Y) |
-|---|---|---|---|---|
-| `Hud` | Atrás / Pausa del minijuego | VCR OSD Mono | 16 px | 10 / 10 |
-| `Action` | Acciones de modales (Continuar, Pista…) | VCR OSD Mono | 18 px | 14 / 12 |
-| `Menu` | Menú principal y dificultad | Atkinson Hyperlegible | 20 px | 16 / 12 |
-
-| Estado | Relleno | Texto/icono | Relieve | Sombra dura | Contenido |
-|---|---|---|---|---|---|
-| Normal | `HeaderBannerColor` (#A0BFC7) | `TextColor(fill)` → #101010 | Elevado | Sí, (2,2) | Base |
-| Hover | `SubheaderBannerColor` (#477987) | Blanco | Hundido 1 px | No | Sin desplazar |
-| Pressed | `CellFoundBackgroundColor` oscurecido 30 % | Blanco | Hundido 1 px | No | +2 px abajo |
-| Focus | Anillo exterior oscuro, centro transparente | Igual que normal | Elevado | La del normal | Sin desplazar |
-| Disabled | `Arena` (#B0C2CC) | #101010 | Plano | No | Base |
-
-Reglas fijas: `CornerRadius = 0`, `AntiAliasing = false`, borde exterior de 2 px, bisel interior de 1 px (luz `#FFFFFF` arriba/izquierda, sombra `#535456` abajo/derecha), `Alpha = 1.0` y `icon_max_width = 16` (los PNG de 32 px son un 2× exacto). El desplazamiento del estado pulsado conserva la altura total: `top + 2`, `bottom − 2`.
-
+Los minijuegos pueden **componer** estos patrones y ajustar métricas locales, pero deben respetar la semántica de estados y la paleta/tipografía heredadas.
 
 ---
 
-## 4. Tipografías Oficiales
+## 6. Reglas tipográficas globales (tokens de rol)
 
-Jerarquía tipográfica de la Sopa de Letras (`docs/word_search/spec.md` §1, `assets/fonts/README.md`):
+| Rol / token | Fuente principal | Uso |
+|---|---|---|
+| **Display / Título** | `PressStart2P.ttf` | Títulos, banners principales, modales destacados |
+| **HUD / Mono / UI técnica** | `VCR_OSD_Mono.ttf` | Tiempo, contadores, botones de interfaz, mensajes estilo retro |
+| **Contenido de grilla / listado de juego** | `PixelOperator.ttf` (u operador mono equivalente aprobado) | Letras de celdas, matrices, listas/palabras en juego |
+| **UI accesible / lectura prolongada** | `AtkinsonHyperlegible-Regular.ttf` / Bold | Menús, ajustes, textos de ayuda o donde la legibilidad prime |
 
-* **Títulos, banners y modales:** `PressStart2P.ttf` (spec §1.1)
-* **HUD, cronómetro, contadores y botones:** `VCR_OSD_Mono.ttf` (spec §1.2)
-* **Celdas del tablero, matriz y lista de palabras pendientes:** `PixelOperator.ttf` (spec §1.3)
-* **Interfaz accesible global:** `AtkinsonHyperlegible-Regular.ttf`
+**Reglas:** usar `Nearest` para fuentes pixel; mantener jerarquía y tamaños legibles por dispositivo; cualquier tratamiento de peso (bold/faux-bold) debe preservar nitidez y documentarse en el minijuego si es específico.
 
 ---
 
-## 5. Micro-animaciones de Retroalimentación (*Game Juice*)
+## 7. Regla de herencia visual (obligatoria)
 
-1. **Selección de Celda:** Escalado elástico suave (`1.0 -> 1.06 -> 1.0`) mediante `CreateTween()`.
-2. **Acierto de Palabra:** Destello de color de acento (`CellFoundBackgroundColor`) en las celdas coincidentes con un micro-rebote y efecto de tachado en el footer.
-3. **Pulsación de Botones UI:** Desplazamiento vertical de 2 píxeles hacia abajo al presionar para simular la pulsación física de un botón de consola clásica.
+1. **Heredan de este global (inmutable por minijuego):** **colores base y valores de la matriz de paleta global (§4)**, semántica de estados de color, **estilos/relieve base de botones y componentes**, y **tokens tipográficos y sus roles (§6)** (fuentes heredadas). Ningún minijuego redefine estos tokens globales.
+2. **Puede definir cada minijuego:** layout, métricas, espaciados, tamaños de grilla/celdas, comportamiento de controles (p. ej. zoom), contenido de HUD/footer, animaciones/partículas y copy visual, siempre dentro de las reglas globales de accesibilidad y presentación.
+3. **Overrides permitidos (acotados):** ajustes métricos o de composición necesarios para fidelidad a la referencia del minijuego (p. ej. radio/relieve local, alturas de panel), **sin** sustituir ni redefinir tokens globales. Toda excepción debe indicarse en el documento del minijuego con justificación y verificación visual.
+
+---
+
+## 8. Master Index — Direcciones de arte por minijuego
+
+| Minijuego | Documento | Alcance |
+|---|---|---|
+| **Sopa de Letras (Word Search)** | [`word_search/art_direction.md`](word_search/art_direction.md) | Layout y HUD del juego, reglas/métricas de grilla, zoom, footer/WordsPanel, confeti/celebración; hereda paleta, tipografía y relieve globales. |
+| *(Futuros minijuegos)* | `docs/<minijuego>/art_direction.md` | Añadir una fila por minijuego siguiendo la misma convención de herencia. |
+
+---
+
+## 9. Micro-animaciones y feedback global (“game juice”)
+
+Patrones reutilizables (la implementación concreta puede variar por minijuego):
+- **Selección/press:** respuesta inmediata (escala/tween sutil o desplazamiento de 1–2 px) que refuerce el estado sin perder claridad.
+- **Acierto/confirmación:** realce breve con tokens de acento/encontrado y feedback en lista/objetivo cuando aplique.
+- **Transiciones/modales:** animaciones cortas y legibles; evitar bloqueos prolongados de interacción.
+
+Los efectos específicos (p. ej. confeti de victoria de Word Search) se especifican en la dirección de arte del minijuego.
+
+---
+
+## 10. Referencias de implementación
+
+- `core/ThemeData.cs`, `core/ThemeManager.cs` — tokens y propagación de tema
+- `core/ui/PixelStyles.cs` — estilos/utilidades visuales
+- `core/SafeAreaManager.cs`, `core/AccessibleTheme.tres` — safe area y tema accesible
+- `docs/word_search/art_direction.md` — ejemplo de dirección específica heredada
