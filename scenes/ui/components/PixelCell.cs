@@ -22,7 +22,7 @@ public partial class PixelCell : Panel
 	private bool _visualsReady;
 
 	protected Label? _label;
-	private Timer _hintTimer;
+	private Timer? _hintTimer;
 
 	public char Letter { get; protected set; } = ' ';
 	public PixelCellState State { get; protected set; } = PixelCellState.Idle;
@@ -130,7 +130,7 @@ public partial class PixelCell : Panel
 		_visualsReady = true;
 	}
 
-	private void ApplyTheme(ThemeData theme)
+	private void ApplyTheme(ThemeData? theme)
 	{
 		_theme = theme ?? new ThemeData();
 		_visualsReady = false;

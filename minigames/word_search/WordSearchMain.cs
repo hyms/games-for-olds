@@ -49,6 +49,15 @@ public partial class WordSearchMain : BaseMinigame
     private int _hintUses = MaxHints;
     private CompletionModal _completionModal;
 
+    // Delegados reutilizables para evitar conexiones/desconexiones duplicadas
+    private Action _onHintAction;
+    private Action _onStartNewGameAction;
+    private Action _onGoToMainMenuAction;
+    private Action _onOpenPauseAction;
+    private CompletionModal.ConfettiRequestedEventHandler _onConfettiRequestedAction;
+    private Action _onZoomInAction;
+    private Action _onZoomOutAction;
+
     public DifficultyConfig Config { get; private set; }
 
     public WordGridContainer Board { get; private set; }
@@ -88,7 +97,7 @@ public partial class WordSearchMain : BaseMinigame
         _pauseTitle = GetNodeOrNull<Label>("%PauseTitle");
         _winTitle = GetNodeOrNull<Label>("%WinTitle");
 
-        _completionModal = GetNode<CompletionModal>("%WinModal");
+        _completionModal = GetNodeOrNull<CompletionModal>("%WinModal");
 
         WireButtons();
 
@@ -146,23 +155,61 @@ public partial class WordSearchMain : BaseMinigame
         SceneManager?.GoTo(DifficultySelector.ScenePath);
     }
 
-    private void WireButtons()
+private void WireButtons()
     {
-        _btnHint.Pressed += UseHint;
-        if (_btnHelp != null) _btnHelp.Pressed += UseHint;
-        _btnReset.Pressed += StartNewGame;
-        _btnNextGame.Pressed += StartNewGame;
-        _btnPauseMenu.Pressed += GoToMainMenu;
-        if (_btnPause != null) _btnPause.Pressed += OpenPause;
+        // Inicializar delegados una sola vez (reutilizables para conectar/desconectar)
+        _onHintAction ??= UseHint;
+        _onStartNewGameAction ??= StartNewGame;
+        _onGoToMainMenuAction ??= GoToMainMenu;
+        _onOpenPauseAction ??= OpenPause;
+        _onConfettiRequestedAction ??= OnConfettiRequested;
+        _onZoomInAction ??= OnZoomIn;
+        _onZoomOutAction ??= OnZoomOut;
 
-        // Confetti de victoria: el modal emite ConfettiRequested; el controlador
+        // Evitar conexiones duplicadas al recargar la escena (StartFromSession -> StartGame -> _Ready).
+        _btnHint.Pressed -= _onHintAction;
+        _btnHint.Pressed += _onHintAction;
+        if (_btnHelp != null)
+        {
+            _btnHelp.Pressed -= _onHintAction;
+            _btnHelp.Pressed += _onHintAction;
+        }
+        _btnReset.Pressed -= _onStartNewGameAction;
+        _btnReset.Pressed += _onStartNewGameAction;
+        _btnNextGame.Pressed -= _onStartNewGameAction;
+        _btnNextGame.Pressed += _onStartNewGameAction;
+        _btnPauseMenu.Pressed -= _onGoToMainMenuAction;
+        _btnPauseMenu.Pressed += _onGoToMainMenuAction;
+        if (_btnPause != null)
+        {
+            _btnPause.Pressed -= _onOpenPauseAction;
+            _btnPause.Pressed += _onOpenPauseAction;
+        }
+
+        // Confeti de victoria: el modal emite ConfettiRequested; el controlador
         // lo conecta al emisor de WordsPanel (desacoplado del componente modal).
-        _completionModal.ConfettiRequested += pos => _wordsPanel?.EmitConfettiAt(pos);
+        if (_completionModal != null)
+        {
+            _completionModal.ConfettiRequested -= _onConfettiRequestedAction;
+            _completionModal.ConfettiRequested += _onConfettiRequestedAction;
+        }
 
         // Zoom del tablero: botones + / − en la NavRow (spec §4).
-        if (_btnZoomIn != null) _btnZoomIn.Pressed += () => Board?.ZoomIn();
-        if (_btnZoomOut != null) _btnZoomOut.Pressed += () => Board?.ZoomOut();
+        if (_btnZoomIn != null)
+        {
+            _btnZoomIn.Pressed -= _onZoomInAction;
+            _btnZoomIn.Pressed += _onZoomInAction;
+        }
+        if (_btnZoomOut != null)
+        {
+            _btnZoomOut.Pressed -= _onZoomOutAction;
+            _btnZoomOut.Pressed += _onZoomOutAction;
+        }
     }
+
+    private void OnConfettiRequested(Vector2 pos) => _wordsPanel?.EmitConfettiAt(pos);
+    private void OnZoomIn() => Board?.ZoomIn();
+    private void OnZoomOut() => Board?.ZoomOut();
 
     /// <summary>Carga el nivel elegido, sortea las palabras y genera el tablero.</summary>
     public void StartFromSession()

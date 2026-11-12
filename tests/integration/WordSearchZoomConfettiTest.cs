@@ -54,15 +54,15 @@ public class WordSearchZoomConfettiTest
         AssertObject(zoomIn).IsNotNull();
         AssertObject(zoomOut).IsNotNull();
 
-        zoomIn.EmitSignal(SignalName.Pressed);
+        zoomIn.EmitSignal(BaseButton.SignalName.Pressed);
         await _runner.SimulateFrames(1);
         AssertFloat(_scene.Board.Zoom).IsGreater(1.0f);
 
-        zoomIn.EmitSignal(SignalName.Pressed);
+        zoomIn.EmitSignal(BaseButton.SignalName.Pressed);
         await _runner.SimulateFrames(1);
-        AssertFloat(_scene.Board.Zoom).IsEqualApprox(WordSearchVisuals.MaxZoom);
+        AssertFloat(_scene.Board.Zoom).IsEqualApprox(WordSearchVisuals.MaxZoom, 0.01f);
 
-        zoomOut.EmitSignal(SignalName.Pressed);
+        zoomOut.EmitSignal(BaseButton.SignalName.Pressed);
         await _runner.SimulateFrames(1);
         AssertFloat(_scene.Board.Zoom).IsLess(WordSearchVisuals.MaxZoom);
 
@@ -130,12 +130,12 @@ public class WordSearchZoomConfettiTest
         AssertInt(confetti.Amount).IsGreater(0);
 
         // El modal de victoria NO aparece de inmediato: la spec pide ~300 ms.
-        AssertBool(_scene.WinModal.Visible).IsFalse();
+        AssertBool(_scene.WinModalPublic.Visible).IsFalse();
 
         await _runner.AwaitMillis(400);
 
         // Tras ~300 ms el modal debe estar visible.
-        AssertBool(_scene.WinModal.Visible).IsTrue();
+        AssertBool(_scene.WinModalPublic.Visible).IsTrue();
     }
 
     // --- Utilidades ----------------------------------------------------------

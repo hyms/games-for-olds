@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 namespace ClasicosMenteActiva.minigames.word_search;
@@ -83,6 +84,18 @@ public partial class WordGridContainer : Control
         AddChild(_hintTimer);
     }
 
+    /// <summary>Restablece el estado de pista (hint) al estado base.</summary>
+    private void RestoreHint()
+    {
+        if (string.IsNullOrEmpty(_hintWord)) return;
+
+        var placement = FindPlacement(_hintWord);
+        if (placement == null) return;
+
+        foreach (var coord in placement.Cells) GetCell(coord)?.RestoreBaseState();
+        _hintWord = string.Empty;
+    }
+
     public override void _Notification(int what)
     {
         if (what == NotificationResized) UpdateLayout();
@@ -95,7 +108,7 @@ public partial class WordGridContainer : Control
     private void UpdateLayout()
     {
         ComputeGridLayout();
-        PivotOffset = PivotOffset.Center;
+        PivotOffset = Size / 2.0f;
         Scale = new Vector2(_zoom, _zoom);
     }
 
@@ -163,7 +176,7 @@ public partial class WordGridContainer : Control
         // Cada partida empieza sin zoom (spec §4: reposición al iniciar/reiniciar).
         _zoom = WordSearchVisuals.MinZoom;
         Scale = Vector2.One;
-        PivotOffset = PivotOffset.Center;
+        PivotOffset = Size / 2.0f;
 
         UpdateLayout();
     }

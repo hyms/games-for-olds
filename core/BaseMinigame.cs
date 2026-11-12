@@ -28,6 +28,10 @@ public abstract partial class BaseMinigame : Control
 
     protected PanelContainer PauseModal { get; private set; }
     protected PanelContainer WinModal { get; private set; }
+    
+    /// <summary>Acceso público al modal de victoria para tests de integración.</summary>
+    public PanelContainer WinModalPublic => WinModal;
+    
     protected CompletionModal CompletionModal { get; private set; }
     protected PanelContainer TitlePanel { get; private set; }
     protected PanelContainer SubtitlePanel { get; private set; }
@@ -35,6 +39,12 @@ public abstract partial class BaseMinigame : Control
     private Timer _clockTimer;
     protected readonly Stopwatch Stopwatch = new();
     protected bool _completed;
+
+    // Delegados reutilizables para evitar conexiones/desconexiones duplicadas
+    private Action _onBackAction;
+    private Action _onOpenPauseAction;
+    private Action _onClosePauseAction;
+    private Action _onGoToMainMenuAction;
 
     public override void _Ready()
     {
@@ -64,10 +74,32 @@ public abstract partial class BaseMinigame : Control
 
     private void WireSharedButtons()
     {
-        if (BtnBack != null) BtnBack.Pressed += OnBack;
-        if (BtnPause != null) BtnPause.Pressed += OpenPause;
-        if (BtnResume != null) BtnResume.Pressed += ClosePause;
-        if (BtnWinMenu != null) BtnWinMenu.Pressed += GoToMainMenu;
+        // Inicializar delegados una sola vez (reutilizables para conectar/desconectar)
+        _onBackAction ??= OnBack;
+        _onOpenPauseAction ??= OpenPause;
+        _onClosePauseAction ??= ClosePause;
+        _onGoToMainMenuAction ??= GoToMainMenu;
+
+        if (BtnBack != null)
+        {
+            BtnBack.Pressed -= _onBackAction;
+            BtnBack.Pressed += _onBackAction;
+        }
+        if (BtnPause != null)
+        {
+            BtnPause.Pressed -= _onOpenPauseAction;
+            BtnPause.Pressed += _onOpenPauseAction;
+        }
+        if (BtnResume != null)
+        {
+            BtnResume.Pressed -= _onClosePauseAction;
+            BtnResume.Pressed += _onClosePauseAction;
+        }
+        if (BtnWinMenu != null)
+        {
+            BtnWinMenu.Pressed -= _onGoToMainMenuAction;
+            BtnWinMenu.Pressed += _onGoToMainMenuAction;
+        }
     }
 
     /// <summary>Acción del botón volver; por defecto vuelve al menú principal.</summary>

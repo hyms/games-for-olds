@@ -3,6 +3,15 @@ using Godot;
 namespace ClasicosMenteActiva.core.ui;
 
 /// <summary>
+///     Extension methods for Godot 4 compatibility.
+/// </summary>
+internal static class GodotExtensions
+{
+    /// <summary>Gets the center of a Vector2 (Size / 2).</summary>
+    public static Vector2 Center(this Vector2 self) => self / 2.0f;
+}
+
+/// <summary>
 ///     Emisor de confeti píxel basado en <see cref="CpuParticles2D" />. VIVE en
 ///     <c>core/ui/</c> porque es un componente base reutilizable (docs/art_direction.md
 ///     §5): cualquier minijuego que necesite partículas de pixel art la instanciará.
@@ -33,9 +42,12 @@ public partial class PixelConfettiEmitter : CpuParticles2D
 
         // Partículas cuadradas de pixel art: textura 1×1 blanca, filtro Nearest,
         // escalada al tamaño de pixel. Sin anti-aliasing ni mipmaps (regla de oro).
-        ParticleTexture = GetPixelTexture();
-        ScaleMin = new Vector2(PixelSize, PixelSize);
-        ScaleMax = new Vector2(PixelSize, PixelSize);
+        Texture = GetPixelTexture();
+        // En Godot 4, ScaleAmountMin/Max controlan la escala de las partículas (float).
+        ScaleAmountMin = PixelSize;
+        ScaleAmountMax = PixelSize;
+        // Filtro Nearest en el CanvasItem (hereda de Node2D) para pixel art nítido.
+        TextureFilter = TextureFilterEnum.Nearest;
 
         Lifetime = DefaultLifetime;
         Amount = DefaultAmount;
@@ -83,11 +95,10 @@ public partial class PixelConfettiEmitter : CpuParticles2D
     {
         if (_pixelTexture != null) return _pixelTexture;
 
-        var image = Image.Create(1, 1, false, Image.Format.Rgba8);
+        var image = Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
         image.SetPixel(0, 0, Colors.White);
 
         _pixelTexture = ImageTexture.CreateFromImage(image);
-        _pixelTexture.Filter = Texture.FilterEnum.Nearest;
         return _pixelTexture;
     }
 }
