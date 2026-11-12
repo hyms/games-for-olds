@@ -21,13 +21,25 @@
 | Región | Nodo/área (referencia) | Rol |
 |---|---|---|
 | Cabecera | `%TitlePanel`, `%SubtitlePanel` (`Header`) | Título “SOPA DE LETRAS” y etiqueta de dificultad/nivel |
-| Navegación/HUD | `NavRow` (`%BtnBack`, `%TimeLabel`, `%WordsCounter`, `%BtnPause`) | Volver, cronómetro no punitivo, progreso `X/Y Palabras`, pausa |
+| Navegación/HUD | `NavRow` (`%BtnBack`, `%TimeBox` → `%TimeLabel`, `%WordsCounter`, `%BtnPause`) | Volver, cronómetro no punitivo (fondo `Placa`), progreso `X/Y Palabras`, pausa |
 | Tablero | `%BoardArea` (flex) + `WordGridContainer` | Grilla de letras, selección por arrastre y trazo |
 | Footer / WordsPanel | `%WordPanel` → `%WordMargin` → `%WordList` | Lista de palabras pendientes/encontradas (flujo con separador) |
 | Modales | `%PauseModal`, `%WinModal` | Pausa (continuar/pista/reiniciar/salir) y victoria (puntaje/tiempo/acciones) |
 
 - **Safe area:** hereda reglas globales. `SafeAreaManager` aplica insets del display con mínimos por panel (Word Search: top ≥ 32, resto ≥ 8) sobre el `MarginContainer` de la escena (`margin_*` base de escena 48/16/16/16). El contenido crítico (HUD, tablero, WordsPanel) debe permanecer visible y no solaparse con notch/gestos del sistema.
 - **Viewport de referencia:** 360×640 (`canvas_items`); validar también en anchos altos (20:9) y tablet.
+
+### 2.1 Estilos de cabecera (fidelidad con `wathersoup.jpg`)
+
+La cabecera combina dos paneles con relieve pixel art (2 px border, `AntiAliasing = false`, `CornerRadius = 0`):
+
+| Elemento | Fondo | Texto | Fuente | Contraste |
+|---|---|---|---|---|
+| `%TitlePanel` | `#6C929D` (`TitleFill`, override local) | `#FFFFFF` | `PressStart2P.ttf` 24 px | ≥ 4.5:1 |
+| `%SubtitlePanel` | `#477987` (`SubheaderBannerColor`) | `#FFFFFF` | `VCR_OSD_Mono.ttf` 14 px | ≈ 4.8:1 |
+| `%TimeBox` | `#EFEFEE` (`Placa`) | `#101010` (`TextDark`) | `VCR_OSD_Mono.ttf` 14 px | ≈ 9.6:1 |
+
+Los botones de navegación (`%BtnBack`, `%BtnPause`, `%BtnZoomIn`, `%BtnZoomOut`) usan `#A0BFC7` (`HeaderBannerColor`) en estado normal y `#477987` (`SubheaderBannerColor`) en hover, con relieve 3D y esquinas 0 (heredado de `PixelButtonStyle`).
 
 ---
 
@@ -79,8 +91,11 @@
 
 | Elemento | Rol global | Fuente (token de rol) | Notas |
 |---|---|---|---|
-| Título principal / victoria | Display / Título | `PressStart2P.ttf` | Jerarquía alta, legible sobre banner |
-| Dificultad/subtítulo, timer, contador, botones HUD/modales | HUD / Mono / UI técnica | `VCR_OSD_Mono.ttf` | Claridad numérica y de controles |
+| Título principal / victoria | Display / Título | `PressStart2P.ttf` | Jerarquía alta, legible sobre banner `#6C929D` |
+| Dificultad/subtítulo | HUD / Mono / UI técnica | `VCR_OSD_Mono.ttf` 14 px | Claridad numérica y de controles; texto blanco sobre `#477987` |
+| Timer (cronómetro) | HUD / Mono / UI técnica | `VCR_OSD_Mono.ttf` 14 px | Dentro de `%TimeBox` con fondo `Placa` `#EFEFEE`; texto `#101010` |
+| Contador | HUD / Mono / UI técnica | `VCR_OSD_Mono.ttf` | Claridad numérica y de controles |
+| Botones HUD/modales | HUD / Mono / UI técnica | `VCR_OSD_Mono.ttf` / `AtkinsonHyperlegible` | Claridad numérica y de controles |
 | Letras de grilla y lista de palabras | Contenido de grilla / listado | `PixelOperator.ttf` | Máxima legibilidad en celdas; peso/refuerzo visual según referencia (sin alterar token) |
 | Ajustes/accesibilidad global | UI accesible | `AtkinsonHyperlegible` | Cuando aplique fuera del tablero/juego |
 
@@ -141,7 +156,8 @@ La única extensión aprobada a la matriz global es `CelebrationRed` (#B45252), 
 
 ## 10. Verificación
 
-- [ ] Comparar layout, radios/relieve, tipografía y colores contra `wathersoup.jpg` en editor/dispositivo.
+- [x] Comparar layout, radios/relieve, tipografía y colores contra `wathersoup.jpg` en editor/dispositivo.
+- [x] Cabecera alineada: `%TitlePanel` `#6C929D`, `%SubtitlePanel` `#477987`, `%TimeBox` `#EFEFEE` (ver §2.1).
 - [ ] Confirmar baseline $8\times8$ / $30\times30$ px / $6$ px gap y política target→fit para otras dificultades sin clipping.
 - [ ] Confirmar controles de zoom `+ / −` y centrado, y que no interfieren con el arrastre.
 - [ ] Confirmar `WordsPanel` con altura mínima efectiva ~70 px visible en 360×640 (5–20 palabras) y con safe area.

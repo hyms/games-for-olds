@@ -32,7 +32,7 @@ public static class PixelStyles
     public const int ButtonIconSize = 16;
 
     // --- Colores de cabecera específicos (wathersoup.jpg) ---------------------
-    public static readonly Color TitleFill = new("#A0BFC7");
+    public static readonly Color TitleFill = new("#6C929D");
     public static readonly Color TitleBorder = new("#68838B");
     public static readonly Color TitleOutline = new("#2B5666");
     public static readonly Color TitleTopHighlight = new("#B0C2C6");
@@ -119,7 +119,7 @@ public static readonly Color Turquesa = new("#099c92"); // Acento de celdas sele
     {
         var box = new StyleBoxFlat
         {
-            BgColor = PlacaHeader,
+            BgColor = TitleFill,
             BorderColor = TitleBorder,
             AntiAliasing = false,
             CornerDetail = 2
