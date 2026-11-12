@@ -127,14 +127,17 @@ public partial class WordSearchMain : BaseMinigame
         if (GetNodeOrNull<PanelContainer>("%WinCard") is PanelContainer winCard)
             winCard.AddThemeStyleboxOverride("panel", PixelStyles.ModalCard());
 
+        if (GetNodeOrNull<PanelContainer>("%TimeBox") is PanelContainer timeBox)
+            timeBox.AddThemeStyleboxOverride("panel", PixelStyles.Plate());
+
         // Los colores de texto de subtítulo, HUD y modales salen de los tokens
         // del tema (docs/art_direction.md §4): SubheaderBannerColor para texto
         // secundario sobre fondos claros. Se aplican aquí, no en la escena, para
         // que un cambio de tema los refresque al instante (SRP · DRY).
         if (DifficultyLabel != null)
-            DifficultyLabel.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
+            DifficultyLabel.AddThemeColorOverride("font_color", Colors.White);
         if (TimeLabel != null)
-            TimeLabel.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
+            TimeLabel.AddThemeColorOverride("font_color", PixelStyles.TextDark);
         if (WordsCounter != null)
             WordsCounter.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
         if (_pauseTitle != null)
