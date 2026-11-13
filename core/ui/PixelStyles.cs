@@ -13,14 +13,14 @@ public static class PixelStyles
     public const int Radius = 0; // Esquinas cuadradas: regla de oro pixel art (spec §2)
 
     // --- Paleta base ---------------------------------------------------------
-    public static readonly Color Fondo = new("#ffffff"); // Fondo global limpio (lineamiento UI)
-    public static readonly Color Arena = new("#b0c2cc"); // Borde fino de celdas y fondos suaves
+    public static readonly Color Fondo = new("#EFEFEE"); // Fondo global limpio (lineamiento UI)
+    public static readonly Color Arena = new("#A0BFC7"); // Borde fino de celdas y fondos suaves
     public static readonly Color Celda = new("#fffcfb"); // Relleno claro de celdas y texto sobre oscuros
     public static readonly Color CeldaIdle = new("#EBF2F5"); // Fondo de celda en reposo (spec §2.1)
     public static readonly Color Placa = new("#efefee"); // Interior de placas y modales
     public static readonly Color PlacaHeader = new("#a0bfc7"); // Panel de título (lineamiento UI)
-    public static readonly Color Tinta = new("#4e6077"); // Letras y texto sobre claros
-    public static readonly Color Borde = new("#4e6077"); // Borde visible de placas, celdas y botones
+    public static readonly Color Tinta = new("#477987"); // Letras y texto sobre claros
+    public static readonly Color Borde = new("#477987"); // Borde visible de placas, celdas y botones
     public static readonly Color Sombra = new("#8a9aaa"); // Sombra dura decorativa
     public static readonly Color TextDark = new("#101010"); // Tinta de texto oscuro sobre claros
     public static readonly Color TextLight = new("#ffffff"); // Texto blanco puro sobre oscuros
