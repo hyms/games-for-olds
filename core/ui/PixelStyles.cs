@@ -31,17 +31,12 @@ public static class PixelStyles
     /// <summary>Lado mostrado de los iconos de botón (32 px de arte = 2× exacto).</summary>
     public const int ButtonIconSize = 16;
 
-    // --- Colores de cabecera específicos (wathersoup.jpg) ---------------------
-    public static readonly Color TitleFill = new("#6C929D");
-    public static readonly Color TitleBorder = new("#68838B");
-    public static readonly Color TitleOutline = new("#2B5666");
-    public static readonly Color TitleTopHighlight = new("#B0C2C6");
-    public static readonly Color TitleReliefMid = new("#94B3B8");
-    public static readonly Color TitleReliefLight = new("#D3ECF0");
-public static readonly Color Turquesa = new("#099c92"); // Acento de celdas seleccionadas/encontradas
+    // --- Acentos -------------------------------------------------------------
+    public static readonly Color Turquesa = new("#099c92"); // Acento de celdas seleccionadas/encontradas
     public static readonly Color Cian = new("#08d0df");
     public static readonly Color Amarillo = new("#fdc109"); // Acento cálido (confeti/celebración)
     public static readonly Color CelebrationRed = new("#b45252"); // Coral cálido de confeti/celebración (token agregado v0.5.0)
+    public static readonly Color CreamYellow = new("#ede19e"); // Banda de dificultad cálida (extensión aditiva v0.5.1)
 
     // --- Estados del tablero -------------------------------------------------
     public static readonly Color CeldaSeleccion = new("#6095fb");
@@ -85,7 +80,7 @@ public static readonly Color Turquesa = new("#099c92"); // Acento de celdas sele
     /// <summary>Color de texto legible sobre un relleno: blanco, tinta o tinta oscura.</summary>
     public static Color TextColor(Color fill)
     {
-        var best = Colors.White;
+        var best = TextLight;
         var bestRatio = ContrastRatio(best, fill);
 
         foreach (var candidate in new[] { Tinta, TextDark })
@@ -108,19 +103,24 @@ public static readonly Color Turquesa = new("#099c92"); // Acento de celdas sele
         return ContrastRatio(TextDark, fill) >= 3.0f ? TextDark : TextLight;
     }
 
-    /// <summary>Placa de encabezado o modal.</summary>
+    /// <summary>Placa de encabezado, cronómetro o modal: <c>Placa</c> con borde pixel 2px y padding interno.</summary>
     public static StyleBoxFlat Plate()
     {
-        return MakeBox(Placa, Borde, 2, Radius);
+        var box = MakeBox(Placa, Borde, 2, Radius);
+        box.ContentMarginLeft = 12.0f;
+        box.ContentMarginRight = 12.0f;
+        box.ContentMarginTop = 4.0f;
+        box.ContentMarginBottom = 4.0f;
+        return box;
     }
 
-    /// <summary>Panel del título principal: banner teal medio (#6C929D, plantilla wathersoup.jpg), borde pixel 2px.</summary>
+    /// <summary>Panel del título principal: banner canónico <c>PlacaHeader</c> (#A0BFC7), borde pixel 2px.</summary>
     public static StyleBoxFlat TitlePanel()
     {
         var box = new StyleBoxFlat
         {
-            BgColor = TitleFill,
-            BorderColor = TitleBorder,
+            BgColor = Opaque(PlacaHeader),
+            BorderColor = Opaque(Borde),
             AntiAliasing = false,
             CornerDetail = 2
         };
@@ -129,7 +129,7 @@ public static readonly Color Turquesa = new("#099c92"); // Acento de celdas sele
         box.BorderWidthTop = 1;
         // Hard retro drop shadow: 2px offset down-right in dark teal
         box.ShadowSize = 2;
-        box.ShadowColor = Tinta;
+        box.ShadowColor = Opaque(Tinta);
         box.ShadowOffset = new Vector2(2, 2);
         // Generous content margins for the taller 72px banner
         box.ContentMarginLeft = 16.0f;
@@ -139,13 +139,16 @@ public static readonly Color Turquesa = new("#099c92"); // Acento de celdas sele
         return box;
     }
 
-    /// <summary>Banda de subtítulo: fondo claro #D2E1E8 bajo el banner (plantilla wathersoup.jpg) con borde pixel 2px.</summary>
+    /// <summary>
+    ///     Banda de dificultad: acento cálido <c>CreamYellow</c> (#EDE19E) con borde pixel 2px,
+    ///     según la referencia wathersoup. Texto oscuro <c>TextDark</c> encima (14.4:1).
+    /// </summary>
     public static StyleBoxFlat SubtitlePanel()
     {
         var box = new StyleBoxFlat
         {
-            BgColor = Color.FromHtml("#477987"),
-            BorderColor = TitleBorder,
+            BgColor = Opaque(CreamYellow),
+            BorderColor = Opaque(Borde),
             AntiAliasing = false,
             CornerDetail = 1
         };
@@ -172,7 +175,7 @@ public static readonly Color Turquesa = new("#099c92"); // Acento de celdas sele
     /// <summary>Fondo del modal: panel sólido que bloquea el tablero (sin alfa reducido, spec §2).</summary>
     public static StyleBoxFlat ModalBackdrop()
     {
-        return MakeBox(new Color(0.04f, 0.05f, 0.07f), Tinta, 0, 0, false);
+        return MakeBox(TextDark, Borde, 0, 0, false);
     }
 
     /// <summary>Tarjeta interior de un modal.</summary>
@@ -196,8 +199,8 @@ public static readonly Color Turquesa = new("#099c92"); // Acento de celdas sele
     {
         StyleBoxFlat box = new()
         {
-            BgColor = bg,
-            BorderColor = border,
+            BgColor = Opaque(bg),
+            BorderColor = Opaque(border),
             AntiAliasing = false,
             CornerDetail = 2
         };
@@ -206,12 +209,15 @@ public static readonly Color Turquesa = new("#099c92"); // Acento de celdas sele
         if (shadow)
         {
             box.ShadowSize = 2;
-            box.ShadowColor = Sombra;
+            box.ShadowColor = Opaque(Sombra);
             box.ShadowOffset = new Vector2(2, 2);
         }
 
         return box;
     }
+
+    /// <summary>Fuerza opacidad total (alpha = 1.0): regla pixel art sin transparencias.</summary>
+    public static Color Opaque(Color color) => new(color.R, color.G, color.B, 1f);
 
     private static float Luminance(Color color)
     {

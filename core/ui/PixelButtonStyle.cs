@@ -132,10 +132,12 @@ public static class PixelButtonStyle
 
         var style = new StyleBoxFlat
         {
-            BgColor = state == PixelButtonState.Focus ? new Color(0, 0, 0, 0) : fill,
-            BorderColor = state == PixelButtonState.Focus
+            // Alfa siempre 1.0: el foco no dibuja centro (DrawCenter = false), así que el
+            // relleno puede ser opaco sin tapar el estado normal que queda debajo.
+            BgColor = PixelStyles.Opaque(fill),
+            BorderColor = PixelStyles.Opaque(state == PixelButtonState.Focus
                 ? PixelStyles.TextColor(theme.BackgroundColor)
-                : border,
+                : border),
             AntiAliasing = false,
             CornerDetail = 0,
             DrawCenter = state != PixelButtonState.Focus
@@ -150,7 +152,7 @@ public static class PixelButtonStyle
         if (state == PixelButtonState.Normal)
         {
             style.ShadowSize = 2;
-            style.ShadowColor = PixelStyles.Sombra;
+            style.ShadowColor = PixelStyles.Opaque(PixelStyles.Sombra);
             style.ShadowOffset = new Vector2(2, 2);
         }
 

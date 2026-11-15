@@ -144,8 +144,10 @@ public abstract partial class BaseMinigame : Control
         if (SubtitlePanel != null)
             SubtitlePanel.AddThemeStyleboxOverride("panel", PixelStyles.SubtitlePanel());
 
+        // El lienzo del minijuego usa el token canónico Placa (#EFEFEE) como fondo,
+        // no el BackgroundColor global (#FFFFFF). Ver auditoría estética, Phase 2.
         var background = GetNodeOrNull<ColorRect>("Background");
-        if (background != null) background.Color = themeData.BackgroundColor;
+        if (background != null) background.Color = PixelStyles.Placa;
     }
 
     private void CreateClockTimer()

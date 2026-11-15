@@ -21,7 +21,7 @@
 | Región | Nodo/área (referencia) | Rol |
 |---|---|---|
 | Cabecera | `%TitlePanel`, `%SubtitlePanel` (`Header`) | Título “SOPA DE LETRAS” y etiqueta de dificultad/nivel |
-| Navegación/HUD | `NavRow` (`%BtnBack`, `%TimeBox` → `%TimeLabel`, `%WordsCounter`, `%BtnPause`) | Volver, cronómetro no punitivo (fondo `Placa`), progreso `X/Y Palabras`, pausa |
+| Navegación/HUD | `NavRow` (`%BtnBack` `← Atrás`, `%TimeBox` → `%TimeLabel` + `%WordsCounter`, `%BtnPause`, `%BtnZoomOut` `−`, `%BtnZoomIn` `+`, `NavBalance` 0 px) | Volver, cronómetro no punitivo (fondo `Placa`), progreso `X/Y Palabras`, pausa, zoom |
 | Tablero | `%BoardArea` (flex) + `WordGridContainer` | Grilla de letras, selección por arrastre y trazo |
 | Footer / WordsPanel | `%WordPanel` → `%WordMargin` → `%WordList` | Lista de palabras pendientes/encontradas (flujo con separador) |
 | Modales | `%PauseModal`, `%WinModal` | Pausa (continuar/pista/reiniciar/salir) y victoria (puntaje/tiempo/acciones) |
@@ -35,12 +35,16 @@ La cabecera combina dos paneles con relieve pixel art (2 px border, `AntiAliasin
 
 | Elemento | Fondo | Texto | Fuente | Contraste |
 |---|---|---|---|---|
-| `%TitlePanel` | `#6C929D` (`TitleFill`, override local) | `#FFFFFF` | `PressStart2P.ttf` 24 px | ≥ 4.5:1 |
-| `%SubtitlePanel` | `#477987` (`SubheaderBannerColor`) | `#FFFFFF` | `VCR_OSD_Mono.ttf` 14 px | ≈ 4.8:1 |
-| `%TimeBox` | `#EFEFEE` (`Placa`) | `#101010` (`TextDark`) | `VCR_OSD_Mono.ttf` 14 px | ≈ 9.6:1 |
+| `%TitlePanel` | `#A0BFC7` (`PlacaHeader`) | `#101010` (`TextDark`) | `PressStart2P.ttf` 24 px | ≈ 9.8:1 |
+| `%SubtitlePanel` | `#EDE19E` (`CreamYellow`, extensión aditiva v0.5.1) | `#101010` (`TextDark`) | `VCR_OSD_Mono.ttf` 14 px | ≈ 14.4:1 |
+| `%TimeBox` | `#EFEFEE` (`Placa`) + borde `#477987` (`Borde`) | `#101010` (`TextDark`) | `VCR_OSD_Mono.ttf` 14/12 px | ≈ 16:1 |
+| Botones `NavRow` | `#A0BFC7` (`HeaderBannerColor`), hover `#477987` | `#101010` (`TextDark`) | `VCR_OSD_Mono.ttf` 16 px | ≈ 9.8:1 |
 
-Los botones de navegación (`%BtnBack`, `%BtnPause`, `%BtnZoomIn`, `%BtnZoomOut`) usan `#A0BFC7` (`HeaderBannerColor`) en estado normal y `#477987` (`SubheaderBannerColor`) en hover, con relieve 3D y esquinas 0 (heredado de `PixelButtonStyle`).
+`%TimeBox` es un `PanelContainer` (`StyleBoxFlat_plate`) con padding interno 12 px horizontal / 4 px vertical que agrupa el cronómetro (`%TimeLabel`, 14 px) y su sub-etiqueta (`%WordsCounter`, 12 px, `0/5 Palabras`), ambos en `TextDark` y `mouse_filter = Ignore`.
 
+Los botones de navegación (`%BtnBack`, `%BtnPause`, `%BtnZoomIn`, `%BtnZoomOut`) usan `#A0BFC7` (`HeaderBannerColor`) en estado normal y `#477987` (`SubheaderBannerColor`) en hover, con relieve 3D y esquinas 0 (heredado de `PixelButtonStyle`). Ninguno introduce azul/cian fuera de la matriz: el estado `Focus` solo dibuja el anillo exterior (sin relleno) y el resto de estados usa tokens canónicos.
+
+> **Decisión (v0.4.5):** el borde de los botones HUD es `#101010`, **no** `Borde #477987`. `PixelStyles.BorderColor()` exige ≥ 3:1 sobre el relleno y `#477987` sobre `#A0BFC7` mide 2.47:1, así que la regla devuelve `TextDark` (9.76:1). La jerarquía es coherente: borde oscuro en controles accionables, borde `#477987` en placas informativas (`%TimeBox`, banners). No sustituir por `Borde` sin excepción explícita de accesibilidad.
 ---
 
 ## 3. Reglas de grilla y métricas del tablero
@@ -72,7 +76,8 @@ Los botones de navegación (`%BtnBack`, `%BtnPause`, `%BtnZoomIn`, `%BtnZoomOut`
 - **Objetivo de interacción:** zoom de tablero accesible y no dependiente de un único gesto.
 - **Controles requeridos (UX):** botones **`+`** / **`−`** para ampliar/reducir y control de **centrar/restablecer** vista (alternativa sin gestos finos), además de soporte de pellizco (pinch) cuando esté disponible.
 - **Parámetros de referencia (visual/comportamiento):** rango $1.0\times$–$2.5\times$, paso incremental acorde a referencia/implementación, y reposición al iniciar/reiniciar partida si así lo define la UX del minijuego.
-- **Estado actual:** los límites/paso de zoom están definidos en `WordSearchVisuals` (`MinZoom/MaxZoom/ZoomStep`); la presencia y disposición final de los controles `+ / −` y centrar en la UI deben verificarse contra escena/implementación y `wathersoup.jpg` durante la alineación.
+- **Ubicación (v0.4.5, alineado con `wathersoup.jpg`):** los botones `−` / `+` viven integrados en la `NavRow` junto a `%BtnPause`, no flotan sobre el tablero. El anterior `%ZoomOverlay` flotante se descartó porque tapaba las celdas de la esquina superior derecha de la grilla en tableros 12×12 y 15×15, donde la grilla llega al borde del `%BoardArea`; moverlos a la fila preserva el tamaño táctil mínimo de 56 px sin solapar celdas. `WordSearchMain._Ready()` ya no mueve ningún overlay (no existe).
+- **Pendiente:** el control de **centrar/restablecer** vista sigue sin UI propia (solo existe `WordGridContainer.ResetZoom()`).
 - **Regla:** el zoom no debe romper la selección por arrastre ni perder el tablero fuera de límites visibles.
 
 ---
@@ -91,8 +96,8 @@ Los botones de navegación (`%BtnBack`, `%BtnPause`, `%BtnZoomIn`, `%BtnZoomOut`
 
 | Elemento | Rol global | Fuente (token de rol) | Notas |
 |---|---|---|---|
-| Título principal / victoria | Display / Título | `PressStart2P.ttf` | Jerarquía alta, legible sobre banner `#6C929D` |
-| Dificultad/subtítulo | HUD / Mono / UI técnica | `VCR_OSD_Mono.ttf` 14 px | Claridad numérica y de controles; texto blanco sobre `#477987` |
+| Título principal / victoria | Display / Título | `PressStart2P.ttf` | Jerarquía alta, legible sobre banner `#A0BFC7` (`PlacaHeader`) |
+| Dificultad/subtítulo | HUD / Mono / UI técnica | `VCR_OSD_Mono.ttf` 14 px | Claridad numérica y de controles; texto `#101010` sobre `#EDE19E` (`CreamYellow`) |
 | Timer (cronómetro) | HUD / Mono / UI técnica | `VCR_OSD_Mono.ttf` 14 px | Dentro de `%TimeBox` con fondo `Placa` `#EFEFEE`; texto `#101010` |
 | Contador | HUD / Mono / UI técnica | `VCR_OSD_Mono.ttf` | Claridad numérica y de controles |
 | Botones HUD/modales | HUD / Mono / UI técnica | `VCR_OSD_Mono.ttf` / `AtkinsonHyperlegible` | Claridad numérica y de controles |
@@ -137,13 +142,13 @@ Durante la alineación V1 se evaluó una propuesta de matriz de colores alternat
 
 | Elemento propuesto | Decisión final (Opción 1) | Token canónico usado |
 |---|---|---|
-| Título | `#6C929D` (override local en `PixelStyles.TitlePanel()`) | `HeaderBannerColor` #A0BFC7 no se toca |
-| Subtítulo | `SubheaderBannerColor` #477987 | canonical |
+| Título | `HeaderBannerColor` #A0BFC7 | `PixelStyles.TitlePanel()` → `PlacaHeader` |
+| Subtítulo | `CreamYellow` #EDE19E + texto `TextDark` #101010 | **extensión aditiva v0.5.1** (ver [`../art_direction.md`](../art_direction.md) §4) |
 | Botones | `HeaderBannerColor` #A0BFC7 (normal) / #477987 (hover) | `PixelButtonStyle.FillFor` |
 | Panel de palabras | `Placa` #EFEFEE | `PixelStyles.WordPanel()` |
-| Confeti | `Turquesa` #099C92 + `Amarillo` #FDC109 + `Cian` #08D0DF + `CelebrationRed` #B45252 | tokens globales + 1 agregado |
+| Confeti | `Turquesa` #099C92 + `Amarillo` #FDC109 + `Cian` #08D0DF + `CelebrationRed` #B45252 | tokens globales + agregados |
 
-La única extensión aprobada a la matriz global es `CelebrationRed` (#B45252), agregada de forma **aditiva** en v0.5.0 (SemVer MINOR) sin alterar ningún token existente.
+Las únicas extensiones aprobadas a la matriz global son `CelebrationRed` (#B45252, v0.5.0) y `CreamYellow` (#EDE19E, v0.5.1), ambas **aditivas** (SemVer MINOR) y sin alterar ningún token existente. El resto de la propuesta alternativa (`#68c2d3` título, `#a77b5b` botones, `#f2f0e5` panel) **sigue rechazada**: redefiniría tokens canónicos.
 
 ---
 
@@ -157,8 +162,9 @@ La única extensión aprobada a la matriz global es `CelebrationRed` (#B45252), 
 ## 10. Verificación
 
 - [x] Comparar layout, radios/relieve, tipografía y colores contra `wathersoup.jpg` en editor/dispositivo.
-- [x] Cabecera alineada: `%TitlePanel` `#6C929D`, `%SubtitlePanel` `#477987`, `%TimeBox` `#EFEFEE` (ver §2.1).
+- [x] Cabecera alineada: `%TitlePanel` `#A0BFC7` + `#101010`, `%SubtitlePanel` `#EDE19E` + `#101010`, `%TimeBox` `#EFEFEE` (ver §2.1).
 - [ ] Confirmar baseline $8\times8$ / $30\times30$ px / $6$ px gap y política target→fit para otras dificultades sin clipping.
-- [ ] Confirmar controles de zoom `+ / −` y centrado, y que no interfieren con el arrastre.
+- [x] Controles de zoom `+ / −` integrados en `%NavRow` junto a `%BtnPause` (sin overlay flotante sobre el tablero); `%BtnBack` muestra `← Atrás` y `%TimeBox` queda centrado (v0.4.5).
+- [ ] Confirmar el control de **centrar/restablecer** vista (hoy solo `ResetZoom()`, sin botón) y que los botones de zoom inline no interfieran con el arrastre en 15×15.
 - [ ] Confirmar `WordsPanel` con altura mínima efectiva ~70 px visible en 360×640 (5–20 palabras) y con safe area.
 - [ ] Confirmar confeti pixel (tamaño/tiempo ~300 ms antes de modal) y ausencia de redefiniciones de paleta global.

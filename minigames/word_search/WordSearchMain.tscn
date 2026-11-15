@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Theme" uid="uid://bq7knk8x6g1mh" path="res://core/AccessibleTheme.tres" id="1_theme"]
 [ext_resource type="Script" path="res://minigames/word_search/WordSearchMain.cs" id="2_script"]
@@ -27,13 +27,30 @@ shadow_size = 2
 shadow_color = Color(0.278431, 0.47451, 0.529412, 1)
 shadow_offset = Vector2(2, 2)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_subtitlepanel"]
-bg_color = Color(0.278431, 0.47451, 0.529412, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate"]
+bg_color = Color(0.937255, 0.937255, 0.933333, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.627451, 0.74902, 0.780392, 1)
+border_color = Color(0.278431, 0.47451, 0.529412, 1)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+anti_aliasing = false
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_subtitlepanel"]
+bg_color = Color(0.929412, 0.882353, 0.619608, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.278431, 0.47451, 0.529412, 1)
 corner_radius_top_left = 0
 corner_radius_top_right = 0
 corner_radius_bottom_right = 0
@@ -99,8 +116,6 @@ text = "SOPA DE LETRAS"
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.062745, 0.062745, 0.062745, 1)
-theme_override_colors/font_outline_color = Color(0.305882, 0.376471, 0.466667, 1)
-theme_override_constants/outline_size = 2
 theme_override_fonts/font = ExtResource("6_press")
 theme_override_font_sizes/font_size = 24
 
@@ -116,26 +131,30 @@ layout_mode = 2
 text = "FÁCIL · NIVEL 1"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.062745, 0.062745, 0.062745, 1)
 theme_override_fonts/font = ExtResource("8_vcr")
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 14
 
 [node name="NavRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_override_constants/separation = 4
+# Los controles de zoom viven en esta fila (no flotan sobre el tablero): un overlay
+# flotante anclado al BoardArea solapaba las celdas de la esquina superior derecha,
+# sobre todo en tableros de 12x12/15x15 donde la grilla llega al borde del BoardArea.
 
 [node name="BtnBack" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 0
 unique_name_in_owner = true
 layout_mode = 1
-custom_minimum_size = Vector2(56, 56)
+custom_minimum_size = Vector2(96, 56)
 grow_horizontal = 0
 grow_vertical = 2
 tooltip_text = "Volver al selector de dificultad"
 icon = ExtResource("4_back")
 expand_icon = false
-text = ""
+icon_alignment = 0
+text = "Atrás"
 
 [node name="CenterInfo" type="VBoxContainer" parent="MarginContainer/VBoxContainer/NavRow"]
 layout_mode = 1
@@ -145,7 +164,21 @@ mouse_filter = 2
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="TimeLabel" type="Label" parent="MarginContainer/VBoxContainer/NavRow/CenterInfo"]
+[node name="TimeBox" type="PanelContainer" parent="MarginContainer/VBoxContainer/NavRow/CenterInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_plate")
+
+[node name="TimeStack" type="VBoxContainer" parent="MarginContainer/VBoxContainer/NavRow/CenterInfo/TimeBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="TimeLabel" type="Label" parent="MarginContainer/VBoxContainer/NavRow/CenterInfo/TimeBox/TimeStack"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
@@ -153,10 +186,11 @@ mouse_filter = 2
 text = "00:00"
 horizontal_alignment = 1
 vertical_alignment = 1
+theme_override_colors/font_color = Color(0.062745, 0.062745, 0.062745, 1)
 theme_override_fonts/font = ExtResource("8_vcr")
 theme_override_font_sizes/font_size = 14
 
-[node name="WordsCounter" type="Label" parent="MarginContainer/VBoxContainer/NavRow/CenterInfo"]
+[node name="WordsCounter" type="Label" parent="MarginContainer/VBoxContainer/NavRow/CenterInfo/TimeBox/TimeStack"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
@@ -164,8 +198,21 @@ mouse_filter = 2
 text = "0/5 Palabras"
 horizontal_alignment = 1
 vertical_alignment = 1
+theme_override_colors/font_color = Color(0.062745, 0.062745, 0.062745, 1)
 theme_override_fonts/font = ExtResource("8_vcr")
 theme_override_font_sizes/font_size = 12
+
+[node name="BtnPause" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 0
+unique_name_in_owner = true
+layout_mode = 1
+custom_minimum_size = Vector2(56, 56)
+grow_horizontal = 0
+grow_vertical = 2
+tooltip_text = "Pausar la partida"
+icon = ExtResource("5_pause")
+expand_icon = false
+text = ""
 
 [node name="BtnZoomOut" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 0
@@ -189,17 +236,10 @@ tooltip_text = "Ampliar zoom"
 expand_icon = false
 text = "+"
 
-[node name="BtnPause" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
-ButtonVariant = 0
-unique_name_in_owner = true
-layout_mode = 1
-custom_minimum_size = Vector2(56, 56)
-grow_horizontal = 0
-grow_vertical = 2
-tooltip_text = "Pausar la partida"
-icon = ExtResource("5_pause")
-expand_icon = false
-text = ""
+[node name="NavBalance" type="Control" parent="MarginContainer/VBoxContainer/NavRow"]
+custom_minimum_size = Vector2(0, 0)
+layout_mode = 2
+mouse_filter = 2
 
 [node name="BoardArea" type="Control" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true

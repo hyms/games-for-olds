@@ -48,7 +48,7 @@ public class WordSearchZoomConfettiTest
         // El zoom empieza en 1.0 (spec §4: reposición al iniciar).
         AssertFloat(_scene.Board.Zoom).IsEqual(1.0f);
 
-        // Los controles + / − están en la NavRow y disparan el zoom.
+        // Los controles + / − flotan sobre el tablero y disparan el zoom.
         var zoomIn = _scene.GetNodeOrNull<BigButton>("%BtnZoomIn");
         var zoomOut = _scene.GetNodeOrNull<BigButton>("%BtnZoomOut");
         AssertObject(zoomIn).IsNotNull();

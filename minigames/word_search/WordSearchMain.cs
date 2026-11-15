@@ -130,16 +130,18 @@ public partial class WordSearchMain : BaseMinigame
         if (GetNodeOrNull<PanelContainer>("%TimeBox") is PanelContainer timeBox)
             timeBox.AddThemeStyleboxOverride("panel", PixelStyles.Plate());
 
-        // Los colores de texto de subtítulo, HUD y modales salen de los tokens
-        // del tema (docs/art_direction.md §4): SubheaderBannerColor para texto
-        // secundario sobre fondos claros. Se aplican aquí, no en la escena, para
-        // que un cambio de tema los refresque al instante (SRP · DRY).
+        // Los colores de texto salen de tokens canónicos (docs/art_direction.md §4):
+        // TextDark sobre la banda cálida CreamYellow (#EDE19E) y el HUD sobre Placa,
+        // y SubheaderBannerColor para los títulos de modal. Se aplican aquí, no en
+        // la escena, para que un cambio de tema los refresque al instante (SRP · DRY).
         if (DifficultyLabel != null)
-            DifficultyLabel.AddThemeColorOverride("font_color", Colors.White);
+            DifficultyLabel.AddThemeColorOverride("font_color", PixelStyles.TextDark);
         if (TimeLabel != null)
             TimeLabel.AddThemeColorOverride("font_color", PixelStyles.TextDark);
+        // Sub-etiqueta del cronómetro (contador de palabras): tinta oscura canónica
+        // sobre el lienzo Placa (#EFEFEE), no el azul atenuado del sub-banner.
         if (WordsCounter != null)
-            WordsCounter.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
+            WordsCounter.AddThemeColorOverride("font_color", PixelStyles.TextDark);
         if (_pauseTitle != null)
             _pauseTitle.AddThemeColorOverride("font_color", themeData.SubheaderBannerColor);
         if (_winTitle != null)
@@ -197,7 +199,8 @@ private void WireButtons()
             _completionModal.ConfettiRequested += _onConfettiRequestedAction;
         }
 
-        // Zoom del tablero: botones + / − en la NavRow (spec §4).
+        // Zoom del tablero: botones + / − integrados en la NavRow (spec §4), junto
+        // a la fila de pausa — sin overlay flotante para no solapar celdas del grid.
         if (_btnZoomIn != null)
         {
             _btnZoomIn.Pressed -= _onZoomInAction;

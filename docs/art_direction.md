@@ -63,10 +63,13 @@
 | `Amarillo` | `#FDC109` | Acento secundario | `PixelStyles` |
 | `Cian` | `#08D0DF` | Acento secundario | `PixelStyles` |
 | `CelebrationRed` | `#B45252` | Color cálido de confeti/celebración (coral). Usado en el estallido de partículas de victoria de Word Search (§8). **Agregado v0.5.0** como extensión aditiva; no altera ningún token existente. | `ThemeData`, `PixelStyles`, `PixelConfettiEmitter` |
+| `CreamYellow` | `#EDE19E` | Banda de dificultad cálida (Word Search). Texto obligatorio `TextDark` `#101010` (14.4:1). **Agregado v0.5.1** como extensión aditiva; no altera ningún token existente. | `PixelStyles` |
 
 > **Deriva conocida:** existen diferencias históricas entre valores de tema y utilidades de estilo (p. ej. bordes de celda idle). Al implementar o refinar, consolidar contra la fuente canónica indicado y actualizar esta matriz si se aprueba un cambio global; los minijuegos deben seguir los **tokens**, no valores ad hoc.
 
 > **Additive extensions (v0.5.0, MINOR):** `CelebrationRed` (#B45252) se incorporó como token de celebración para completar la paleta de partículas de Word Search. Es una **extensión aditiva**: no redefine, renombra ni sustituye ningún token de la matriz canónica. Los minijuegos que la usan deben documentarlo en su dirección de arte local (ver [`word_search/art_direction.md`](word_search/art_direction.md) §8).
+>
+> **Additive extensions (v0.5.1, MINOR):** `CreamYellow` (#EDE19E) se incorporó como acento cálido para la banda de dificultad de Word Search (referencia `wathersoup.jpeg`). También es **extensión aditiva**: no redefine, renombra ni sustituye ningún token canónico. Regla de uso: sobre `CreamYellow` el texto y los iconos deben usar `TextDark` (#101010) — 14.4:1 — y el borde `Borde` (#477987) alcanza 3.6:1, cumpliendo el mínimo de bordes de §2.3.
 
 ---
 
