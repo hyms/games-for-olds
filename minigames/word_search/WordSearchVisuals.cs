@@ -29,10 +29,10 @@ public static class WordSearchVisuals
     }
 
     /// <summary>Luz del bisel elevado de celda: 1 px arriba/izquierda (plantilla retro).</summary>
-    public const int ReliefHighlightWidth = 1;
+    public const int ReliefHighlightWidth = 2;
 
     /// <summary>Sombra dura del bisel elevado de celda: 2 px abajo/derecha (plantilla retro).</summary>
-    public const int ReliefShadowWidth = 2;
+    public const int ReliefShadowWidth = 3;
 
     /// <summary>
     ///     Piso de seguridad del lado de celda. Con <see cref="BoardMetricsFor" />

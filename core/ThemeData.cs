@@ -48,4 +48,40 @@ public sealed class ThemeData
     ///     token agregado v0.5.0 de forma aditiva). No altera ningún token existente.
     /// </summary>
     public Color CelebrationRed { get; init; } = Color.FromHtml("#B45252");
+
+    /// <summary>WS-Fondo: fondo madera de escena y relleno de botones HUD (Word Search rev. 1.1).</summary>
+    public Color WSFondo { get; init; } = Color.FromHtml("#A17A5B");
+
+    /// <summary>WS-MaderaBorde: borde visible de botones, marco del tablero y del footer.</summary>
+    public Color WSMaderaBorde { get; init; } = Color.FromHtml("#3A2A1E");
+
+    /// <summary>WS-Crema: placa de dificultad (banda de nivel).</summary>
+    public Color WSCrema { get; init; } = Color.FromHtml("#EDE19E");
+
+    /// <summary>WS-CremaBorde: borde de la placa de dificultad.</summary>
+    public Color WSCremaBorde { get; init; } = Color.FromHtml("#C4B476");
+
+    /// <summary>WS-CremaSuave: %TimeBox y tarjeta del footer.</summary>
+    public Color WSCremaSuave { get; init; } = Color.FromHtml("#F1EFE2");
+
+    /// <summary>WS-Celda: relleno de celda en reposo.</summary>
+    public Color WSCelda { get; init; } = Color.FromHtml("#F1EDE1");
+
+    /// <summary>WS-Acento / WS-Encontrado: estado encontrado/selección (coral sólido).</summary>
+    public Color WSAcento { get; init; } = Color.FromHtml("#FD6D52");
+
+    /// <summary>WS-EncontradoBorde: borde/contorno de celda encontrada.</summary>
+    public Color WSEncontradoBorde { get; init; } = Color.FromHtml("#8E3B33");
+
+    /// <summary>WS-CeldaAviso: variante de celda en foco/hover/hint suave.</summary>
+    public Color WSCeldaAviso { get; init; } = Color.FromHtml("#B07259");
+
+    /// <summary>WS-CianTitulo: título sobre fondo madera (requiere contorno WS-MaderaSombra).</summary>
+    public Color WSCianTitulo { get; init; } = Color.FromHtml("#65B9C4");
+
+    /// <summary>WS-MaderaSombra: contorno/sombra dura del título y separadores.</summary>
+    public Color WSMaderaSombra { get; init; } = Color.FromHtml("#2E1D12");
+
+    /// <summary>WS-Tachado: tachado + texto de palabra encontrada en el footer.</summary>
+    public Color WSTachado { get; init; } = Color.FromHtml("#9B4E48");
 }

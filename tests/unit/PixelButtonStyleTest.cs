@@ -40,7 +40,8 @@ public class PixelButtonStyleTest
             {
                 // El foco es un anillo superpuesto: centro transparente y 2 px fuera.
                 AssertBool(style.DrawCenter).IsFalse();
-                AssertFloat(style.ExpandMarginLeft).IsEqual(2.0f);
+                AssertInt(style.BorderWidthLeft).IsEqual(PixelReliefPainter.BorderWidth);
+                AssertBool(style.DrawCenter).IsFalse();
             }
             else
             {
@@ -105,7 +106,7 @@ public class PixelButtonStyleTest
     {
         var focus = PixelButtonStyle.For(PixelButtonVariant.Menu, PixelButtonState.Focus, Theme);
         AssertBool(focus.Style.DrawCenter).IsFalse();
-        AssertFloat(focus.Style.ExpandMarginLeft).IsEqual(2.0f);
+        AssertInt(focus.Style.BorderWidthLeft).IsEqual(PixelReliefPainter.BorderWidth);
         AssertBool(Ratio(focus.Style.BorderColor, PixelStyles.Arena) >= 3.0f).IsTrue();
         AssertBool(focus.Style.BgColor.A < 0.01f).IsTrue();
     }
@@ -123,18 +124,18 @@ public class PixelButtonStyleTest
         AssertBool(selected.Raised).IsFalse();
         AssertBool(found.Raised).IsFalse();
 
-        AssertBool(idle.Style.BgColor.IsEqualApprox(Theme.CellIdleBackgroundColor)).IsTrue();
-        AssertBool(idle.Style.BorderColor.IsEqualApprox(Theme.CellIdleBorderColor)).IsTrue();
-        // Selected usa el acento turquesa oficial (#099C92), no el azul anterior.
-        AssertBool(selected.Style.BgColor.IsEqualApprox(PixelStyles.Turquesa))
+        AssertBool(idle.Style.BgColor.IsEqualApprox(PixelStyles.WSCelda)).IsTrue();
+        AssertBool(idle.Style.BorderColor.IsEqualApprox(PixelStyles.WSMaderaBorde)).IsTrue();
+        // Selected usa el acento coral oficial (#FD6D52), no el turquesa anterior.
+        AssertBool(selected.Style.BgColor.IsEqualApprox(PixelStyles.WSAcento))
             .OverrideFailureMessage($"selected fill = {selected.Style.BgColor.ToHtml()}")
             .IsTrue();
-        AssertBool(found.Style.BgColor.IsEqualApprox(PixelStyles.Turquesa)).IsTrue();
+        AssertBool(found.Style.BgColor.IsEqualApprox(PixelStyles.WSAcento)).IsTrue();
 
-        AssertBool(selected.Style.BorderColor.IsEqualApprox(PixelStyles.EncontradaBorde))
+        AssertBool(selected.Style.BorderColor.IsEqualApprox(PixelStyles.WSEncontradoBorde))
             .OverrideFailureMessage($"selected border = {selected.Style.BorderColor.ToHtml()}")
             .IsTrue();
-        AssertBool(selected.TextColor.IsEqualApprox(Colors.White))
+        AssertBool(selected.TextColor.IsEqualApprox(PixelStyles.TextDark))
             .OverrideFailureMessage($"selected text = {selected.TextColor.ToHtml()}")
             .IsTrue();
 
@@ -147,7 +148,7 @@ public class PixelButtonStyleTest
             AssertFloat(visual.Style.BgColor.A).IsEqual(1.0f);
         }
 
-        // Turquesa + blanco: gran texto → umbral 3:1 es suficiente.
+        // Coral + texto oscuro: gran texto → umbral 3:1 es suficiente.
         AssertBool(Ratio(selected.TextColor, selected.Style.BgColor) >= 3.0f).IsTrue();
         AssertBool(Ratio(found.TextColor, found.Style.BgColor) >= 3.0f).IsTrue();
         // Hint mantiene ≥4.5:1 por ser un estado temporal más sutil.

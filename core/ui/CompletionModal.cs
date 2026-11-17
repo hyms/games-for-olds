@@ -1,4 +1,5 @@
 using System;
+using ClasicosMenteActiva.core;
 using Godot;
 
 namespace ClasicosMenteActiva.core.ui;
@@ -145,6 +146,6 @@ public partial class CompletionModal : PanelContainer
     private void ApplyDefeatStyling()
     {
         if (_title != null)
-            _title.AddThemeColorOverride("font_color", new Color(0.82f, 0.2f, 0.2f, 1.0f));
+            _title.AddThemeColorOverride("font_color", PixelStyles.CelebrationRed);
     }
 }

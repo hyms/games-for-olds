@@ -101,8 +101,8 @@ public class ThemeManagerTest
 
         // Aditivo: no altera ningún token existente de la matriz canónica.
         AssertString(classic.HeaderBannerColor.ToHtml(false)).IsEqual("#a0bfc7");
-        AssertString(classic.CellFoundBackgroundColor.ToHtml(false)).IsEqual("#099c92");
-        AssertString(classic.FooterStrikethroughColor.ToHtml(false)).IsEqual("#099c92");
+        AssertString(classic.CellFoundBackgroundColor.ToHtml(false)).IsEqual("#fd6d52");
+        AssertString(classic.FooterStrikethroughColor.ToHtml(false)).IsEqual("#9b4e48");
     }
 
     private static void SetPath(SaveManager save, string fieldName, string godotPath)

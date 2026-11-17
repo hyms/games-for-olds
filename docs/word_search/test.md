@@ -109,7 +109,7 @@ Este sección mapea el cumplimiento de los requisitos desde la especificación h
 
 > **Estado:** los tres casos están automatizados en
 > `tests/integration/WordSearchDragTest.cs` sobre la escena real
-> (`WordSearchMain.tscn`) con `ISceneRunner`: el arrastre se simula con el ratón
+> (`WordSearchMain.tscn`, escena activa) con `ISceneRunner`: el arrastre se simula con el ratón
 > emulado sobre los centros de celda calculados por el tablero, y el caso
 > inválido espera 800 ms para comprobar que la celda vuelve a reposo con
 > transparencia restaurada. `IT-WS-01` comprueba además que la celda encontrada

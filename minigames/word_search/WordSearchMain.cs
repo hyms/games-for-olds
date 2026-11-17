@@ -127,8 +127,20 @@ public partial class WordSearchMain : BaseMinigame
         if (GetNodeOrNull<PanelContainer>("%WinCard") is PanelContainer winCard)
             winCard.AddThemeStyleboxOverride("panel", PixelStyles.ModalCard());
 
+        // Fondo de escena: madera WS-Fondo (rev. 1.1), no Placa fría.
+        if (GetNodeOrNull<ColorRect>("Background") is ColorRect background)
+            background.Color = PixelStyles.WSFondo;
+
+        // Título directamente sobre la madera (sin placa fría).
+        if (TitlePanel != null)
+            TitlePanel.AddThemeStyleboxOverride("panel", PixelStyles.WordSearchTitlePanel());
+        if (SubtitlePanel != null)
+            SubtitlePanel.AddThemeStyleboxOverride("panel", PixelStyles.SubtitlePanel());
+
         if (GetNodeOrNull<PanelContainer>("%TimeBox") is PanelContainer timeBox)
             timeBox.AddThemeStyleboxOverride("panel", PixelStyles.Plate());
+        if (GetNodeOrNull<PanelContainer>("%BoardFrame") is PanelContainer boardFrame)
+            boardFrame.AddThemeStyleboxOverride("panel", PixelStyles.BoardFrame());
 
         // Los colores de texto salen de tokens canónicos (docs/art_direction.md §4):
         // TextDark sobre la banda cálida CreamYellow (#EDE19E) y el HUD sobre Placa,

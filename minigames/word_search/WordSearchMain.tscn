@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Theme" uid="uid://bq7knk8x6g1mh" path="res://core/AccessibleTheme.tres" id="1_theme"]
 [ext_resource type="Script" path="res://minigames/word_search/WordSearchMain.cs" id="2_script"]
@@ -10,52 +10,6 @@
 [ext_resource type="Script" uid="uid://dq4klv01b0mpb" path="res://minigames/word_search/WordsPanel.cs" id="9_words"]
 [ext_resource type="Script" path="res://core/ui/CompletionModal.cs" id="11_completion"]
 [ext_resource type="Script" path="res://core/SafeAreaManager.cs" id="10_safearea"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_titlepanel"]
-bg_color = Color(0.627451, 0.74902, 0.780392, 1)
-border_width_left = 2
-border_width_top = 1
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.278431, 0.47451, 0.529412, 1)
-corner_radius_top_left = 0
-corner_radius_top_right = 0
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
-anti_aliasing = false
-shadow_size = 2
-shadow_color = Color(0.278431, 0.47451, 0.529412, 1)
-shadow_offset = Vector2(2, 2)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_plate"]
-bg_color = Color(0.937255, 0.937255, 0.933333, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.278431, 0.47451, 0.529412, 1)
-corner_radius_top_left = 0
-corner_radius_top_right = 0
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
-anti_aliasing = false
-content_margin_left = 12.0
-content_margin_top = 4.0
-content_margin_right = 12.0
-content_margin_bottom = 4.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_subtitlepanel"]
-bg_color = Color(0.929412, 0.882353, 0.619608, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.278431, 0.47451, 0.529412, 1)
-corner_radius_top_left = 0
-corner_radius_top_right = 0
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
-anti_aliasing = false
 
 [node name="WordSearchMain" type="Control"]
 layout_mode = 3
@@ -101,13 +55,12 @@ theme_override_constants/separation = 6
 
 [node name="Header" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 4
 
 [node name="TitlePanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/Header"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_titlepanel")
 
 [node name="Title" type="Label" parent="MarginContainer/VBoxContainer/Header/TitlePanel"]
 layout_mode = 2
@@ -121,9 +74,8 @@ theme_override_font_sizes/font_size = 24
 
 [node name="SubtitlePanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/Header"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 30)
+custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_subtitlepanel")
 
 [node name="DifficultyLabel" type="Label" parent="MarginContainer/VBoxContainer/Header/SubtitlePanel"]
 unique_name_in_owner = true
@@ -136,18 +88,15 @@ theme_override_fonts/font = ExtResource("8_vcr")
 theme_override_font_sizes/font_size = 14
 
 [node name="NavRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-theme_override_constants/separation = 4
-# Los controles de zoom viven en esta fila (no flotan sobre el tablero): un overlay
-# flotante anclado al BoardArea solapaba las celdas de la esquina superior derecha,
-# sobre todo en tableros de 12x12/15x15 donde la grilla llega al borde del BoardArea.
+custom_minimum_size = Vector2(0, 56)
+theme_override_constants/separation = 8
 
 [node name="BtnBack" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 0
 unique_name_in_owner = true
 layout_mode = 1
-custom_minimum_size = Vector2(96, 56)
+custom_minimum_size = Vector2(88, 56)
 grow_horizontal = 0
 grow_vertical = 2
 tooltip_text = "Volver al selector de dificultad"
@@ -156,29 +105,36 @@ expand_icon = false
 icon_alignment = 0
 text = "Atrás"
 
-[node name="CenterInfo" type="VBoxContainer" parent="MarginContainer/VBoxContainer/NavRow"]
-layout_mode = 1
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/NavRow"]
+layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 4
 mouse_filter = 2
-theme_override_constants/separation = 0
-alignment = 1
 
-[node name="TimeBox" type="PanelContainer" parent="MarginContainer/VBoxContainer/NavRow/CenterInfo"]
+[node name="TimeBox" type="PanelContainer" parent="MarginContainer/VBoxContainer/NavRow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_plate")
 
-[node name="TimeStack" type="VBoxContainer" parent="MarginContainer/VBoxContainer/NavRow/CenterInfo/TimeBox"]
+[node name="TimeStack" type="VBoxContainer" parent="MarginContainer/VBoxContainer/NavRow/TimeBox"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="TimeLabel" type="Label" parent="MarginContainer/VBoxContainer/NavRow/CenterInfo/TimeBox/TimeStack"]
+[node name="TimeCaption" type="Label" parent="MarginContainer/VBoxContainer/NavRow/TimeBox/TimeStack"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+text = "TIEMPO"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_color = Color(0.062745, 0.062745, 0.062745, 1)
+theme_override_fonts/font = ExtResource("8_vcr")
+theme_override_font_sizes/font_size = 12
+
+[node name="TimeLabel" type="Label" parent="MarginContainer/VBoxContainer/NavRow/TimeBox/TimeStack"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
@@ -190,7 +146,7 @@ theme_override_colors/font_color = Color(0.062745, 0.062745, 0.062745, 1)
 theme_override_fonts/font = ExtResource("8_vcr")
 theme_override_font_sizes/font_size = 14
 
-[node name="WordsCounter" type="Label" parent="MarginContainer/VBoxContainer/NavRow/CenterInfo/TimeBox/TimeStack"]
+[node name="WordsCounter" type="Label" parent="MarginContainer/VBoxContainer/NavRow/TimeBox/TimeStack"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
@@ -202,68 +158,45 @@ theme_override_colors/font_color = Color(0.062745, 0.062745, 0.062745, 1)
 theme_override_fonts/font = ExtResource("8_vcr")
 theme_override_font_sizes/font_size = 12
 
+[node name="Spacer2" type="Control" parent="MarginContainer/VBoxContainer/NavRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
 [node name="BtnPause" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 0
 unique_name_in_owner = true
 layout_mode = 1
-custom_minimum_size = Vector2(56, 56)
+custom_minimum_size = Vector2(96, 56)
 grow_horizontal = 0
 grow_vertical = 2
 tooltip_text = "Pausar la partida"
 icon = ExtResource("5_pause")
 expand_icon = false
-text = ""
+icon_alignment = 2
+text = "Pausa"
 
-[node name="BtnZoomOut" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
-ButtonVariant = 0
-unique_name_in_owner = true
-layout_mode = 1
-custom_minimum_size = Vector2(56, 56)
-grow_horizontal = 0
-grow_vertical = 2
-tooltip_text = "Reducir zoom"
-expand_icon = false
-text = "−"
-
-[node name="BtnZoomIn" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
-ButtonVariant = 0
-unique_name_in_owner = true
-layout_mode = 1
-custom_minimum_size = Vector2(56, 56)
-grow_horizontal = 0
-grow_vertical = 2
-tooltip_text = "Ampliar zoom"
-expand_icon = false
-text = "+"
-
-[node name="NavBalance" type="Control" parent="MarginContainer/VBoxContainer/NavRow"]
-custom_minimum_size = Vector2(0, 0)
-layout_mode = 2
-mouse_filter = 2
-
-[node name="BoardArea" type="Control" parent="MarginContainer/VBoxContainer"]
+[node name="BoardFrame" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 custom_minimum_size = Vector2(0, 200)
-theme_override_constants/margin_top = 8
+
+[node name="BoardArea" type="Control" parent="MarginContainer/VBoxContainer/BoardFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 200)
 mouse_filter = 2
 
 [node name="WordsPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 70)
+custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
 size_flags_vertical = 0
-theme_override_constants/margin_top = 8
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
 script = ExtResource("9_words")
-
-[node name="VictoryLabel" type="Label" parent="MarginContainer/VBoxContainer"]
-visible = false
-unique_name_in_owner = true
-layout_mode = 2
-text = "¡Sopa completada!"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="PauseModal" type="PanelContainer" parent="."]
 unique_name_in_owner = true
@@ -291,6 +224,7 @@ layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="PauseTitle" type="Label" parent="PauseModal/Center/PauseCard/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "PAUSA"
 horizontal_alignment = 1
@@ -298,43 +232,70 @@ vertical_alignment = 1
 theme_override_fonts/font = ExtResource("6_press")
 theme_override_font_sizes/font_size = 16
 
+[node name="ZoomRow" type="HBoxContainer" parent="PauseModal/Center/PauseCard/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="BtnZoomOut" parent="PauseModal/Center/PauseCard/VBox/ZoomRow" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 0
+unique_name_in_owner = true
+layout_mode = 1
+custom_minimum_size = Vector2(56, 56)
+grow_horizontal = 0
+grow_vertical = 2
+tooltip_text = "Reducir zoom"
+expand_icon = false
+text = "−"
+
+[node name="BtnZoomIn" parent="PauseModal/Center/PauseCard/VBox/ZoomRow" instance=ExtResource("3_bigbtn")]
+ButtonVariant = 0
+unique_name_in_owner = true
+layout_mode = 1
+custom_minimum_size = Vector2(56, 56)
+grow_horizontal = 0
+grow_vertical = 2
+tooltip_text = "Ampliar zoom"
+expand_icon = false
+text = "+"
+
 [node name="BtnResume" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 1
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 text = "Continuar"
 
 [node name="BtnHint" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 1
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 text = "Pista (3)"
 
 [node name="BtnHelp" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 1
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 text = "Ayuda"
 
 [node name="BtnReset" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 1
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 text = "Reiniciar partida"
 
 [node name="BtnPauseMenu" parent="PauseModal/Center/PauseCard/VBox" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 1
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 text = "Salir al menú principal"
 
@@ -402,15 +363,15 @@ theme_override_font_sizes/font_size = 18
 [node name="BtnNextGame" parent="WinModal/Center/WinCard/VBox" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 1
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 text = "Siguiente partida"
 
 [node name="BtnWinMenu" parent="WinModal/Center/WinCard/VBox" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 1
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
 size_flags_horizontal = 3
 text = "Menú principal"

@@ -112,7 +112,8 @@ public partial class WordCell : PixelCell
         // El color de la letra sale de la misma fábrica que el relleno, de modo
         // que cada estado del tema mantiene el contraste WCAG (docs §2).
         _label.AddThemeColorOverride("font_color", CurrentVisual.TextColor);
-        _label.AddThemeColorOverride("font_outline_color", PixelStyles.Placa);
-        _label.AddThemeConstantOverride("outline_size", 0);
+        var outlined = WordState is WordCellState.Normal or WordCellState.Hint;
+        _label.AddThemeColorOverride("font_outline_color", PixelStyles.TextDark);
+        _label.AddThemeConstantOverride("outline_size", outlined ? 1 : 0);
     }
 }

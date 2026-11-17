@@ -32,14 +32,39 @@ public static class PixelStyles
     public const int ButtonIconSize = 16;
 
     // --- Acentos -------------------------------------------------------------
-    public static readonly Color Turquesa = new("#099c92"); // Acento de celdas seleccionadas/encontradas
-    public static readonly Color Cian = new("#08d0df");
+    public static readonly Color Turquesa = new("#099c92"); // Acento de celdas seleccionadas/encontradas (matriz global, conservada)
+    public static readonly Color Cian = new("#08d0df"); // Acento secundario (matriz global, conservada)
     public static readonly Color Amarillo = new("#fdc109"); // Acento cálido (confeti/celebración)
     public static readonly Color CelebrationRed = new("#b45252"); // Coral cálido de confeti/celebración (token agregado v0.5.0)
     public static readonly Color CreamYellow = new("#ede19e"); // Banda de dificultad cálida (extensión aditiva v0.5.1)
 
+    // --- Tokens locales de Word Search: madera/tierra (art_direction.md rev. 1.1) ---
+    /// <summary>WS-Fondo: fondo madera de escena y relleno de botones HUD.</summary>
+    public static readonly Color WSFondo = new("#a17a5b");
+    /// <summary>WS-MaderaBorde: borde visible de botones, marco del tablero y del footer.</summary>
+    public static readonly Color WSMaderaBorde = new("#3a2a1e");
+    /// <summary>WS-Crema: placa de dificultad (banda de nivel).</summary>
+    public static readonly Color WSCrema = new("#ede19e");
+    /// <summary>WS-CremaBorde: borde de la placa de dificultad.</summary>
+    public static readonly Color WSCremaBorde = new("#c4b476");
+    /// <summary>WS-CremaSuave: %TimeBox y tarjeta del footer.</summary>
+    public static readonly Color WSCremaSuave = new("#f1efe2");
+    /// <summary>WS-Celda: relleno de celda en reposo.</summary>
+    public static readonly Color WSCelda = new("#f1ede1");
+    /// <summary>WS-Acento / WS-Encontrado: estado encontrado/selección (coral sólido).</summary>
+    public static readonly Color WSAcento = new("#fd6d52");
+    /// <summary>WS-EncontradoBorde: borde/contorno de celda encontrada.</summary>
+    public static readonly Color WSEncontradoBorde = new("#8e3b33");
+    /// <summary>WS-CeldaAviso: variante de celda en foco/hover/hint suave.</summary>
+    public static readonly Color WSCeldaAviso = new("#b07259");
+    /// <summary>WS-CianTitulo: título sobre fondo madera (requiere contorno WS-MaderaSombra).</summary>
+    public static readonly Color WSCianTitulo = new("#65b9c4");
+    /// <summary>WS-MaderaSombra: contorno/sombra dura del título y separadores.</summary>
+    public static readonly Color WSMaderaSombra = new("#2e1d12");
+    /// <summary>WS-Tachado: tachado + texto de palabra encontrada en el footer.</summary>
+    public static readonly Color WSTachado = new("#9b4e48");
+
     // --- Estados del tablero -------------------------------------------------
-    public static readonly Color CeldaSeleccion = new("#6095fb");
     public static readonly Color Trazo = new("#2b56b8");
 
     public static readonly Color
@@ -103,10 +128,10 @@ public static class PixelStyles
         return ContrastRatio(TextDark, fill) >= 3.0f ? TextDark : TextLight;
     }
 
-    /// <summary>Placa de encabezado, cronómetro o modal: <c>Placa</c> con borde pixel 2px y padding interno.</summary>
+    /// <summary>Placa de encabezado, cronómetro o modal: crema suave con borde madera 2px y padding interno (Word Search, rev. 1.1).</summary>
     public static StyleBoxFlat Plate()
     {
-        var box = MakeBox(Placa, Borde, 2, Radius);
+        var box = MakeBox(WSCremaSuave, WSMaderaBorde, 2, Radius);
         box.ContentMarginLeft = 12.0f;
         box.ContentMarginRight = 12.0f;
         box.ContentMarginTop = 4.0f;
@@ -114,7 +139,7 @@ public static class PixelStyles
         return box;
     }
 
-    /// <summary>Panel del título principal: banner canónico <c>PlacaHeader</c> (#A0BFC7), borde pixel 2px.</summary>
+    /// <summary>Panel del título principal: fondo madera WS-Fondo con borde madera, borde pixel 2px (sin placa fría).</summary>
     public static StyleBoxFlat TitlePanel()
     {
         var box = new StyleBoxFlat
@@ -139,16 +164,28 @@ public static class PixelStyles
         return box;
     }
 
+    /// <summary>Panel del título de Word Search: fondo madera WS-Fondo sobre el lienzo de escena (sin placa fría).</summary>
+    public static StyleBoxFlat WordSearchTitlePanel()
+    {
+        var box = MakeBox(WSFondo, WSMaderaBorde, 2, Radius);
+        box.ContentMarginLeft = 16.0f;
+        box.ContentMarginRight = 16.0f;
+        box.ContentMarginTop = 10.0f;
+        box.ContentMarginBottom = 10.0f;
+        return box;
+    }
+
     /// <summary>
-    ///     Banda de dificultad: acento cálido <c>CreamYellow</c> (#EDE19E) con borde pixel 2px,
+    ///     Banda de dificultad: acento cálido <c>CreamYellow</c> (#EDE19E == WS-Crema) con borde pixel 2px,
     ///     según la referencia wathersoup. Texto oscuro <c>TextDark</c> encima (14.4:1).
+    ///     Borde WS-CremaBorde (rev. 1.1) en lugar de Borde frío.
     /// </summary>
     public static StyleBoxFlat SubtitlePanel()
     {
         var box = new StyleBoxFlat
         {
             BgColor = Opaque(CreamYellow),
-            BorderColor = Opaque(Borde),
+            BorderColor = Opaque(WSCremaBorde),
             AntiAliasing = false,
             CornerDetail = 1
         };
@@ -161,14 +198,25 @@ public static class PixelStyles
         return box;
     }
 
-    /// <summary>Panel inferior de palabras: placa ancha con marco retro de pixel art de 2px.</summary>
+    /// <summary>Marco del tablero: fondo madera WS-Fondo con borde WS-MaderaBorde de 3 px, plano (sin sombra).</summary>
+    public static StyleBoxFlat BoardFrame()
+    {
+        var box = MakeBox(WSFondo, WSMaderaBorde, 3, Radius, false);
+        box.ContentMarginLeft = 10.0f;
+        box.ContentMarginRight = 10.0f;
+        box.ContentMarginTop = 10.0f;
+        box.ContentMarginBottom = 10.0f;
+        return box;
+    }
+
+    /// <summary>Panel inferior de palabras: crema suave WS-CremaSuave con marco madera WS-MaderaBorde de 3px.</summary>
     public static StyleBoxFlat WordPanel()
     {
-        var box = MakeBox(Placa, Tinta, 2, Radius);
-        box.ContentMarginLeft = 12.0f;
-        box.ContentMarginRight = 12.0f;
-        box.ContentMarginTop = 8.0f;
-        box.ContentMarginBottom = 8.0f;
+        var box = MakeBox(WSCremaSuave, WSMaderaBorde, 3, Radius);
+        box.ContentMarginLeft = 16.0f;
+        box.ContentMarginRight = 16.0f;
+        box.ContentMarginTop = 12.0f;
+        box.ContentMarginBottom = 12.0f;
         return box;
     }
 

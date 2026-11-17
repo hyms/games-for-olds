@@ -25,7 +25,7 @@ public partial class WordsPanel : PanelContainer
 {
     private const int WordFontSize = 16;
     private const int LineSeparation = 2;
-    private const float MinPanelHeight = 70.0f;
+    private const float MinPanelHeight = 88.0f;
     private const float MaxPanelHeight = 160.0f;
 
     private RichTextLabel _wordList;
@@ -80,7 +80,7 @@ public partial class WordsPanel : PanelContainer
         {
             // El fondo del panel permanece en Placa (#efefee) de forma canónica;
             // solo el borde se actualiza con el tema.
-            _stylePanel.BorderColor = theme.CellIdleBorderColor;
+            _stylePanel.BorderColor = PixelStyles.Borde;
             AddThemeStyleboxOverride("panel", _stylePanel);
         }
 
@@ -171,7 +171,7 @@ public void EmitConfettiAt(Vector2 globalPosition)
         if (PixelStyles.CellFont != null)
             label.AddThemeFontOverride("normal_font", PixelStyles.CellFont);
         label.AddThemeFontSizeOverride("normal_font_size", WordFontSize);
-        label.AddThemeColorOverride("default_color", PixelStyles.Tinta);
+        label.AddThemeColorOverride("default_color", PixelStyles.TextDark);
         label.AddThemeConstantOverride("line_separation", LineSeparation);
         return label;
     }

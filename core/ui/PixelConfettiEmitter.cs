@@ -72,18 +72,20 @@ public partial class PixelConfettiEmitter : CpuParticles2D
     }
 
     /// <summary>
-    ///     Construye la rampa de colores del confeti con los tokens de la paleta
-    ///     global: <see cref="PixelStyles.Turquesa" />, <see cref="PixelStyles.Amarillo" />,
-    ///     <see cref="PixelStyles.Cian" /> y <see cref="PixelStyles.CelebrationRed" />.
-    ///     No se introducen colores fuera de la matriz global (docs/art_direction.md §4).
+    ///     Construye la rampa de colores del confeti con los tokens cálidos de la
+    ///     paleta de Word Search: <see cref="PixelStyles.WSAcento" /> (coral),
+    ///     <see cref="PixelStyles.CelebrationRed" />, <see cref="PixelStyles.WSCrema" />
+    ///     y <see cref="PixelStyles.Amarillo" />. Todos provienen de la paleta
+    ///     aprobada (docs/art_direction.md §8.1); no se introducen colores fuera
+    ///     de la matriz global ni acentos fríos.
     /// </summary>
     private static Gradient BuildColorRamp()
     {
         var ramp = new Gradient();
-        ramp.SetColor(0, PixelStyles.Turquesa);
-        ramp.SetColor(1, PixelStyles.Amarillo);
-        ramp.SetColor(2, PixelStyles.Cian);
-        ramp.SetColor(3, PixelStyles.CelebrationRed);
+        ramp.SetColor(0, PixelStyles.WSAcento);
+        ramp.SetColor(1, PixelStyles.CelebrationRed);
+        ramp.SetColor(2, PixelStyles.WSCrema);
+        ramp.SetColor(3, PixelStyles.Amarillo);
         return ramp;
     }
 

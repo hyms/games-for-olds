@@ -30,19 +30,19 @@ public static class PixelCellStyle
         var (fill, border, text, raised) = state switch
         {
             PixelCellState.Pressed => (
-                theme.CellIdleBackgroundColor.Darkened(0.08f),
+                PixelStyles.Celda.Darkened(0.08f),
                 theme.CellIdleBorderColor,
-                PixelStyles.TextColor(theme.CellIdleBackgroundColor.Darkened(0.08f)),
+                PixelStyles.TextColor(PixelStyles.Celda.Darkened(0.08f)),
                 false),
             PixelCellState.Selected => (
-                PixelStyles.Turquesa,
-                PixelStyles.EncontradaBorde,
-                Colors.White, // Texto blanco sobre turquesa
+                theme.CellFoundBackgroundColor, // WS-Acento (coral, rev. 1.1)
+                PixelStyles.WSEncontradoBorde,
+                PixelStyles.TextDark, // Texto oscuro sobre coral
                 false),
             PixelCellState.Found => (
-                theme.CellFoundBackgroundColor,
-                FoundBorder(theme),
-                theme.CellFoundTextColor,
+                theme.CellFoundBackgroundColor, // WS-Acento (coral, rev. 1.1)
+                PixelStyles.WSEncontradoBorde,
+                PixelStyles.TextDark, // Texto oscuro sobre coral
                 false),
             PixelCellState.Hint => (
                 PixelStyles.PistaAcento,
@@ -50,8 +50,8 @@ public static class PixelCellStyle
                 PixelStyles.TextColor(PixelStyles.PistaAcento),
                 true),
             _ => (
-                theme.CellIdleBackgroundColor,
-                theme.CellIdleBorderColor,
+                theme.CellIdleBackgroundColor, // WS-Celda (rev. 1.1)
+                PixelStyles.WSMaderaBorde,
                 PixelStyles.TextColor(theme.CellIdleBackgroundColor),
                 true)
         };
@@ -74,13 +74,5 @@ public static class PixelCellStyle
             Raised = raised,
             DrawRelief = true
         };
-    }
-
-    private static Color FoundBorder(ThemeData theme)
-    {
-        // El tema clásico usa el turquesa oscurecido de la dirección de arte.
-        return theme.CellFoundBackgroundColor.IsEqualApprox(PixelStyles.Turquesa)
-            ? PixelStyles.EncontradaBorde
-            : PixelStyles.BorderColor(theme.CellFoundBackgroundColor);
     }
 }

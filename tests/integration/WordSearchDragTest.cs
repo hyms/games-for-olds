@@ -56,7 +56,7 @@ public class WordSearchDragTest
         AssertInt(_scene.WordsFound).IsEqual(1);
         AssertBool(_scene.FoundWords.Contains(target.Word)).IsTrue();
 
-        // La celda debe cambiar de relleno al acento turquesa, no solo el borde.
+        // La celda debe cambiar de relleno al acento coral, no solo el borde.
         var probeCell = _scene.Board.GetCell(target.Start);
         GD.Print($"[PROBE] start={target.Start} found={_scene.WordsFound} cellState={probeCell.WordState} isFound={probeCell.IsFound} pxState={probeCell.State}");
 
@@ -65,7 +65,7 @@ public class WordSearchDragTest
 
         var foundStyle = _scene.Board.GetCell(target.Start).GetThemeStylebox("panel") as StyleBoxFlat;
         AssertObject(foundStyle).IsNotNull();
-        AssertBool(foundStyle.BgColor.IsEqualApprox(PixelStyles.Turquesa))
+        AssertBool(foundStyle.BgColor.IsEqualApprox(PixelStyles.WSAcento))
             .OverrideFailureMessage($"la celda encontrada conserva el relleno {foundStyle.BgColor}")
             .IsTrue();
     }

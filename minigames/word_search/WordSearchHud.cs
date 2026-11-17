@@ -68,7 +68,7 @@ public sealed class WordSearchHud
             text.Append(word);
         }
 
-        var strikeColor = theme?.FooterStrikethroughColor ?? PixelStyles.EncontradaBorde;
+        var strikeColor = theme?.WSTachado ?? PixelStyles.WSTachado;
         var color = strikeColor.ToHtml(false);
         foreach (var word in found)
         {

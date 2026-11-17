@@ -32,7 +32,7 @@ public class WordSearchHudTest
         AssertBool(casa > luna)
             .OverrideFailureMessage($"la encontrada debe ir al final del flujo en «{text}»")
             .IsTrue();
-        AssertBool(text.Contains(PixelStyles.EncontradaBorde.ToHtml(false)))
+        AssertBool(text.Contains(PixelStyles.WSTachado.ToHtml(false)))
             .OverrideFailureMessage($"falta el color de encontrada en «{text}»")
             .IsTrue();
     }

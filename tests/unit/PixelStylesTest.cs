@@ -19,7 +19,7 @@ public class PixelStylesTest
     private static readonly string[] Families =
     {
         "TURQUESA", "CIAN",
-        "CELDA", "PLACA", "ARENA", "CELDA_SELECCION"
+        "CELDA", "PLACA", "ARENA"
     };
 
     private static Color Fill(string family)
@@ -31,7 +31,6 @@ public class PixelStylesTest
             "CELDA" => PixelStyles.Celda,
             "PLACA" => PixelStyles.Placa,
             "ARENA" => PixelStyles.Arena,
-            "CELDA_SELECCION" => PixelStyles.CeldaSeleccion,
             _ => PixelStyles.Arena
         };
     }

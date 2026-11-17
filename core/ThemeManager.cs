@@ -65,14 +65,26 @@ public partial class ThemeManager : Node
                 BackgroundColor = Color.FromHtml("#FFFFFF"),
                 HeaderBannerColor = Color.FromHtml("#A0BFC7"),
                 SubheaderBannerColor = Color.FromHtml("#477987"),
-                CellIdleBackgroundColor = Color.FromHtml("#EBF2F5"),
-                CellIdleBorderColor = Color.FromHtml("#A0BFC7"),
+                CellIdleBackgroundColor = Color.FromHtml("#F1EDE1"), // WS-Celda (rev. 1.1)
+                CellIdleBorderColor = Color.FromHtml("#A17A5B"), // WS-Fondo (rev. 1.1)
                 CellIdleTextColor = Color.FromHtml("#101010"),
-                CellFoundBackgroundColor = Color.FromHtml("#099C92"),
-                CellFoundTextColor = Color.FromHtml("#FFFFFF"),
-                FooterTextColor = Color.FromHtml("#477987"),
-                FooterStrikethroughColor = Color.FromHtml("#099C92"),
-                CelebrationRed = Color.FromHtml("#B45252")
+                CellFoundBackgroundColor = Color.FromHtml("#FD6D52"), // WS-Acento (rev. 1.1)
+                CellFoundTextColor = Color.FromHtml("#101010"),
+                FooterTextColor = Color.FromHtml("#101010"),
+                FooterStrikethroughColor = Color.FromHtml("#9B4E48"), // WS-Tachado (rev. 1.1)
+                CelebrationRed = Color.FromHtml("#B45252"),
+                WSFondo = Color.FromHtml("#A17A5B"),
+                WSMaderaBorde = Color.FromHtml("#3A2A1E"),
+                WSCrema = Color.FromHtml("#EDE19E"),
+                WSCremaBorde = Color.FromHtml("#C4B476"),
+                WSCremaSuave = Color.FromHtml("#F1EFE2"),
+                WSCelda = Color.FromHtml("#F1EDE1"),
+                WSAcento = Color.FromHtml("#FD6D52"),
+                WSEncontradoBorde = Color.FromHtml("#8E3B33"),
+                WSCeldaAviso = Color.FromHtml("#B07259"),
+                WSCianTitulo = Color.FromHtml("#65B9C4"),
+                WSMaderaSombra = Color.FromHtml("#2E1D12"),
+                WSTachado = Color.FromHtml("#9B4E48")
             },
             "dark_contrast" => new ThemeData
             {
@@ -80,14 +92,26 @@ public partial class ThemeManager : Node
                 BackgroundColor = Color.FromHtml("#121212"),
                 HeaderBannerColor = Color.FromHtml("#2A2A2A"),
                 SubheaderBannerColor = Color.FromHtml("#3A3A3A"),
-                CellIdleBackgroundColor = Color.FromHtml("#1E1E1E"),
-                CellIdleBorderColor = Color.FromHtml("#4A4A4A"),
-                CellIdleTextColor = Color.FromHtml("#FFFFFF"),
-                CellFoundBackgroundColor = Color.FromHtml("#099C92"),
-                CellFoundTextColor = Color.FromHtml("#FFFFFF"),
-                FooterTextColor = Color.FromHtml("#B0B0B0"),
-                FooterStrikethroughColor = Color.FromHtml("#099C92"),
-                CelebrationRed = Color.FromHtml("#B45252")
+                CellIdleBackgroundColor = Color.FromHtml("#F1EDE1"), // WS-Celda (rev. 1.1)
+                CellIdleBorderColor = Color.FromHtml("#A17A5B"), // WS-Fondo (rev. 1.1)
+                CellIdleTextColor = Color.FromHtml("#101010"),
+                CellFoundBackgroundColor = Color.FromHtml("#FD6D52"), // WS-Acento (rev. 1.1)
+                CellFoundTextColor = Color.FromHtml("#101010"),
+                FooterTextColor = Color.FromHtml("#101010"),
+                FooterStrikethroughColor = Color.FromHtml("#9B4E48"), // WS-Tachado (rev. 1.1)
+                CelebrationRed = Color.FromHtml("#B45252"),
+                WSFondo = Color.FromHtml("#A17A5B"),
+                WSMaderaBorde = Color.FromHtml("#3A2A1E"),
+                WSCrema = Color.FromHtml("#EDE19E"),
+                WSCremaBorde = Color.FromHtml("#C4B476"),
+                WSCremaSuave = Color.FromHtml("#F1EFE2"),
+                WSCelda = Color.FromHtml("#F1EDE1"),
+                WSAcento = Color.FromHtml("#FD6D52"),
+                WSEncontradoBorde = Color.FromHtml("#8E3B33"),
+                WSCeldaAviso = Color.FromHtml("#B07259"),
+                WSCianTitulo = Color.FromHtml("#65B9C4"),
+                WSMaderaSombra = Color.FromHtml("#2E1D12"),
+                WSTachado = Color.FromHtml("#9B4E48")
             },
             _ => new ThemeData { ThemeId = themeId }
         };

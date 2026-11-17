@@ -158,8 +158,7 @@ public static class PixelButtonStyle
 
         if (state == PixelButtonState.Focus)
         {
-            // El foco se pinta encima del estilo base: solo un anillo exterior.
-            style.SetExpandMarginAll(2);
+            // El foco se pinta como anillo de 2 px pegado al borde (sin expand).
         }
 
         return new PixelButtonVisual
