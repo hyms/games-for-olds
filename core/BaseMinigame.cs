@@ -46,6 +46,8 @@ public abstract partial class BaseMinigame : Control
     private Action _onClosePauseAction;
     private Action _onGoToMainMenuAction;
 
+    private bool _sharedButtonsWired;
+
     public override void _Ready()
     {
         SceneManager = GetNode<SceneManager>($"/root/{Constants.AutoloadSceneManager}");
@@ -74,32 +76,20 @@ public abstract partial class BaseMinigame : Control
 
     private void WireSharedButtons()
     {
+        if (_sharedButtonsWired) return;
+
         // Inicializar delegados una sola vez (reutilizables para conectar/desconectar)
         _onBackAction ??= OnBack;
         _onOpenPauseAction ??= OpenPause;
         _onClosePauseAction ??= ClosePause;
         _onGoToMainMenuAction ??= GoToMainMenu;
 
-        if (BtnBack != null)
-        {
-            BtnBack.Pressed -= _onBackAction;
-            BtnBack.Pressed += _onBackAction;
-        }
-        if (BtnPause != null)
-        {
-            BtnPause.Pressed -= _onOpenPauseAction;
-            BtnPause.Pressed += _onOpenPauseAction;
-        }
-        if (BtnResume != null)
-        {
-            BtnResume.Pressed -= _onClosePauseAction;
-            BtnResume.Pressed += _onClosePauseAction;
-        }
-        if (BtnWinMenu != null)
-        {
-            BtnWinMenu.Pressed -= _onGoToMainMenuAction;
-            BtnWinMenu.Pressed += _onGoToMainMenuAction;
-        }
+        if (BtnBack != null) BtnBack.Pressed += _onBackAction;
+        if (BtnPause != null) BtnPause.Pressed += _onOpenPauseAction;
+        if (BtnResume != null) BtnResume.Pressed += _onClosePauseAction;
+        if (BtnWinMenu != null) BtnWinMenu.Pressed += _onGoToMainMenuAction;
+
+        _sharedButtonsWired = true;
     }
 
     /// <summary>Acción del botón volver; por defecto vuelve al menú principal.</summary>

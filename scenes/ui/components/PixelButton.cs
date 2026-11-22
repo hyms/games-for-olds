@@ -13,14 +13,36 @@ namespace ClasicosMenteActiva.scenes.ui.components;
 /// </summary>
 public partial class PixelButton : Button
 {
-	private readonly StyleBoxFlat[] _styles = new StyleBoxFlat[5];
-	private readonly Color[] _textColors = new Color[5];
 	private ThemeData _theme = new();
+	private int _cornerRadius;
 	private BaseButton.DrawMode _lastDrawMode = (BaseButton.DrawMode)(-1);
 
 	/// <summary>Contexto visual del botón (HUD, acción de modal o menú).</summary>
 	[Export]
 	public PixelButtonVariant ButtonVariant { get; set; } = PixelButtonVariant.Menu;
+
+	/// <summary>Alcance del botón: determina qué paleta de colores usar (global o Word Search).</summary>
+	[Export]
+	public ButtonScope Scope { get; set; } = ButtonScope.Global;
+
+	/// <summary>Posición del icono respecto al texto del botón.</summary>
+	[Export]
+	public IconPosition IconPosition { get; set; } = IconPosition.Right;
+
+	/// <summary>True permite alto inferior a MinTouchSize.Y (HUD compacto, ej. 48–52 px).
+	/// BigButton respeta esta bandera y no clampa la Y al mínimo táctil.</summary>
+	[Export]
+	public bool AllowCompactHeight { get; set; }
+
+	/// <summary>Estilo atenuado para tarjetas secundarias del carrusel: relleno más
+	/// oscuro, sin alfa. Úsalo con <see cref="RefreshVisuals" /> para activar/desactivar.</summary>
+	[Export]
+	public bool Muted { get; set; }
+
+	/// <summary>Omite el ancho mínimo de la variante y usa esquina 0: botón cuadrado
+	/// compacto para icono único (ej. salida). Default false no cambia comportamiento existente.</summary>
+	[Export]
+	public bool CompactSquare { get; set; }
 
 	public override void _Ready()
 	{
@@ -30,6 +52,8 @@ public partial class PixelButton : Button
 		var theme = GetNodeOrNull<ThemeManager>("/root/ThemeManager");
 		ApplyTheme(theme?.CurrentThemeData);
 		if (theme != null) theme.OnThemeChanged += OnThemeChanged;
+
+		ApplyGeometry();
 	}
 
 	public override void _Process(double delta)
@@ -56,58 +80,90 @@ public partial class PixelButton : Button
 		if (mode == BaseButton.DrawMode.Disabled) return;
 
 		var raised = mode is BaseButton.DrawMode.Normal;
-		PixelReliefPainter.Draw(this, Size, raised);
+		var hl = Scope == ButtonScope.WordSearch ? _theme.WSCremaSuave : (Color?)null;
+		var sh = Scope == ButtonScope.WordSearch ? _theme.WSMaderaSombra : (Color?)null;
+		PixelReliefPainter.Draw(this, Size, raised, 1, 1, _cornerRadius, hl, sh);
 	}
 
 	private void OnThemeChanged(ThemeData themeData) => ApplyTheme(themeData);
 
+	private void ApplyGeometry()
+	{
+		var metrics = PixelButtonStyle.MetricsFor(ButtonVariant);
+		var minSize = metrics.MinSize;
+
+		if (CompactSquare)
+		{
+			// Botón cuadrado: no se clampa al ancho mínimo de la variante (88 en Hud).
+			var current = CustomMinimumSize;
+			CustomMinimumSize = new Vector2(
+				current.X,
+				minSize.Y > 0 ? Mathf.Max(minSize.Y, current.Y) : current.Y);
+		}
+		else if (minSize.X > 0 || minSize.Y > 0)
+		{
+			var current = CustomMinimumSize;
+			CustomMinimumSize = new Vector2(
+				minSize.X > 0 ? Mathf.Max(minSize.X, current.X) : current.X,
+				minSize.Y > 0 ? Mathf.Max(minSize.Y, current.Y) : current.Y);
+		}
+
+		IconAlignment = IconPosition == IconPosition.Left
+			? HorizontalAlignment.Left
+			: HorizontalAlignment.Right;
+	}
+
 	private void ApplyTheme(ThemeData theme)
 	{
 		_theme = theme ?? new ThemeData();
-
-		for (var i = 0; i < _styles.Length; i++)
-		{
-			var visual = PixelButtonStyle.For(ButtonVariant, (PixelButtonState)i, _theme);
-			_styles[i] = visual.Style;
-			_textColors[i] = visual.TextColor;
-		}
+		_cornerRadius = CompactSquare ? 0 : PixelButtonStyle.MetricsFor(ButtonVariant).CornerRadius;
 
 		UpdateVisuals();
 	}
 
 	private void UpdateVisuals()
 	{
-		var normal = _styles[(int)PixelButtonState.Normal];
-		var hover = _styles[(int)PixelButtonState.Hover];
-		var pressed = _styles[(int)PixelButtonState.Pressed];
-		var focus = _styles[(int)PixelButtonState.Focus];
-		var disabled = _styles[(int)PixelButtonState.Disabled];
+		var normal = VisualFor(PixelButtonState.Normal);
+		var hover = VisualFor(PixelButtonState.Hover);
+		var pressed = VisualFor(PixelButtonState.Pressed);
+		var focus = VisualFor(PixelButtonState.Focus);
+		var disabled = VisualFor(PixelButtonState.Disabled);
 
-		AddThemeStyleboxOverride("normal", normal);
-		AddThemeStyleboxOverride("hover", hover);
-		AddThemeStyleboxOverride("pressed", pressed);
-		AddThemeStyleboxOverride("hover_pressed", pressed);
-		AddThemeStyleboxOverride("focus", focus);
-		AddThemeStyleboxOverride("disabled", disabled);
+		AddThemeStyleboxOverride("normal", normal.Style);
+		AddThemeStyleboxOverride("hover", hover.Style);
+		AddThemeStyleboxOverride("pressed", pressed.Style);
+		AddThemeStyleboxOverride("hover_pressed", pressed.Style);
+		AddThemeStyleboxOverride("focus", focus.Style);
+		AddThemeStyleboxOverride("disabled", disabled.Style);
 
 		var metrics = PixelButtonStyle.MetricsFor(ButtonVariant);
 		if (metrics.Font != null) AddThemeFontOverride("font", metrics.Font);
 		AddThemeFontSizeOverride("font_size", metrics.FontSize);
 		AddThemeConstantOverride("h_separation", metrics.HSeparation);
 
-		AddThemeColorOverride("font_color", _textColors[(int)PixelButtonState.Normal]);
-		AddThemeColorOverride("font_hover_color", _textColors[(int)PixelButtonState.Hover]);
-		AddThemeColorOverride("font_pressed_color", _textColors[(int)PixelButtonState.Pressed]);
-		AddThemeColorOverride("font_focus_color", _textColors[(int)PixelButtonState.Focus]);
-		AddThemeColorOverride("font_disabled_color", _textColors[(int)PixelButtonState.Disabled]);
+		AddThemeColorOverride("font_color", normal.TextColor);
+		AddThemeColorOverride("font_hover_color", hover.TextColor);
+		AddThemeColorOverride("font_pressed_color", pressed.TextColor);
+		AddThemeColorOverride("font_focus_color", focus.TextColor);
+		AddThemeColorOverride("font_disabled_color", disabled.TextColor);
 
-		AddThemeColorOverride("icon_normal_color", _textColors[(int)PixelButtonState.Normal]);
-		AddThemeColorOverride("icon_hover_color", _textColors[(int)PixelButtonState.Hover]);
-		AddThemeColorOverride("icon_pressed_color", _textColors[(int)PixelButtonState.Pressed]);
-		AddThemeColorOverride("icon_focus_color", _textColors[(int)PixelButtonState.Focus]);
-		AddThemeColorOverride("icon_disabled_color", _textColors[(int)PixelButtonState.Disabled]);
+		AddThemeColorOverride("icon_normal_color", normal.TextColor);
+		AddThemeColorOverride("icon_hover_color", hover.TextColor);
+		AddThemeColorOverride("icon_pressed_color", pressed.TextColor);
+		AddThemeColorOverride("icon_focus_color", focus.TextColor);
+		AddThemeColorOverride("icon_disabled_color", disabled.TextColor);
 
 		_lastDrawMode = GetDrawMode();
 		QueueRedraw();
+	}
+
+	/// <summary>Vuelve a aplicar los estilos (útil tras cambiar <see cref="Muted" />).</summary>
+	public void RefreshVisuals() => UpdateVisuals();
+
+	private PixelButtonVisual VisualFor(PixelButtonState state)
+	{
+		return Muted
+			? PixelButtonStyle.MutedFor(ButtonVariant, state, _theme, Scope)
+			: PixelButtonStyle.For(ButtonVariant, state, _theme, Scope);
 	}
 }

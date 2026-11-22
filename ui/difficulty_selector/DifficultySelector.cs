@@ -30,6 +30,26 @@ public partial class DifficultySelector : Control
 
         _btnBack.Pressed += OnBackPressed;
         BuildLevelButtons();
+        ApplyVisuals();
+    }
+
+    private void ApplyVisuals()
+    {
+        if (GetNodeOrNull<ColorRect>("Background") is ColorRect bg)
+            bg.Color = PixelStyles.Placa;
+
+        if (GetNodeOrNull<Label>("Title") is Label title)
+        {
+            title.AddThemeColorOverride("font_color", PixelStyles.WSCianTitulo);
+            title.AddThemeColorOverride("font_outline_color", PixelStyles.WSMaderaSombra);
+            title.AddThemeConstantOverride("outline_size", 4);
+        }
+
+        if (GetNodeOrNull<Label>("Subtitle") is Label subtitle)
+            subtitle.AddThemeColorOverride("font_color", PixelStyles.Tinta);
+
+        if (GetNodeOrNull<Label>("Hint") is Label hint)
+            hint.AddThemeColorOverride("font_color", PixelStyles.TextDark);
     }
 
     private void BuildLevelButtons()
@@ -63,7 +83,9 @@ public partial class DifficultySelector : Control
         var button = buttonScene.Instantiate<BigButton>();
         button.Name = $"Level_{level.Id}";
         button.CustomMinimumSize = new Vector2(0, WordSearchVisuals.LevelButtonMinHeight);
+        button.AddThemeFontOverride("font", PixelStyles.DisplayFont);
         button.AddThemeFontSizeOverride("font_size", WordSearchVisuals.LevelButtonFontSize);
+        button.Scope = ButtonScope.WordSearch;
 
         var progress = Mathf.Min(completed, required);
         var locked = level.Id != DifficultyCatalog.DefaultId && completed < required;

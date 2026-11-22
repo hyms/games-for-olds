@@ -22,7 +22,7 @@ public sealed class ThemeData
     public Color SubheaderBannerColor { get; init; } = Color.FromHtml("#477987");
 
     /// <summary>Fondo de celdas en reposo (idle).</summary>
-    public Color CellIdleBackgroundColor { get; init; } = Color.FromHtml("#EBF2F5");
+    public Color CellIdleBackgroundColor { get; init; } = Color.FromHtml("#F1EDE1");
 
     /// <summary>Borde de celdas en reposo.</summary>
     public Color CellIdleBorderColor { get; init; } = Color.FromHtml("#A0BFC7");
@@ -31,7 +31,7 @@ public sealed class ThemeData
     public Color CellIdleTextColor { get; init; } = Color.FromHtml("#101010");
 
     /// <summary>Fondo de celdas cuando la palabra está completada.</summary>
-    public Color CellFoundBackgroundColor { get; init; } = Color.FromHtml("#099C92");
+    public Color CellFoundBackgroundColor { get; init; } = Color.FromHtml("#FD6D52");
 
     /// <summary>Texto de celdas cuando la palabra está completada (blanco puro).</summary>
     public Color CellFoundTextColor { get; init; } = Color.FromHtml("#FFFFFF");
@@ -40,7 +40,7 @@ public sealed class ThemeData
     public Color FooterTextColor { get; init; } = Color.FromHtml("#477987");
 
     /// <summary>Color del tachado de palabras encontradas en el footer.</summary>
-    public Color FooterStrikethroughColor { get; init; } = Color.FromHtml("#099C92");
+    public Color FooterStrikethroughColor { get; init; } = Color.FromHtml("#9B4E48");
 
     /// <summary>
     ///     Color cálido de confeti/celebración (coral). Usado en el estallido de

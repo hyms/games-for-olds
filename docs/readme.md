@@ -17,9 +17,9 @@ El proyecto sigue una arquitectura modular orientada a componentes y dominios de
 
 1. **Singleton Pattern (`ThemeManager.cs`):**
    - Administra los tokens globales de color (`ThemeData`) e inyecta actualizaciones en tiempo real a todas las vistas suscritas mediante eventos `event Action`.
-2. **Factory Pattern (`WordGridFactory.cs`):**
+2. **Factory Pattern (`WordGridContainer` + `WordSearchGenerator`):**
    - Encargado de la instanciación y distribución procedural de las celdas del tablero según la dificultad del minijuego.
-3. **Strategy Pattern (`IWordPlacementStrategy.cs`):**
+3. **Strategy Pattern (`WordSearchGenerator`):**
    - Desacopla los algoritmos de colocación de palabras (horizontal, vertical, diagonal, inverso) cumpliendo con el principio abierto/cerrado (OCP).
 4. **Observer Pattern (Eventos C# `event Action`):**
    - Comunicación unidireccional y desacoplada para señales de juego (aciertos de palabras, uso de pistas, finalización de niveles y menú de pausa).
@@ -64,15 +64,35 @@ res://
 │   │
 │   └── minigames/
 │       └── word_search/          # Módulo específico del minijuego Sopa de Letras
-│           ├── WordsPanel.cs     # Panel inferior: palabras pendientes y tachados
 │           ├── WordSearchMain.cs # Coordinador principal de lógica y eventos
-│           ├── WordGridFactory.cs# Factoría de construcción de tableros
-│           └── strategies/       # Algoritmos de colocación de palabras
+│           ├── WordGridContainer.cs  # Layout y renderizado del tablero de celdas
+│           ├── WordSearchGenerator.cs # Colocación procedural de palabras
+│           ├── WordSearchVisuals.cs   # Estilos y métricas visuales del tablero
+│           ├── WordSearchHud.cs   # HUD y panel inferior (WordsPanel)
+│           ├── WordCell.cs        # Celda interactiva de la grilla
+│           ├── WordsPanel.cs      # Panel inferior: palabras pendientes y tachados
+│           ├── BoardInputHandler.cs # Manejo de entrada y selección por arrastre
+│           ├── DragSelection.cs   # Trazo de selección de palabras
+│           ├── HintSystem.cs      # Sistema de pistas
+│           ├── ShuffleBagSystem.cs # Mezcla de palabras/letras
+│           ├── WordPath.cs        # Ruta de selección de palabra
+│           ├── WordSelection.cs   # Lógica de selección de palabras
+│           ├── WordTraceOverlay.cs # Overlay visual de trazo
+│           └── DifficultyCatalog.cs / DifficultyConfig.cs # Catálogo y configuración de dificultades
 │
-├── doc/
-│   └── word_search/
-│       └── spec.md               # Especificación técnica detallada del minijuego
-│
+├── docs/
+│   ├── word_search/              # Documentación del minijuego Sopa de Letras
+│   │   ├── spec.md               # Especificación técnica detallada del minijuego
+│   │   ├── plan.md               # Plan de trabajo del minijuego
+│   │   ├── plan_audit.md         # Auditoría y roadmap del minijuego
+│   │   ├── art_direction.md      # Dirección de arte del minijuego
+│   │   ├── test.md               # Pruebas del minijuego
+│   │   └── wathersoup.jpeg       # Referencia visual del mockup
+│   ├── art_direction.md          # Dirección de arte global (paleta, tipografía, herencia)
+│   ├── plan.md                   # Plan de trabajo global
+│   ├── spec.md                   # Spec global del producto
+│   ├── test.md                   # Pruebas globales
+│   └── readme.md                 # Resumen de documentación
 └── README.md
 ```
 

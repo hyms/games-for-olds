@@ -68,7 +68,6 @@ size_flags_horizontal = 3
 text = "SOPA DE LETRAS"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_color = Color(0.062745, 0.062745, 0.062745, 1)
 theme_override_fonts/font = ExtResource("6_press")
 theme_override_font_sizes/font_size = 24
 
@@ -84,25 +83,26 @@ text = "FÁCIL · NIVEL 1"
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(0.062745, 0.062745, 0.062745, 1)
-theme_override_fonts/font = ExtResource("8_vcr")
-theme_override_font_sizes/font_size = 14
+theme_override_fonts/font = ExtResource("6_press")
+theme_override_font_sizes/font_size = 12
 
 [node name="NavRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 52)
 theme_override_constants/separation = 8
 
 [node name="BtnBack" parent="MarginContainer/VBoxContainer/NavRow" instance=ExtResource("3_bigbtn")]
 ButtonVariant = 0
 unique_name_in_owner = true
 layout_mode = 1
-custom_minimum_size = Vector2(88, 56)
+Scope = 1
+IconPosition = 0
+AllowCompactHeight = true
 grow_horizontal = 0
-grow_vertical = 2
+size_flags_vertical = 4
 tooltip_text = "Volver al selector de dificultad"
 icon = ExtResource("4_back")
 expand_icon = false
-icon_alignment = 0
 text = "Atrás"
 
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/NavRow"]
@@ -167,13 +167,14 @@ mouse_filter = 2
 ButtonVariant = 0
 unique_name_in_owner = true
 layout_mode = 1
-custom_minimum_size = Vector2(96, 56)
+Scope = 1
+IconPosition = 1
+AllowCompactHeight = true
 grow_horizontal = 0
-grow_vertical = 2
+size_flags_vertical = 4
 tooltip_text = "Pausar la partida"
 icon = ExtResource("5_pause")
 expand_icon = false
-icon_alignment = 2
 text = "Pausa"
 
 [node name="BoardFrame" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
@@ -295,7 +296,8 @@ text = "Reiniciar partida"
 ButtonVariant = 1
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(0, 56)
+Scope = 1
+IconPosition = 1
 size_flags_horizontal = 3
 text = "Salir al menú principal"
 

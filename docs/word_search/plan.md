@@ -12,7 +12,7 @@
 > [Manifiesto de assets](../../assets/asset-manifest.json)
 >
 > Ubicación del código: `minigames/word_search/` · Documentación: `docs/word_search/`.
-> Plantilla visual aprobada: `docs/word_search/wathersoup.jpg`.
+> Plantilla visual aprobada: `docs/word_search/wathersoup.jpeg`.
 
 ## Leyenda
 
@@ -145,10 +145,10 @@ dimensiones ni tolerancia.
 ## Fase 0.6 — Dirección de arte y componentes visuales (P2) 🔜
 
 Fuente: [`art_direction.md`](../art_direction.md) y plantilla
-`docs/word_search/wathersoup.jpg`.
+`docs/word_search/wathersoup.jpeg`.
 
 - [x] Analizar la plantilla: paleta, geometría y contrastes.
-- [x] Dejar la plantilla en `docs/word_search/wathersoup.jpg` (referencia interna;
+- [x] Dejar la plantilla en `docs/word_search/wathersoup.jpeg` (referencia interna;
       `docs/.gdignore` evita que Godot la importe o exporte).
 - [x] Crear `docs/art_direction.md` y `assets/asset-manifest.json`.
 - [x] Elegir fuente pixel para las letras: **Press Start 2P** (OFL) a 24 px, y

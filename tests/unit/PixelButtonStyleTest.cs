@@ -28,9 +28,15 @@ public class PixelButtonStyleTest
             var style = visual.Style;
             var label = $"{variant}/{state}";
 
+            var expectedRadius = variant switch
+            {
+                PixelButtonVariant.Hud => 8,
+                PixelButtonVariant.Action => 4,
+                _ => 4
+            };
             AssertBool(style.AntiAliasing).OverrideFailureMessage($"{label}: anti-aliasing").IsFalse();
-            AssertInt(style.CornerRadiusTopLeft).OverrideFailureMessage(label).IsEqual(PixelStyles.Radius);
-            AssertInt(style.CornerRadiusBottomRight).OverrideFailureMessage(label).IsEqual(PixelStyles.Radius);
+            AssertInt(style.CornerRadiusTopLeft).OverrideFailureMessage(label).IsEqual(expectedRadius);
+            AssertInt(style.CornerRadiusBottomRight).OverrideFailureMessage(label).IsEqual(expectedRadius);
             AssertInt(style.BorderWidthLeft).OverrideFailureMessage(label)
                 .IsEqual(PixelReliefPainter.BorderWidth);
             AssertInt(style.BorderWidthTop).OverrideFailureMessage(label)
@@ -77,7 +83,7 @@ public class PixelButtonStyleTest
 
         AssertInt(hover.Style.ShadowSize).IsEqual(0);
         AssertInt(pressed.Style.ShadowSize).IsEqual(0);
-        AssertBool(normal.Style.ShadowSize > 0).IsTrue();
+        AssertInt(normal.Style.ShadowSize).IsEqual(0);
     }
 
     [TestCase]
@@ -153,6 +159,18 @@ public class PixelButtonStyleTest
         AssertBool(Ratio(found.TextColor, found.Style.BgColor) >= 3.0f).IsTrue();
         // Hint mantiene ≥4.5:1 por ser un estado temporal más sutil.
         AssertBool(Ratio(hint.TextColor, hint.Style.BgColor) >= 4.5f).IsTrue();
+    }
+
+    [TestCase]
+    public void HudUsaFuenteDisplayYAltoCompacto()
+    {
+        var hud = PixelButtonStyle.For(PixelButtonVariant.Hud, PixelButtonState.Normal, Theme);
+        var ws = PixelButtonStyle.For(PixelButtonVariant.Hud, PixelButtonState.Normal, Theme, ButtonScope.WordSearch);
+
+        AssertBool(hud.Metrics.Font == PixelStyles.DisplayFont).IsTrue();
+        AssertInt((int)hud.Metrics.MinSize.Y).IsEqual(50);
+        AssertInt(ws.Style.CornerRadiusTopLeft).IsEqual(8);
+        AssertInt(ws.Style.CornerDetail).IsEqual(2);
     }
 
     [TestCase]

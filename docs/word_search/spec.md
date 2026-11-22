@@ -129,13 +129,13 @@ La arquitectura sigue estrictamente los principios **SOLID**, **KISS**, **YAGNI*
 
    * Instancia única accesible globalmente (`/root/ThemeManager`) que administra los datos de `ThemeData` y notifica cambios a la UI mediante eventos.
 
-2. **Factory Pattern (`WordGridFactory.cs`):**
+2. **Factory Pattern (`WordGridContainer.cs` + `WordSearchGenerator.cs`):**
 
-   * Responsable exclusivo de instanciar y ubicar espacialmente los nodos `PixelCell` en la grilla según la dimensión del nivel (SRP).
+   * Responsable exclusivo de instanciar y ubicar espacialmente los nodos `PixelCell` en la grilla según la dimensión del nivel (SRP). `WordGridContainer` gestiona el layout de celdas; `WordSearchGenerator` coloca las palabras proceduralmente.
 
-3. **Strategy Pattern (`IWordPlacementStrategy.cs`):**
+3. **Strategy Pattern (`WordSearchGenerator.cs`):**
 
-   * Desacopla los algoritmos de colocación de palabras en la grilla (`HorizontalVerticalPlacement`, `DiagonalPlacement`, `ReversePlacement`). Permite cambiar o agregar nuevas reglas sin modificar el código existente (OCP).
+   * Desacopla los algoritmos de colocación de palabras en la grilla (horizontal, vertical, diagonal, inverso). Permite cambiar o agregar nuevas reglas sin modificar el código existente (OCP). La interfaz estratégica formal (`IWordPlacementStrategy`) no está implementada (YAGNI): la colocación vive directamente en `WordSearchGenerator`.
 
 4. **Observer Pattern (`event Action`):**
 
@@ -143,7 +143,7 @@ La arquitectura sigue estrictamente los principios **SOLID**, **KISS**, **YAGNI*
 
 5. **Principios de Diseño:**
 
-   * **SRP (Single Responsibility):** `PixelCell` solo renderiza su estado visual; `WordSearchMain` coordina reglas; `WordGridFactory` construye el tablero.
+   * **SRP (Single Responsibility):** `PixelCell` solo renderiza su estado visual; `WordSearchMain` coordina reglas; `WordGridContainer` construye el tablero.
 
    * **OCP (Open/Closed):** Nuevos temas o estrategias de colocación se añaden creando clases/recursos sin alterar el flujo principal.
 

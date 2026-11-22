@@ -2,7 +2,8 @@
 
 > **Documento SDD de dirección de arte (minijuego)**.  
 > **Versión:** 1.1 · **Estado:** Vigente · **Última actualización:** 2026-11-17  
-> **Hereda de:** [Dirección de Arte Global](../art_direction.md) — **paleta global (§4), tokens tipográficos (§6), relieve/estados base de botones y componentes (§5, §7)**. Este documento **no redefine** fuentes ni estilos base globales; especifica layout, métricas, comportamiento y el **mapeo de tokens de Word Search** (`WS-*`, §2.2).  
+> **Hereda de:** [Dirección de Arte Global](../art_direction.md) — **paleta global (§4), tokens tipográficos (§6), relieve/estados base de botones y componentes (§5, §7)**. Este documento **no redefine** fuentes ni estilos base globales; especifica layout, métricas, comportamiento y el **mapeo de tokens de Word Search** (`WS-*`, §2.2).
+> **Gobernanza de `WS-*`:** `WS-*` es una **extensión aditiva de alcance local** sobre la matriz global — nunca redefine, renombra ni sustituye tokens globales (§4 de `../art_direction.md`). Sigue el precedente de `CreamYellow` (v0.5.1) y `CelebrationRed` (v0.5.0). Conflicto resuelto en `../art_direction.md` §7.1 cláusula 4 y §4 nota de alcance.  
 > **Referencia visual:** `wathersoup.jpeg` (misma carpeta). Todos los valores de “fidelidad 1:1” se verifican contra esta imagen en editor/dispositivo.
 
 ---
@@ -37,9 +38,9 @@ En la referencia la cabecera **no usa placas**: el título se escribe directamen
 | Elemento | Fondo | Texto | Fuente | Rol / contraste |
 |---|---|---|---|---|
 | `%TitlePanel` | `WS-Fondo` (`#A17A5B`) — sin placa | `WS-CianTitulo` `#65B9C4` | `PressStart2P.ttf` 24 px | ~1.7:1 sobre madera — **insuficiente**: el título debe llevar un contorno duro `WS-MaderaSombra` `#3A2A1E` (4.19:1 local) o placa clara para cumplir ≥ 3:1 en display |
-| `%SubtitlePanel` | `WS-Crema` `#EDE19E` + borde `WS-CremaBorde` `#C4B476` | `TextDark` `#101010` | `VCR_OSD_Mono.ttf` 14 px | ~14.4:1 |
+| `%SubtitlePanel` | `WS-Crema` `#EDE19E` + borde `WS-CremaBorde` `#C4B476` | `TextDark` `#101010` | `PressStart2P.ttf` 12 px | ~14.4:1 |
 | `%TimeBox` | `WS-CremaSuave` `#F1EFE2` | `TextDark` `#101010` | `VCR_OSD_Mono.ttf` 14/12 px | ~16:1 |
-| Botones `NavRow` (`← Atrás`, `Pausa`) | `WS-Madera` `#A17A5B` + borde `WS-MaderaBorde` `#3A2A1E` | `TextDark` `#101010` | `VCR_OSD_Mono.ttf` 16 px | 4.94:1 (texto) / 3.56:1 (borde ≥ 3:1) |
+| Botones `NavRow` (`← Atrás`, `Pausa`) | `WS-Madera` `#A17A5B` + borde `WS-MaderaBorde` `#3A2A1E` | `TextDark` `#101010` | `PressStart2P.ttf` 10 px | 4.94:1 (texto) / 3.56:1 (borde ≥ 3:1) |
 
 `%TimeBox` es un `PanelContainer` con padding interno 12 px horizontal / 4 px vertical que agrupa el cronómetro (`%TimeLabel`, 14 px) y su sub-etiqueta (`%WordsCounter`, 12 px, `0/5 Palabras`), ambos en `TextDark`, `mouse_filter = Ignore` y **borderless** en la referencia (la placa crema puede llevar borde `WS-CremaBorde` como refuerzo de forma).
 
@@ -99,7 +100,7 @@ Los botones de navegación toman el **mismo relleno madera que el fondo** y se d
 | Maestro | $15 \times 15$ | 20 | 8 direcciones · 4 | Objetivo de referencia por definir vs `wathersoup.jpeg`; **runtime actual: fit-to-area** |
 
 - **Fuente de datos:** `resources/difficulties/{facil,medio,dificil,maestro}.tres`, `DifficultyConfig.cs`/`DifficultyCatalog.cs`.
-- **Runtime actual (implementación):** `WordGridFactory.ComputeLayout` calcula `cellSize = max(MinCellSize, floor(fit))` con `gap = WordSearchVisuals.CellGap` (6.0) centrando la grilla en `BoardArea`. **No** existe hoy una métrica fija $30\times30$ por dificultad en código; cualquier discrepancia con el baseline debe resolverse como trabajo de alineación visual explícito (ver `minigames/word_search/WordSearchVisuals.cs`).
+- **Runtime actual (implementación):** `WordGridContainer` calcula `cellSize = max(MinCellSize, floor(fit))` con `gap = WordSearchVisuals.CellGap` (6.0) centrando la grilla en `BoardArea`. `WordGridFactory` **no existe** en código (rechazado por YAGNI en `WordGridContainer.cs:142`); cualquier métrica fija $30\times30$ por dificultad debe resolverse como trabajo de alineación visual explícito (ver `minigames/word_search/WordSearchVisuals.cs`).
 - **Criterios de aceptación visual:** cero clipping horizontal/vertical, celdas centradas, espaciado uniforme, y **hit-testing/centros de trazo exactamente alineados** a la geometría renderizada.
 
 ---
@@ -194,14 +195,15 @@ El mockup muestra confeti en la misma familia cálida del tablero. La paleta se 
 - **Spec/plan del minijuego:** [`spec.md`](spec.md), [`plan.md`](plan.md)
 - **Auditoría/roadmap:** [`plan_audit.md`](plan_audit.md)
 - **Referencia visual:** [`wathersoup.jpeg`](wathersoup.jpeg)
-- **Implementación:** `minigames/word_search/WordSearchMain.tscn`, `WordSearchMain.cs`, `WordGridContainer.cs`, `WordGridFactory.cs`, `WordSearchVisuals.cs`, `WordSearchHud.cs`, `WordCell.cs`, `core/SafeAreaManager.cs`, `core/ui/PixelStyles.cs`, `core/ThemeData.cs`
+- **Implementación:** `minigames/word_search/WordSearchMain.tscn`, `WordSearchMain.cs`, `WordGridContainer.cs`, `WordSearchVisuals.cs`, `WordSearchHud.cs`, `WordCell.cs`, `core/SafeAreaManager.cs`, `core/ui/PixelStyles.cs`, `core/ThemeData.cs`
 
 ## 10. Verificación
 
-- [x] Comparar layout, radios/relieve, tipografía y colores contra `wathersoup.jpeg`.
-- [x] **rev. 1.1:** muestra de color del mockup (fondo `#A17A5B`, título `#65B9C4` + contorno `#3A2A1E`, dificultad `#EDE19E`, celdas `#F1EDE1`, encontrado `#FD6D52`/borde `#8E3B33`, footer `#F1EFE2`, tachado `#9B4E48`) registrada en §2.2 y aplicada a §2.1/§5/§7/§8.
-- [ ] Implementar tokens `WS-*` en `ThemeData`/`PixelStyles` y retirar superficies frías en las escenas de Word Search.
-- [ ] Confirmar baseline $8\times8$ / $30\times30$ px / $6$ px gap y política target→fit para otras dificultades sin clipping.
+- [ ] Comparar layout, radios/relieve, tipografía y colores contra `wathersoup.jpeg` — **pendiente** (requiere editor/dispositivo Godot; no hay runtime en este entorno).
+- [x] **rev. 1.1 docs-only:** muestra de color del mockup (fondo `#A17A5B`, título `#65B9C4` + contorno `#3A2A1E`, dificultad `#EDE19E`, celdas `#F1EDE1`, encontrado `#FD6D52`/borde `#8E3B33`, footer `#F1EFE2`, tachado `#9B4E48`) registrada en §2.2 y aplicada a §2.1/§5/§7/§8.
+- [x] **code-verified:** Tokens `WS-*` implementados en `ThemeData.cs`/`PixelStyles.cs` (`core/ThemeData.cs:53-80`, `core/ThemeManager.cs:69-112`, `core/ui/PixelStyles.cs:168,202`).
+- [ ] **pendiente visual:** retirar superficies frías (`#EFEFEE`, `#A0BFC7`, `#477987`, `#099C92`) de las escenas de Word Search.
+- [ ] Confirmar baseline $8\times8$ / $30\times30$ px / $6$ px gap y política target→fit para otras dificultades sin clipping (editor/dispositivo).
 - [ ] Confirmar el control de **centrar/restablecer** vista (hoy solo `ResetZoom()`, sin botón) y que el zoom del `PauseModal` no interfiera con el arrastre en 15×15.
 - [ ] Confirmar `WordsPanel` con altura mínima efectiva ~70 px visible en 360×640 (5–20 palabras) y con safe area.
-- [ ] Confirmar confeti pixel cálido (tamaño/tiempo ~300 ms antes de modal) sin `Turquesa`/`Cian`.
+- [x] **code-verified:** Confeti pixel cálido (ramp `WS-Acento`/`CelebrationRed`/`WS-Crema`/`Amarillo` en `PixelConfettiEmitter`); [ ] pendiente visual: tamaño/tiempo ~300 ms antes de modal sin `Turquesa`/`Cian`.

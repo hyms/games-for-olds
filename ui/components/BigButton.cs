@@ -19,9 +19,10 @@ public partial class BigButton : PixelButton
         base._Ready();
 
         var minimum = CustomMinimumSize;
+        var minY = AllowCompactHeight ? minimum.Y : Mathf.Max(minimum.Y, Constants.MinTouchSize.Y);
         CustomMinimumSize = new Vector2(
             Mathf.Max(minimum.X, Constants.MinTouchSize.X),
-            Mathf.Max(minimum.Y, Constants.MinTouchSize.Y));
+            minY);
 
         AddToGroup(Constants.GroupUiFocusable);
         AddToGroup(Constants.GroupTouchable);

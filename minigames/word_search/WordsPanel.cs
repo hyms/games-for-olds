@@ -23,7 +23,7 @@ namespace ClasicosMenteActiva.minigames.word_search;
 /// </remarks>
 public partial class WordsPanel : PanelContainer
 {
-    private const int WordFontSize = 16;
+    private const int WordFontSize = 20;
     private const int LineSeparation = 2;
     private const float MinPanelHeight = 88.0f;
     private const float MaxPanelHeight = 160.0f;

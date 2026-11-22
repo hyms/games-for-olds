@@ -66,6 +66,8 @@
 | `CreamYellow` | `#EDE19E` | Banda de dificultad cálida (Word Search). Texto obligatorio `TextDark` `#101010` (14.4:1). **Agregado v0.5.1** como extensión aditiva; no altera ningún token existente. | `PixelStyles` |
 
 > **Deriva conocida:** existen diferencias históricas entre valores de tema y utilidades de estilo (p. ej. bordes de celda idle). Al implementar o refinar, consolidar contra la fuente canónica indicado y actualizar esta matriz si se aprueba un cambio global; los minijuegos deben seguir los **tokens**, no valores ad hoc.
+>
+> **Alcance de la matriz (aditivos locales):** Word Search define un sub-conjunto `WS-*` (madera/tierra/crema/coral) documentado en [`word_search/art_direction.md` §2.2](word_search/art_direction.md). Es una **extensión aditiva de alcance local**: no redefine, renombra ni sustituye ningún token de esta matriz canónica; vincula `CellFound*`/`FooterStrikethrough*` a `WS-*` dentro de su alcance. Otros minigames permanecen bajo la matriz global sin cambios.
 
 > **Additive extensions (v0.5.0, MINOR):** `CelebrationRed` (#B45252) se incorporó como token de celebración para completar la paleta de partículas de Word Search. Es una **extensión aditiva**: no redefine, renombra ni sustituye ningún token de la matriz canónica. Los minijuegos que la usan deben documentarlo en su dirección de arte local (ver [`word_search/art_direction.md`](word_search/art_direction.md) §8).
 >
@@ -108,6 +110,7 @@ Los minijuegos pueden **componer** estos patrones y ajustar métricas locales, p
 1. **Heredan de este global (inmutable por minijuego):** **colores base y valores de la matriz de paleta global (§4)**, semántica de estados de color, **estilos/relieve base de botones y componentes**, y **tokens tipográficos y sus roles (§6)** (fuentes heredadas). Ningún minijuego redefine estos tokens globales.
 2. **Puede definir cada minijuego:** layout, métricas, espaciados, tamaños de grilla/celdas, comportamiento de controles (p. ej. zoom), contenido de HUD/footer, animaciones/partículas y copy visual, siempre dentro de las reglas globales de accesibilidad y presentación.
 3. **Overrides permitidos (acotados):** ajustes métricos o de composición necesarios para fidelidad a la referencia del minijuego (p. ej. radio/relieve local, alturas de panel), **sin** sustituir ni redefinir tokens globales. Toda excepción debe indicarse en el documento del minijuego con justificación y verificación visual.
+4. **Extensiones de tokens de alcance local (aditivas):** un minijuego puede definir tokens adicionales con prefijo local (p. ej. `WS-*` en Word Search) que **extienden** la matriz global sin redefinir, renombrar ni sustituir ningún token canónico. Sigue el precedente de `CreamYellow` (v0.5.1) y `CelebrationRed` (v0.5.0). Debe documentarse en la dirección de arte del minijuego y apuntar a esta matriz como fuente de los tokens heredados.
 
 ---
 
@@ -115,7 +118,7 @@ Los minijuegos pueden **componer** estos patrones y ajustar métricas locales, p
 
 | Minijuego | Documento | Alcance |
 |---|---|---|
-| **Sopa de Letras (Word Search)** | [`word_search/art_direction.md`](word_search/art_direction.md) | Layout y HUD del juego, reglas/métricas de grilla, zoom, footer/WordsPanel, confeti/celebración; hereda paleta, tipografía y relieve globales. |
+| **Sopa de Letras (Word Search)** | [`word_search/art_direction.md`](word_search/art_direction.md) | Layout y HUD del juego, reglas/métricas de grilla, zoom, footer/WordsPanel, confeti/celebración; hereda paleta, tipografía y relieve globales; define sub-paleta local `WS-*` (madera/tierra/crema/coral) de alcance aditivo. |
 | *(Futuros minijuegos)* | `docs/<minijuego>/art_direction.md` | Añadir una fila por minijuego siguiendo la misma convención de herencia. |
 
 ---

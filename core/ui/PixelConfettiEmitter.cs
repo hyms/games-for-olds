@@ -82,10 +82,10 @@ public partial class PixelConfettiEmitter : CpuParticles2D
     private static Gradient BuildColorRamp()
     {
         var ramp = new Gradient();
-        ramp.SetColor(0, PixelStyles.WSAcento);
-        ramp.SetColor(1, PixelStyles.CelebrationRed);
-        ramp.SetColor(2, PixelStyles.WSCrema);
-        ramp.SetColor(3, PixelStyles.Amarillo);
+        ramp.AddPoint(0f, PixelStyles.WSAcento);
+        ramp.AddPoint(1f / 3f, PixelStyles.CelebrationRed);
+        ramp.AddPoint(2f / 3f, PixelStyles.WSCrema);
+        ramp.AddPoint(1f, PixelStyles.Amarillo);
         return ramp;
     }
 

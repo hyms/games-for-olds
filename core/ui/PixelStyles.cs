@@ -1,4 +1,6 @@
 using Godot;
+using System;
+using System.Collections.Generic;
 
 /// <summary>
 ///     Fábrica de estilos "pixel art limpio" del proyecto.
@@ -90,16 +92,33 @@ public static class PixelStyles
     /// <summary>Fuente Atkinson Hyperlegible para menús y textos accesibles.</summary>
     public static Font UiFont { get; private set; }
 
+    /// <summary>Fuente PressStart2P para botones HUD con peso gráfico de display (art_direction §2.1).</summary>
+    public static Font DisplayFont { get; private set; }
+
     static PixelStyles()
     {
         CellFont = LoadFont("res://assets/fonts/PixelOperator.ttf");
         HudFont = LoadFont("res://assets/fonts/VCR_OSD_Mono.ttf");
         UiFont = LoadFont("res://assets/fonts/AtkinsonHyperlegible-Regular.ttf");
+        DisplayFont = LoadFont("res://assets/fonts/PressStart2P.ttf");
     }
 
     private static Font LoadFont(string path)
     {
         return ResourceLoader.Exists(path) ? GD.Load<Font>(path) : null;
+    }
+
+    private static readonly Dictionary<string, StyleBoxFlat> _styleCache = new();
+
+    private static StyleBoxFlat Cached(string themeId, string key, Func<StyleBoxFlat> build)
+    {
+        var cacheKey = $"{themeId}:{key}";
+        if (!_styleCache.TryGetValue(cacheKey, out var box))
+        {
+            box = build();
+            _styleCache[cacheKey] = box;
+        }
+        return box;
     }
 
     /// <summary>Color de texto legible sobre un relleno: blanco, tinta o tinta oscura.</summary>
@@ -128,8 +147,10 @@ public static class PixelStyles
         return ContrastRatio(TextDark, fill) >= 3.0f ? TextDark : TextLight;
     }
 
-    /// <summary>Placa de encabezado, cronómetro o modal: crema suave con borde madera 2px y padding interno (Word Search, rev. 1.1).</summary>
-    public static StyleBoxFlat Plate()
+    /// <summary>Placa de encabezado, cronómetro o modal: crema suave con borde madera 2px y padding interno (Word Search, rev. 1.1). Devuelto desde caché flyweight por themeId; no mutar.</summary>
+    public static StyleBoxFlat Plate(string themeId = "classic") => Cached(themeId, nameof(Plate), BuildPlate);
+
+    private static StyleBoxFlat BuildPlate()
     {
         var box = MakeBox(WSCremaSuave, WSMaderaBorde, 2, Radius);
         box.ContentMarginLeft = 12.0f;
@@ -139,8 +160,10 @@ public static class PixelStyles
         return box;
     }
 
-    /// <summary>Panel del título principal: fondo madera WS-Fondo con borde madera, borde pixel 2px (sin placa fría).</summary>
-    public static StyleBoxFlat TitlePanel()
+    /// <summary>Panel del título principal: fondo madera WS-Fondo con borde madera, borde pixel 2px (sin placa fría). Devuelto desde caché flyweight por themeId; no mutar.</summary>
+    public static StyleBoxFlat TitlePanel(string themeId = "classic") => Cached(themeId, nameof(TitlePanel), BuildTitlePanel);
+
+    private static StyleBoxFlat BuildTitlePanel()
     {
         var box = new StyleBoxFlat
         {
@@ -164,8 +187,10 @@ public static class PixelStyles
         return box;
     }
 
-    /// <summary>Panel del título de Word Search: fondo madera WS-Fondo sobre el lienzo de escena (sin placa fría).</summary>
-    public static StyleBoxFlat WordSearchTitlePanel()
+    /// <summary>Panel del título de Word Search: fondo madera WS-Fondo sobre el lienzo de escena (sin placa fría). Devuelto desde caché flyweight por themeId; no mutar.</summary>
+    public static StyleBoxFlat WordSearchTitlePanel(string themeId = "classic") => Cached(themeId, nameof(WordSearchTitlePanel), BuildWordSearchTitlePanel);
+
+    private static StyleBoxFlat BuildWordSearchTitlePanel()
     {
         var box = MakeBox(WSFondo, WSMaderaBorde, 2, Radius);
         box.ContentMarginLeft = 16.0f;
@@ -178,9 +203,11 @@ public static class PixelStyles
     /// <summary>
     ///     Banda de dificultad: acento cálido <c>CreamYellow</c> (#EDE19E == WS-Crema) con borde pixel 2px,
     ///     según la referencia wathersoup. Texto oscuro <c>TextDark</c> encima (14.4:1).
-    ///     Borde WS-CremaBorde (rev. 1.1) en lugar de Borde frío.
+    ///     Borde WS-CremaBorde (rev. 1.1) en lugar de Borde frío. Devuelto desde caché flyweight por themeId; no mutar.
     /// </summary>
-    public static StyleBoxFlat SubtitlePanel()
+    public static StyleBoxFlat SubtitlePanel(string themeId = "classic") => Cached(themeId, nameof(SubtitlePanel), BuildSubtitlePanel);
+
+    private static StyleBoxFlat BuildSubtitlePanel()
     {
         var box = new StyleBoxFlat
         {
@@ -191,15 +218,17 @@ public static class PixelStyles
         };
         box.SetBorderWidthAll(2);
         box.SetCornerRadiusAll(0);
-        box.ContentMarginLeft = 14.0f;
-        box.ContentMarginRight = 14.0f;
+        box.ContentMarginLeft = 18.0f;
+        box.ContentMarginRight = 18.0f;
         box.ContentMarginTop = 2.0f;
         box.ContentMarginBottom = 2.0f;
         return box;
     }
 
-    /// <summary>Marco del tablero: fondo madera WS-Fondo con borde WS-MaderaBorde de 3 px, plano (sin sombra).</summary>
-    public static StyleBoxFlat BoardFrame()
+    /// <summary>Marco del tablero: fondo madera WS-Fondo con borde WS-MaderaBorde de 3 px, plano (sin sombra). Devuelto desde caché flyweight por themeId; no mutar.</summary>
+    public static StyleBoxFlat BoardFrame(string themeId = "classic") => Cached(themeId, nameof(BoardFrame), BuildBoardFrame);
+
+    private static StyleBoxFlat BuildBoardFrame()
     {
         var box = MakeBox(WSFondo, WSMaderaBorde, 3, Radius, false);
         box.ContentMarginLeft = 10.0f;
@@ -209,8 +238,10 @@ public static class PixelStyles
         return box;
     }
 
-    /// <summary>Panel inferior de palabras: crema suave WS-CremaSuave con marco madera WS-MaderaBorde de 3px.</summary>
-    public static StyleBoxFlat WordPanel()
+    /// <summary>Panel inferior de palabras: crema suave WS-CremaSuave con marco madera WS-MaderaBorde de 3px. Devuelto desde caché flyweight por themeId; no mutar.</summary>
+    public static StyleBoxFlat WordPanel(string themeId = "classic") => Cached(themeId, nameof(WordPanel), BuildWordPanel);
+
+    private static StyleBoxFlat BuildWordPanel()
     {
         var box = MakeBox(WSCremaSuave, WSMaderaBorde, 3, Radius);
         box.ContentMarginLeft = 16.0f;
@@ -220,14 +251,13 @@ public static class PixelStyles
         return box;
     }
 
-    /// <summary>Fondo del modal: panel sólido que bloquea el tablero (sin alfa reducido, spec §2).</summary>
-    public static StyleBoxFlat ModalBackdrop()
-    {
-        return MakeBox(TextDark, Borde, 0, 0, false);
-    }
+    /// <summary>Fondo del modal: panel sólido que bloquea el tablero (sin alfa reducido, spec §2). Devuelto desde caché flyweight por themeId; no mutar.</summary>
+    public static StyleBoxFlat ModalBackdrop(string themeId = "classic") => Cached(themeId, nameof(ModalBackdrop), () => MakeBox(TextDark, Borde, 0, 0, false));
 
-    /// <summary>Tarjeta interior de un modal.</summary>
-    public static StyleBoxFlat ModalCard()
+    /// <summary>Tarjeta interior de un modal. Devuelto desde caché flyweight por themeId; no mutar.</summary>
+    public static StyleBoxFlat ModalCard(string themeId = "classic") => Cached(themeId, nameof(ModalCard), BuildModalCard);
+
+    private static StyleBoxFlat BuildModalCard()
     {
         var box = MakeBox(Placa, Tinta, 2, Radius);
         box.ContentMarginLeft = 18.0f;
@@ -237,11 +267,8 @@ public static class PixelStyles
         return box;
     }
 
-    /// <summary>Píldora de categoría.</summary>
-    public static StyleBoxFlat Pill()
-    {
-        return MakeBox(Arena, BorderColor(Arena), 2, 999, false);
-    }
+    /// <summary>Píldora de categoría. Devuelto desde caché flyweight por themeId; no mutar.</summary>
+    public static StyleBoxFlat Pill(string themeId = "classic") => Cached(themeId, nameof(Pill), () => MakeBox(Arena, BorderColor(Arena), 2, 999, false));
 
     private static StyleBoxFlat MakeBox(Color bg, Color border, int borderWidth, int radius, bool shadow = true)
     {

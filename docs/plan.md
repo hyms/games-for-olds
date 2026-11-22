@@ -241,7 +241,7 @@ mínimas.
 ### 4.5 Dirección de arte (P2)
 
 Fuente: [`docs/art_direction.md`](art_direction.md) · Plantilla aprobada
-`docs/word_search/wathersoup.jpg` · Manifiesto `assets/asset-manifest.json`.
+`docs/word_search/wathersoup.jpeg` · Manifiesto `assets/asset-manifest.json`.
 
 - [x] Analizar la plantilla y extraer paleta, geometría y contrastes.
 - [x] Crear `docs/art_direction.md` y `assets/asset-manifest.json`.

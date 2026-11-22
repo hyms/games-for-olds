@@ -26,6 +26,7 @@ public partial class WordGridContainer : Control
     private readonly List<Vector2I> _invalidCells = new();
     private readonly List<Vector2I> _preview = new();
     private readonly DragSelection _selection = new();
+    private readonly BoardInputHandler _input = new();
 
     private WordTraceOverlay _trace;
     private WordCell[,] _cells;
@@ -35,7 +36,6 @@ public partial class WordGridContainer : Control
     private Tween _invalidTween;
     private char[,] _letters;
     private Vector2 _origin;
-    private bool _isPressed;
 
     // --- Zoom (Fase 4) -------------------------------------------------------
     private float _zoom = WordSearchVisuals.MinZoom;
@@ -62,6 +62,10 @@ public partial class WordGridContainer : Control
         MouseFilter = MouseFilterEnum.Stop;
         EnsureTrace();
         EnsureHintTimer();
+        _input.SelectionBegan += BeginSelection;
+        _input.SelectionUpdated += UpdateSelection;
+        _input.SelectionEnded += EndSelection;
+        _input.SelectionCanceled += CancelSelection;
         UpdateLayout();
     }
 
@@ -450,65 +454,8 @@ public partial class WordGridContainer : Control
             _trace.HideTrace();
     }
 
-    // --- Entrada directa (sin BoardInputHandler — YAGNI) ---------------------
-
     public override void _GuiInput(InputEvent @event)
     {
-        switch (@event)
-        {
-            case InputEventScreenTouch touch:
-                if (touch.Pressed)
-                {
-                    _isPressed = true;
-                    BeginSelection(touch.Position);
-                    AcceptEvent();
-                    return;
-                }
-
-                if (_isPressed)
-                {
-                    _isPressed = false;
-                    EndSelection(touch.Position);
-                    AcceptEvent();
-                    return;
-                }
-
-                // Release sin pressed previo: estado atrapado, limpiar.
-                CancelSelection();
-                AcceptEvent();
-                return;
-
-            case InputEventScreenDrag drag:
-                if (!_isPressed) return;
-                UpdateSelection(drag.Position);
-                AcceptEvent();
-                return;
-
-            case InputEventMouseButton { ButtonIndex: MouseButton.Left } button:
-                if (button.Pressed)
-                {
-                    _isPressed = true;
-                    BeginSelection(button.Position);
-                    AcceptEvent();
-                    return;
-                }
-
-                if (_isPressed)
-                {
-                    _isPressed = false;
-                    EndSelection(button.Position);
-                    AcceptEvent();
-                    return;
-                }
-
-                CancelSelection();
-                AcceptEvent();
-                return;
-
-            case InputEventMouseMotion motion when _isPressed:
-                UpdateSelection(motion.Position);
-                AcceptEvent();
-                return;
-        }
+        if (_input.Process(@event)) AcceptEvent();
     }
 }

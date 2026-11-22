@@ -24,6 +24,20 @@ public enum PixelButtonState
     Disabled
 }
 
+/// <summary>Alcance del botón: determina qué paleta de colores usar.</summary>
+public enum ButtonScope
+{
+    Global,
+    WordSearch
+}
+
+/// <summary>Posición del icono respecto al texto del botón.</summary>
+public enum IconPosition
+{
+    Left,
+    Right
+}
+
 /// <summary>Medidas tipográficas compartidas por todos los estados de una variante.</summary>
 public readonly struct PixelButtonMetrics
 {
@@ -32,6 +46,9 @@ public readonly struct PixelButtonMetrics
     public int MarginX { get; init; }
     public int MarginY { get; init; }
     public int HSeparation { get; init; }
+    public Vector2 MinSize { get; init; }
+    public HorizontalAlignment IconAlignment { get; init; }
+    public int CornerRadius { get; init; }
 }
 
 /// <summary>Resultado inmutable para pintar un estado concreto de un botón.</summary>
@@ -47,6 +64,9 @@ public readonly struct PixelButtonVisual
     /// <summary>False solo en deshabilitado: sin relieve, botón plano.</summary>
     public bool DrawRelief { get; init; }
 
+    /// <summary>Esquina del StyleBoxFlat (template de botón, no por estado).</summary>
+    public int CornerRadius { get; init; }
+
     /// <summary>El icono se tiñe con el mismo color que el texto para mantener contraste.</summary>
     public Color IconColor => TextColor;
 }
@@ -54,9 +74,9 @@ public readonly struct PixelButtonVisual
 /// <summary>
 ///     Fábrica única de estilos de botón (factory method <see cref="For" />).
 ///     Centraliza la paleta, las medidas y los seis estados de <c>Button</c>, de modo
-///     que HUD, modales, menús y selector de dificultad comparten las mismas reglas:
-///     esquinas rectas, borde de 2 px, bisel de 1 px, alfa 1.0 y desplazamiento de
-///     2 px al pulsar (docs/art_direction.md §3 y §5.3).
+    ///     que HUD, modales, menús y selector de dificultad comparten las mismas reglas:
+    ///     esquinas redondeadas 4 px (HUD Word Search: 8 px), borde de 2 px, bisel de 1 px, alfa 1.0 y desplazamiento de
+    ///     2 px al pulsar (docs/art_direction.md §3 y §5.3).
 /// </summary>
 public static class PixelButtonStyle
 {
@@ -92,19 +112,25 @@ public static class PixelButtonStyle
         {
             PixelButtonVariant.Hud => new PixelButtonMetrics
             {
-                Font = PixelStyles.HudFont,
-                FontSize = 16,
+                Font = PixelStyles.DisplayFont,
+                FontSize = 10,
                 MarginX = 10,
                 MarginY = 10,
-                HSeparation = 6
+                HSeparation = 6,
+                MinSize = new Vector2(88, 50),
+                IconAlignment = HorizontalAlignment.Center,
+                CornerRadius = 8
             },
             PixelButtonVariant.Action => new PixelButtonMetrics
             {
-                Font = PixelStyles.HudFont,
-                FontSize = 18,
+                Font = PixelStyles.DisplayFont,
+                FontSize = 11,
                 MarginX = 14,
                 MarginY = 12,
-                HSeparation = 8
+                HSeparation = 8,
+                MinSize = new Vector2(0, 56),
+                IconAlignment = HorizontalAlignment.Center,
+                CornerRadius = 4
             },
             _ => new PixelButtonMetrics
             {
@@ -112,7 +138,10 @@ public static class PixelButtonStyle
                 FontSize = 20,
                 MarginX = 16,
                 MarginY = 12,
-                HSeparation = 8
+                HSeparation = 8,
+                MinSize = new Vector2(0, 56),
+                IconAlignment = HorizontalAlignment.Center,
+                CornerRadius = 4
             }
         };
     }
@@ -122,39 +151,37 @@ public static class PixelButtonStyle
     ///     conserva la altura total (top + 2 px, bottom − 2 px) y el resto de estados
     ///     comparten márgenes para que el botón no cambie de tamaño al interactuar.
     /// </summary>
-    public static PixelButtonVisual For(PixelButtonVariant variant, PixelButtonState state, ThemeData theme)
+    public static PixelButtonVisual For(PixelButtonVariant variant, PixelButtonState state, ThemeData theme, ButtonScope scope = ButtonScope.Global)
     {
         theme ??= new ThemeData();
         var metrics = MetricsFor(variant);
-        var fill = FillFor(state, theme);
-        var border = PixelStyles.BorderColor(fill);
+        var fill = FillFor(state, theme, scope);
+        var border = BorderFor(state, theme, fill, scope);
         var isPressed = state == PixelButtonState.Pressed;
 
         var style = new StyleBoxFlat
         {
-            // Alfa siempre 1.0: el foco no dibuja centro (DrawCenter = false), así que el
-            // relleno puede ser opaco sin tapar el estado normal que queda debajo.
-            BgColor = PixelStyles.Opaque(fill),
+            BgColor = state == PixelButtonState.Focus
+                ? new Color(0, 0, 0, 0)
+                : PixelStyles.Opaque(fill),
             BorderColor = PixelStyles.Opaque(state == PixelButtonState.Focus
                 ? PixelStyles.TextColor(theme.BackgroundColor)
                 : border),
             AntiAliasing = false,
-            CornerDetail = 0,
+            CornerDetail = 1,
             DrawCenter = state != PixelButtonState.Focus
         };
         style.SetBorderWidthAll(PixelReliefPainter.BorderWidth);
-        style.SetCornerRadiusAll(PixelStyles.Radius);
+        style.SetCornerRadiusAll(CornerRadiusFor(variant, scope));
         style.ContentMarginLeft = metrics.MarginX;
         style.ContentMarginRight = metrics.MarginX;
         style.ContentMarginTop = metrics.MarginY + (isPressed ? PressShift : 0);
         style.ContentMarginBottom = metrics.MarginY - (isPressed ? PressShift : 0);
+        style.CornerDetail = CornerDetailFor(scope);
 
-        if (state == PixelButtonState.Normal)
-        {
-            style.ShadowSize = 2;
-            style.ShadowColor = PixelStyles.Opaque(PixelStyles.Sombra);
-            style.ShadowOffset = new Vector2(2, 2);
-        }
+        style.ContentMarginTop = metrics.MarginY + (isPressed ? PressShift : 0);
+        style.ContentMarginBottom = metrics.MarginY - (isPressed ? PressShift : 0);
+        style.CornerDetail = CornerDetailFor(scope);
 
         if (state == PixelButtonState.Focus)
         {
@@ -165,14 +192,45 @@ public static class PixelButtonStyle
         {
             Metrics = metrics,
             Style = style,
-            TextColor = TextFor(state, theme),
+            TextColor = TextFor(state, theme, scope),
             Raised = state is PixelButtonState.Normal or PixelButtonState.Focus,
-            DrawRelief = state != PixelButtonState.Disabled
+            DrawRelief = state != PixelButtonState.Disabled,
+            CornerRadius = CornerRadiusFor(variant, scope)
         };
     }
 
-    private static Color FillFor(PixelButtonState state, ThemeData theme)
+    /// <summary>Esquina del StyleBoxFlat: Word Search redondea a 8 px; el resto usa la métrica de la variante.</summary>
+    private static int CornerRadiusFor(PixelButtonVariant variant, ButtonScope scope)
     {
+        return scope == ButtonScope.WordSearch ? 8 : metricsCornerRadius(variant);
+    }
+
+    /// <summary>Corneado de detalle: Word Search 2 px, el resto 1 px.</summary>
+    private static int CornerDetailFor(ButtonScope scope)
+    {
+        return scope == ButtonScope.WordSearch ? 2 : 1;
+    }
+
+    private static int metricsCornerRadius(PixelButtonVariant variant) => variant switch
+    {
+        PixelButtonVariant.Hud => 8,
+        PixelButtonVariant.Action => 4,
+        _ => 4
+    };
+
+    private static Color FillFor(PixelButtonState state, ThemeData theme, ButtonScope scope)
+    {
+        if (scope == ButtonScope.WordSearch)
+        {
+            return state switch
+            {
+                PixelButtonState.Hover => theme.WSCremaSuave,
+                PixelButtonState.Pressed => theme.WSMaderaBorde.Darkened(0.2f),
+                PixelButtonState.Disabled => theme.WSCrema,
+                _ => theme.WSFondo
+            };
+        }
+
         return state switch
         {
             PixelButtonState.Hover => theme.SubheaderBannerColor,
@@ -182,14 +240,67 @@ public static class PixelButtonStyle
         };
     }
 
-    private static Color TextFor(PixelButtonState state, ThemeData theme)
+    private static Color BorderFor(PixelButtonState state, ThemeData theme, Color fill, ButtonScope scope)
+    {
+        if (state == PixelButtonState.Focus)
+        {
+            return PixelStyles.TextColor(theme.BackgroundColor);
+        }
+
+        if (scope == ButtonScope.WordSearch)
+        {
+            return theme.WSMaderaBorde;
+        }
+
+        return PixelStyles.BorderColor(fill);
+    }
+
+    private static Color TextFor(PixelButtonState state, ThemeData theme, ButtonScope scope)
     {
         return state switch
         {
-            // El foco se dibuja sobre el relleno normal.
             PixelButtonState.Focus => PixelStyles.TextColor(theme.HeaderBannerColor),
             PixelButtonState.Disabled => PixelStyles.TextColor(PixelStyles.Arena),
-            _ => PixelStyles.TextColor(FillFor(state, theme))
+            _ => PixelStyles.TextColor(FillFor(state, theme, scope))
+        };
+    }
+
+    /// <summary>
+    ///     Estilo atenuado para tarjetas secundarias (no activas) del carrusel:
+    ///     relleno del estado base oscurecido, sin transparencia, colores de texto
+    ///   y borde derivados del relleno para mantener contraste. Los estados
+    ///     (normal/hover/pressed/focus/disabled) conservan su semántica de relieve.
+    /// </summary>
+    public static PixelButtonVisual MutedFor(PixelButtonVariant variant, PixelButtonState state, ThemeData theme, ButtonScope scope = ButtonScope.Global)
+    {
+        theme ??= new ThemeData();
+        var metrics = MetricsFor(variant);
+        var fill = PixelStyles.Opaque(FillFor(state, theme, scope).Darkened(0.35f));
+        var isPressed = state == PixelButtonState.Pressed;
+
+        var style = new StyleBoxFlat
+        {
+            BgColor = fill,
+            BorderColor = PixelStyles.Opaque(PixelStyles.BorderColor(fill)),
+            AntiAliasing = false,
+            CornerDetail = 1,
+            DrawCenter = state != PixelButtonState.Focus,
+        };
+        style.SetBorderWidthAll(PixelReliefPainter.BorderWidth);
+        style.SetCornerRadiusAll(CornerRadiusFor(variant, scope));
+        style.ContentMarginLeft = metrics.MarginX;
+        style.ContentMarginRight = metrics.MarginX;
+        style.ContentMarginTop = metrics.MarginY + (isPressed ? PressShift : 0);
+        style.ContentMarginBottom = metrics.MarginY - (isPressed ? PressShift : 0);
+
+        return new PixelButtonVisual
+        {
+            Metrics = metrics,
+            Style = style,
+            TextColor = PixelStyles.TextColor(fill),
+            Raised = state is PixelButtonState.Normal or PixelButtonState.Focus,
+            DrawRelief = state != PixelButtonState.Disabled,
+            CornerRadius = CornerRadiusFor(variant, scope),
         };
     }
 }

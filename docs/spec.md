@@ -26,7 +26,7 @@ Para garantizar un código limpio, desacoplado y mantenible que no genere bucles
 3. **Restricción de Interfaces Complejas (Evitar L & I excesivos):** En Godot 4 C#, se evita el uso abusivo de jerarquías de interfaces e inyección de dependencias pesadas que choquen con la jerarquía nativa de `Node`. Se prioriza la composición de nodos nativos.
 
 ### 2.2 Patrones de Diseño Soportados
-* **Factory Pattern (`WordGridFactory` / `CellFactory`):** Creación e instanciación dinámica de celdas y componentes de tablero desacoplados de la UI.
+* **Factory Pattern (`WordGridContainer` + `WordSearchGenerator`):** Creación e instanciación dinámica de celdas y componentes de tablero desacoplados de la UI.
 * **Observer / Signals Pattern (`Action` / `event` / Godot Signals):** Comunicación reactiva para eventos (palabra encontrada, tiempo transcurrido, cambio de puntuación).
 * **Tween / Game Juice Animations:** Uso de `CreateTween()` para micro-animaciones en selección, acierto y tachado de palabras.
 
@@ -62,6 +62,9 @@ res://
 │   └── word_search/                # Módulo Sopa de Letras (C1: ruta raíz, no scenes/)
 │       ├── WordSearchMain.tscn
 │       ├── WordSearchMain.cs
-│       ├── WordGridFactory.cs
+│       ├── WordGridContainer.cs
+│       ├── WordSearchGenerator.cs
+│       ├── WordSearchVisuals.cs
+│       ├── WordSearchHud.cs
 │       └── components/             # WordsPanel, WordCell
 ```

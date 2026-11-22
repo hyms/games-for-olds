@@ -58,6 +58,8 @@ public partial class WordSearchMain : BaseMinigame
     private Action _onZoomInAction;
     private Action _onZoomOutAction;
 
+    private bool _wired;
+
     public DifficultyConfig Config { get; private set; }
 
     public WordGridContainer Board { get; private set; }
@@ -137,6 +139,14 @@ public partial class WordSearchMain : BaseMinigame
         if (SubtitlePanel != null)
             SubtitlePanel.AddThemeStyleboxOverride("panel", PixelStyles.SubtitlePanel());
 
+        // Título principal: WS-CianTitulo con contorno WS-MaderaSombra (mockup fidelidad).
+        if (TitlePanel != null && GetNodeOrNull<Label>("TitlePanel/Title") is Label title)
+        {
+            title.AddThemeColorOverride("font_color", PixelStyles.WSCianTitulo);
+            title.AddThemeColorOverride("font_outline_color", PixelStyles.WSMaderaSombra);
+            title.AddThemeConstantOverride("outline_size", 4);
+        }
+
         if (GetNodeOrNull<PanelContainer>("%TimeBox") is PanelContainer timeBox)
             timeBox.AddThemeStyleboxOverride("panel", PixelStyles.Plate());
         if (GetNodeOrNull<PanelContainer>("%BoardFrame") is PanelContainer boardFrame)
@@ -174,6 +184,8 @@ public partial class WordSearchMain : BaseMinigame
 
 private void WireButtons()
     {
+        if (_wired) return;
+
         // Inicializar delegados una sola vez (reutilizables para conectar/desconectar)
         _onHintAction ??= UseHint;
         _onStartNewGameAction ??= StartNewGame;
@@ -184,30 +196,19 @@ private void WireButtons()
         _onZoomOutAction ??= OnZoomOut;
 
         // Evitar conexiones duplicadas al recargar la escena (StartFromSession -> StartGame -> _Ready).
-        _btnHint.Pressed -= _onHintAction;
         _btnHint.Pressed += _onHintAction;
         if (_btnHelp != null)
         {
-            _btnHelp.Pressed -= _onHintAction;
             _btnHelp.Pressed += _onHintAction;
         }
-        _btnReset.Pressed -= _onStartNewGameAction;
         _btnReset.Pressed += _onStartNewGameAction;
-        _btnNextGame.Pressed -= _onStartNewGameAction;
         _btnNextGame.Pressed += _onStartNewGameAction;
-        _btnPauseMenu.Pressed -= _onGoToMainMenuAction;
         _btnPauseMenu.Pressed += _onGoToMainMenuAction;
-        if (_btnPause != null)
-        {
-            _btnPause.Pressed -= _onOpenPauseAction;
-            _btnPause.Pressed += _onOpenPauseAction;
-        }
 
         // Confeti de victoria: el modal emite ConfettiRequested; el controlador
         // lo conecta al emisor de WordsPanel (desacoplado del componente modal).
         if (_completionModal != null)
         {
-            _completionModal.ConfettiRequested -= _onConfettiRequestedAction;
             _completionModal.ConfettiRequested += _onConfettiRequestedAction;
         }
 
@@ -215,14 +216,14 @@ private void WireButtons()
         // a la fila de pausa — sin overlay flotante para no solapar celdas del grid.
         if (_btnZoomIn != null)
         {
-            _btnZoomIn.Pressed -= _onZoomInAction;
             _btnZoomIn.Pressed += _onZoomInAction;
         }
         if (_btnZoomOut != null)
         {
-            _btnZoomOut.Pressed -= _onZoomOutAction;
             _btnZoomOut.Pressed += _onZoomOutAction;
         }
+
+        _wired = true;
     }
 
     private void OnConfettiRequested(Vector2 pos) => _wordsPanel?.EmitConfettiAt(pos);

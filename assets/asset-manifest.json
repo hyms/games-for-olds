@@ -69,7 +69,7 @@
       "status": "generated",
       "technical": { "dimensions": "32x32 png (16x16 de arte, escala x2 nearest)", "alpha": true, "frames": 1, "filtering": "nearest" },
       "visual_locks": ["white-fill", "tinta-outline-1px", "palette"],
-      "required": ["star", "wand", "magnifier", "refresh", "lock", "pause", "menu", "restart", "back", "check"],
+      "required": ["star", "wand", "magnifier", "refresh", "lock", "pause", "menu", "restart", "back", "check", "exit"],
       "source": { "kind": "generated-by-script", "url_or_tool": "tools/generate_icons.py", "creator": "proyecto", "created_at": "2026-10-27", "license": "project" },
       "verification": { "native_scale_reviewed": true, "technical_checks_passed": true, "approved_by": "usuario (pendiente de revisión en editor)" }
     },

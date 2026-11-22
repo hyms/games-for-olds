@@ -30,8 +30,13 @@ public static class PixelReliefPainter
     ///     Ancho en px de la banda de sombra (abajo/derecha). Por defecto 1 px.
     ///     Las celdas del tablero usan 2 px para igualar la plantilla de diseño.
     /// </param>
+    /// <param name="radius">Esquina del StyleBoxFlat (px). Cuando &gt; 0, las bandas del
+    /// bisel se recortan en los extremos pegados a la esquina para no traspasar el
+    /// arco redondeado. Valor 0 mantiene el comportamiento original (celdas).</param>
+    /// <param name="highlight">Color de la banda de luz. Por defecto <c>PixelStyles.BiselClaro</c>.</param>
+    /// <param name="shadow">Color de la banda de sombra. Por defecto <c>PixelStyles.BiselOscuro</c>.</param>
     public static void Draw(CanvasItem canvas, Vector2 size, bool raised,
-        int highlightWidth = 1, int shadowWidth = 1)
+        int highlightWidth = 1, int shadowWidth = 1, int radius = 0, Color? highlight = null, Color? shadow = null)
     {
         var width = Mathf.RoundToInt(size.X);
         var height = Mathf.RoundToInt(size.Y);
@@ -40,28 +45,43 @@ public static class PixelReliefPainter
         if (innerWidth <= 0 || innerHeight <= 0) return;
         if (highlightWidth < 0 || shadowWidth < 0) return;
 
-        // En estado elevado: luz (hw px) arriba/izquierda y sombra (sw px)
-        // abajo/derecha. En estado hundido se invierten COLORES y GROSORES: la
-        // sombra ancha pasa a arriba/izquierda y la luz fina a abajo/derecha,
-        // como en una tecla mecánica presionada.
-        var light = raised ? PixelStyles.BiselClaro : PixelStyles.BiselOscuro;
-        var dark = raised ? PixelStyles.BiselOscuro : PixelStyles.BiselClaro;
+        // En estado elevado: luz (hw px) arriba/izquierda y sombra abajo/derecha. En estado
+        // hundido se invierten COLORES y GROSORES: la sombra ancha pasa a arriba/izquierda y
+        // la luz fina a abajo/derecha, como en una tecla mecánica presionada.
+        var hl = highlight ?? PixelStyles.BiselClaro;
+        var sh = shadow ?? PixelStyles.BiselOscuro;
+        var light = raised ? hl : sh;
+        var dark = raised ? sh : hl;
         var lightW = Mathf.Min(raised ? highlightWidth : shadowWidth, innerWidth);
         var darkW = Mathf.Min(raised ? shadowWidth : highlightWidth, innerHeight);
         var b = BorderWidth;
+        var corner = Mathf.Max(0, radius);
 
         // Bandas claras arriba/izquierda; se acortan donde empieza la sombra
         // para no pisar las esquinas opuestas.
         var lightTopW = innerWidth - darkW;
         if (lightTopW > 0)
-            canvas.DrawRect(new Rect2(b, b, lightTopW, lightW), light);
+        {
+            var topX = corner > 0 ? b + corner : b;
+            var topW = corner > 0 ? lightTopW - corner : lightTopW;
+            if (topW > 0)
+                canvas.DrawRect(new Rect2(topX, b, topW, lightW), light);
+        }
         var lightLeftH = innerHeight - darkW;
         if (lightLeftH > 0)
-            canvas.DrawRect(new Rect2(b, b, lightW, lightLeftH), light);
+        {
+            var leftY = corner > 0 ? b + corner : b;
+            var leftH = corner > 0 ? lightLeftH - corner : lightLeftH;
+            if (leftH > 0)
+                canvas.DrawRect(new Rect2(b, leftY, lightW, leftH), light);
+        }
 
         // Bandas oscuras abajo/derecha; cubren las esquinas restantes al
         // extenderse por todo el ancho/alto interior.
-        canvas.DrawRect(new Rect2(b, height - b - darkW, innerWidth, darkW), dark);
-        canvas.DrawRect(new Rect2(width - b - darkW, b, darkW, innerHeight), dark);
+        var bottomW = corner > 0 ? innerWidth - corner : innerWidth;
+        canvas.DrawRect(new Rect2(b, height - b - darkW, bottomW, darkW), dark);
+        var rightH = corner > 0 ? innerHeight - corner : innerHeight;
+        var rightY = corner > 0 ? b + corner : b;
+        canvas.DrawRect(new Rect2(width - b - darkW, rightY, darkW, rightH), dark);
     }
 }

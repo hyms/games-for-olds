@@ -105,6 +105,27 @@ public class ThemeManagerTest
         AssertString(classic.FooterStrikethroughColor.ToHtml(false)).IsEqual("#9b4e48");
     }
 
+    /// <summary>WS-THEME-05: "default" resuelve al bloque "classic" (relleno celda encontrado = coral WS-Acento).</summary>
+    [TestCase]
+    public void TemaDefaultAliasDeClassicTokensWS()
+    {
+        var classic = _theme.GetThemeData("classic");
+        var defaultTheme = _theme.GetThemeData("default");
+
+        AssertString(defaultTheme.CellFoundBackgroundColor.ToHtml(false)).IsEqual("fd6d52");
+        AssertString(defaultTheme.WSAcento.ToHtml(false)).IsEqual("fd6d52");
+        AssertString(defaultTheme.WSEncontradoBorde.ToHtml(false)).IsEqual("8e3b33");
+        AssertString(defaultTheme.CellIdleBackgroundColor.ToHtml(false)).IsEqual("f1ede1");
+        AssertString(defaultTheme.WSCelda.ToHtml(false)).IsEqual("f1ede1");
+        AssertString(defaultTheme.WSCianTitulo.ToHtml(false)).IsEqual("65b9c4");
+        AssertString(defaultTheme.WSMaderaSombra.ToHtml(false)).IsEqual("2e1d12");
+        AssertString(defaultTheme.WSTachado.ToHtml(false)).IsEqual("9b4e48");
+        // default y classic comparten el mismo bloque WS (sin desviación de paleta).
+        AssertString(defaultTheme.CellFoundBackgroundColor.ToHtml(false)).IsEqual(classic.CellFoundBackgroundColor.ToHtml(false));
+        AssertString(defaultTheme.WSAcento.ToHtml(false)).IsEqual(classic.WSAcento.ToHtml(false));
+        AssertString(defaultTheme.WSEncontradoBorde.ToHtml(false)).IsEqual(classic.WSEncontradoBorde.ToHtml(false));
+    }
+
     private static void SetPath(SaveManager save, string fieldName, string godotPath)
     {
         typeof(SaveManager)

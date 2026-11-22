@@ -5,7 +5,7 @@
 ## Purpose & scope
 - Keep changes minimal, verifiable, and aligned with the project’s Spec-Driven Development (SDD) workflow.
 - **Documentation/governance changes:** prefer updating the authoritative docs below over ad-hoc decisions.
-- **Visual fidelity:** validate UI/layout claims against `docs/word_search/wathersoup.jpg` (and future minigame references) in the Godot editor/device when possible.
+- **Visual fidelity:** validate UI/layout claims against `docs/word_search/wathersoup.jpeg` (and future minigame references) in the Godot editor/device when possible.
 
 ## Hierarchy of Sources of Truth (SoT)
 1. **Global product/spec:** [`docs/spec.md`](docs/spec.md) — vision, architecture, transversal requirements.
@@ -26,3 +26,7 @@
 - Update relevant docs when behavior or visual decisions change; avoid duplicating SoT across files.
 - Prefer small, reviewable changes; do not invent metrics, CI status, or assets—mark unverifiable details for editor/device confirmation.
 - Do not modify gameplay logic unless explicitly requested; keep `.md`/governance tasks documentation-only when scoped as such.
+
+## Project state (read first)
+
+Before working in this repo, read `docs/word_search/plan_audit.md` §0 ("Current State & Next Step") for verified state, open phases, known test failures, and the single next step. It is the durable source of truth and mirrors what should live in `codebase-memory` once a write-capable MCP tool is available. Do not re-read the entire codebase from scratch.

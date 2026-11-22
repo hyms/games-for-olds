@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://gamecardtscn001"]
+
+[ext_resource type="Theme" path="res://core/AccessibleTheme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://ui/main_menu/GameCard.cs" id="2_script"]
+
+[node name="GameCard" type="Button"]
+custom_minimum_size = Vector2(200, 260)
+size_flags_horizontal = 1
+size_flags_vertical = 0
+theme = ExtResource("1_theme")
+script = ExtResource("2_script")
+text = ""
+
+[node name="Content" type="VBoxContainer" parent="."]
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Content"]
+custom_minimum_size = Vector2(64, 64)
+mouse_filter = 2
+flip_h = false
+flip_v = false
+
+[node name="Title" type="Label" parent="Content"]
+mouse_filter = 2
+text = "Juego"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="Content"]
+mouse_filter = 2
+text = "Jugar"
+horizontal_alignment = 1
